@@ -11,6 +11,7 @@
                 </el-form-item>
                 <el-form-item label="成本" prop="cost">
                   <span>{{deal_detail.deal.cost}}</span>
+                  
                 </el-form-item>
                 <el-form-item label="销售单价" prop="sale_price">
                   <span>{{deal_detail.deal.sale_price}}</span>
