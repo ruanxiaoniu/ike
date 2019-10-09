@@ -1,7 +1,7 @@
  <template>
    <el-tabs>
           <el-tab-pane  label="详细资料">
-            <detail></detail>
+            <detail :type="show"></detail>
           </el-tab-pane>
           <el-tab-pane  label="历史跟进">
             <history></history>
@@ -53,7 +53,7 @@
         </el-tabs>
 </template>
 <script>
-import detail from './components/detail'
+import detail from '../../../public/customer/detail'
 import history from './components/history'
 export default {
   components:{

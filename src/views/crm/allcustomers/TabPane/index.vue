@@ -24,13 +24,13 @@
          </el-col>
        </el-row>
      </el-select>
-      <el-button size="small" icon="el-icon-search" @click="search">
+      <el-button size="small" icon="el-icon-search" @click="handle('search')">
             搜索
       </el-button>
       <el-button  size="small"  icon="el-icon-delete">
             删除
       </el-button>
-       <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="handleDownload">
+       <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="handle('add')" >
         新建
       </el-button>
       <el-button :loading="downloadLoading" size="small" icon="el-icon-upload" @click="handleDownload">
@@ -109,11 +109,11 @@
   <el-dialog title="客户详情" :visible.sync="showDialogFlag" v-if="title=='customer_name'">
     <show></show>
   </el-dialog>
-  <el-dialog v-else-if="title=='search'" title="搜索" :visible.sync="showDialogFlag">
-    <search></search>
+  <el-dialog v-else-if="operation_type!='update'" :title="textMap[title]" :visible.sync="showDialogFlag">
+    <search v-if="title=='search'"></search>
+    <add v-else-if="title=='add'"></add>
   </el-dialog>
-  <el-dialog v-else :title="textMap[title]" :visible.sync="showDialogFlag" width="20%">
-    <!-- <show v-if="title=='customer_name'"></show> -->
+  <el-dialog v-else :title="textMap[title]" :visible.sync="showDialogFlag" width="30%">
     <update :type="title"></update>
   </el-dialog>
 </div>
@@ -126,13 +126,14 @@ import pagination from '@/components/Pagination'
 import show from '../show/index'
 import update from '../update/index'
 import search from '../search/index'
-
+import add from '../add/index'
 export default {
   components:{
     pagination,
     show,
     update,
-    search
+    search,
+    add,
   },
   filters: {
     statusFilter(status) {
@@ -152,6 +153,7 @@ export default {
   },
   data() {
     return {
+      operation_type:'update',//判断是修改还是其他操作,update为修改
       selection:'所有成员',
       list: null,
       total:0,
@@ -164,6 +166,8 @@ export default {
       },
       loading: false,
       textMap:{
+        search:'搜索',
+        add:'新增客户',
         customer_state:'修改客户状态',
         customer_stage:'修改客户阶段',
         customer_level:'修改客户等级',
@@ -208,12 +212,14 @@ export default {
       
     },
     operation(row, column, cell, event){
+         this.operation_type='update'
          this.title=column.property
          console.log(this.title)
          this.showDialogFlag=true
     },
-    search(){
-      this.title='search'
+    handle(type){
+      this.title=type
+      this.operation_type='other'
       this.showDialogFlag=true
     }
   }
