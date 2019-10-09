@@ -1,7 +1,7 @@
 <template>
 <div>
    <div>
-     <el-select size="small" v-model="selection" placeholder="请选择">
+     <el-select v-show="modelType=='allCustomer'" size="small" v-model="selection" placeholder="请选择" >
        <el-row>
          <el-col span="24">
             <el-option-group>
@@ -174,13 +174,15 @@ export default {
         customer_origin:'修改客户来源',
         relation_primary:'修改主联系手机号',
         landline_number:'修改主联系座机号',
-        end_follow:'修改修改最后跟进时间',
-        employee:'修改修改负责人'
-      }
+        end_follow:'修改最后跟进时间',
+        employee:'修改负责人'
+      },
+      modelType:'',
     }
   },
-  created() {
+  created() {    
     this.getList()
+    this.modelType=this.$store.getters.modelType
   },
   methods: {
     getList() {

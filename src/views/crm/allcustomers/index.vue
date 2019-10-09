@@ -3,7 +3,7 @@
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
-          <tab-pane v-if="activeName==item.key" :type="item.key"  />
+          <tab-pane v-if="activeName==item.key" :type="item.key"/>
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -39,6 +39,7 @@ export default {
     if (tab) {
       this.activeName = tab
     }
+    this.$store.dispatch('customer/setmodelType','allCustomer')
   },
   methods: {
     showCreatedTimes() {

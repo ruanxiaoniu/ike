@@ -42,7 +42,7 @@
               <el-input v-model="customer.customer_level"></el-input>
             </el-col>
             <el-col span="6" style="text-align:right">
-              <el-button size="small" icon="el-icon-edit" @click="handle('orgin')">编辑</el-button>
+              <el-button size="small" icon="el-icon-edit" @click="handle('origin')">编辑</el-button>
             </el-col>
           </el-row>
         </el-form-item>

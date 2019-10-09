@@ -6,6 +6,7 @@ const getters = {
   name: state => state.user.name,
   dialogstatus:state=>state.product.dialogstatus,
   rowList:state=>state.product.rowList,
-  dialogFormVisible:state=>state.product.dialogFormVisible
+  dialogFormVisible:state=>state.product.dialogFormVisible,
+  modelType:state=>state.customer.modelType,
 }
 export default getters
