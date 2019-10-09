@@ -1,6 +1,29 @@
 <template>
 <div>
    <div>
+     <el-select size="small" v-model="selection" placeholder="请选择">
+       <el-row>
+         <el-col span="24">
+            <el-option-group>
+              <el-option label="所有成员" value="所有成员" >所有成员</el-option>
+            </el-option-group>
+         </el-col>
+       </el-row>
+       <el-row>
+         <el-col span="12">
+            <el-option-group label="指定成员">
+              <el-option label="成员A" value="成员A">成员A</el-option>
+              <el-option label="成员B" value="成员B">成员B</el-option>
+            </el-option-group>
+         </el-col>
+         <el-col span="12">
+            <el-option-group label="指定部门">
+                <el-option label="部门A" value="部门A">部门A</el-option>
+                <el-option label="部门B" value="部门B">部门B</el-option>
+            </el-option-group>
+         </el-col>
+       </el-row>
+     </el-select>
       <el-button size="small" icon="el-icon-search" @click="search">
             搜索
       </el-button>
@@ -86,6 +109,9 @@
   <el-dialog title="客户详情" :visible.sync="showDialogFlag" v-if="title=='customer_name'">
     <show></show>
   </el-dialog>
+  <el-dialog v-else-if="title=='search'" title="搜索" :visible.sync="showDialogFlag">
+    <search></search>
+  </el-dialog>
   <el-dialog v-else :title="textMap[title]" :visible.sync="showDialogFlag" width="20%">
     <!-- <show v-if="title=='customer_name'"></show> -->
     <update :type="title"></update>
@@ -99,11 +125,14 @@ import { getCustomerAll ,getCustomerToday} from '@/api/customer'
 import pagination from '@/components/Pagination'
 import show from '../show/index'
 import update from '../update/index'
+import search from '../search/index'
+
 export default {
   components:{
     pagination,
     show,
-    update
+    update,
+    search
   },
   filters: {
     statusFilter(status) {
@@ -123,6 +152,7 @@ export default {
   },
   data() {
     return {
+      selection:'所有成员',
       list: null,
       total:0,
       title:'',
@@ -182,6 +212,10 @@ export default {
          console.log(this.title)
          this.showDialogFlag=true
     },
+    search(){
+      this.title='search'
+      this.showDialogFlag=true
+    }
   }
 }
 </script>
