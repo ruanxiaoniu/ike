@@ -47,13 +47,15 @@
       v-loading="loading"
       align="center"
       label="跟进时间"
-      width="150px"
+      min-width="150px"
       element-loading-text="请给我点时间！"
       prop="customer_name"
 
     >
       <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.customer_name }}</span>
+        <i class="el-icon-time" />
+        <span class="link-type">{{ scope.row.end_follow }}</span>
+
       </template>
     </el-table-column>
 

@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import tabPane from '../allcustomers/TabPane/index'
+import tabPane from './TabPane/index'
 
 export default {
   name: 'Tab',
