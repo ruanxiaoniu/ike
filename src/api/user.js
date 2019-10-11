@@ -1,10 +1,16 @@
 import request from '@/utils/request'
 
 export function login(data) {
+  // return request({
+  //   url: '/user/login',
+  //   method: 'post',
+  //   data
+  // })
+  
   return request({
-    url: '/user/login',
+    url: `/Authen/login?name=${data.username}&pwd=${data.password}`,
     method: 'post',
-    data
+    // data:JSON.stringify(data)
   })
 }
 

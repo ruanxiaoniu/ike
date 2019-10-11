@@ -1,7 +1,7 @@
 <template>
 <div>
    <div>
-     <!-- <el-select v-show="modelType=='allCustomer'" size="small" v-model="selection" placeholder="请选择" >
+     <el-select size="small" v-model="selection" placeholder="请选择" >
        <el-row>
          <el-col span="24">
             <el-option-group>
@@ -23,13 +23,13 @@
             </el-option-group>
          </el-col>
        </el-row>
-     </el-select> -->
+     </el-select>
       <el-button size="small" icon="el-icon-search" @click="handle('search')">
             搜索
       </el-button>
-      <el-button  size="small"  icon="el-icon-delete">
+      <!-- <el-button  size="small"  icon="el-icon-delete">
             删除
-      </el-button>
+      </el-button> -->
        <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="handle('add')" >
         新建
       </el-button>
@@ -41,78 +41,32 @@
       </el-button>
     </div>
     <p></p>
-  <el-table :data="list" border fit highlight-current-row style="width: 100%"  @cell-click="operation">
-   <el-table-column  type="selection" align="center"  />
-    <el-table-column
-      v-loading="loading"
-      align="center"
-      label="跟进时间"
-      min-width="150px"
-      element-loading-text="请给我点时间！"
-      prop="customer_name"
-
-    >
-      <template slot-scope="scope">
-        <i class="el-icon-time" />
-        <span class="link-type">{{ scope.row.end_follow }}</span>
-
-      </template>
-    </el-table-column>
-
-    <el-table-column min-width="100px" align="center" label="客户联系人名称" prop="customer_state">
-      <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.customer_state}}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column min-width="100px" align="center" label="计划内容" prop="customer_stage">
-      <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.customer_stage }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column min-width="100px" align="center" label="员工名称" prop="customer_level">
-      <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.customer_level }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column min-width="100px" label="是否完成" prop="customer_origin">
-       <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.customer_origin }}</span>
-      </template>
-    </el-table-column>
-  </el-table>
+  <baseData></baseData>
   <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-  
-  <!-- <el-dialog title="客户详情" :visible.sync="showDialogFlag" v-if="title=='customer_name'">
-    <show></show>
+  <el-dialog title="搜索" :visible.sync="showDialogFlag" v-if="operation_type=='search'">
+    <search></search>
   </el-dialog>
-  <el-dialog v-else-if="operation_type!='update'" :title="textMap[title]" :visible.sync="showDialogFlag">
-    <search v-if="title=='search'"></search>
-    <add v-else-if="title=='add'"></add>
+  <el-dialog v-else title="新建跟进" :visible.sync="showDialogFlag">
+    <add></add>
   </el-dialog>
-  <el-dialog v-else :title="textMap[title]" :visible.sync="showDialogFlag" width="30%">
-    <update :type="title"></update>
-  </el-dialog> -->
+
 </div>
   
 </template>
 
 <script>
-import { getCustomerAll ,getCustomerToday} from '@/api/customer'
+import { getfCustomerAll ,getCustomerToday} from '@/api/customer'
 import pagination from '@/components/Pagination'
-// import show from '../show/index'
-// import update from '../update/index'
-// import search from '../search/index'
-// import add from '../add/index'
+import baseData from '../../../public/follow/base'
+import search from '../search/index'
+import add from '../add/index'
+
 export default {
   components:{
     pagination,
-    // show,
-    // update,
-    // search,
-    // add,
+    baseData,
+    search,
+    add
   },
   filters: {
     statusFilter(status) {
@@ -132,7 +86,8 @@ export default {
   },
   data() {
     return {
-      operation_type:'update',//判断是修改还是其他操作,update为修改
+    
+      operation_type:'search',//判断是修改还是其他操作,update为修改
       selection:'所有成员',
       list: null,
       total:0,
@@ -200,7 +155,7 @@ export default {
     },
     handle(type){
       this.title=type
-      this.operation_type='other'
+      this.operation_type=type
       this.showDialogFlag=true
     }
   }

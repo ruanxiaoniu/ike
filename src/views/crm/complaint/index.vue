@@ -11,19 +11,19 @@
 </template>
 
 <script>
-import tabPane from '../allcustomers/TabPane/index'
+import tabPane from './TabPane/index'
 
 export default {
   name: 'Tab',
   components: { tabPane },
   data() {
     return {
-      tabMapOptions: [
+       tabMapOptions: [
         { label: '全部', key: 'all' },
-        { label: '今日新增', key: 'today_add' },
-        { label: '今天跟进', key: 'today_follow' },
-        { label: '30天未跟进', key: 'thirty' },
-        { label: '从未跟进', key: 'never' }
+        { label: '由我负责的', key: 'my_responsibility.' },
+        { label: '已处理的', key: 'processed' },
+        { label: '未处理的', key: 'unprocessed' },
+        { label: '自定义', key: 'customize' }
       ],
       activeName:'all',
       modelType:'myCustomer'

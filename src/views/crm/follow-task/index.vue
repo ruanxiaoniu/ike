@@ -1,44 +1,48 @@
 <template>
   <div class="tab-container">
-    <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
-      <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
+    <el-tabs v-model="TopactiveName" style="margin-top:15px;" type="border-card">
+     <el-tab-pane v-for="item in ToptabMapOptions" :key="item.key" :label="item.label" :name="item.key">
+       <keep-alive>
+         <subtabPane v-if="TopactiveName==item.key" :type="item.key"  />
+       </keep-alive>
+     </el-tab-pane>
+      <!-- <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
           <tab-pane v-if="activeName==item.key" :type="item.key"  />
         </keep-alive>
-      </el-tab-pane>
+      </el-tab-pane> -->
     </el-tabs>
   </div>
 </template>
 
 <script>
-import tabPane from '../allcustomers/TabPane/index'
+import subtabPane from './TabPane/subTapPane'
 
 export default {
   name: 'Tab',
-  components: { tabPane },
+  components: { subtabPane },
   data() {
     return {
-      tabMapOptions: [
-        { label: '全部', key: 'all' },
-        { label: '今日新增', key: 'today_add' },
-        { label: '今天跟进', key: 'today_follow' },
-        { label: '30天未跟进', key: 'thirty' },
-        { label: '从未跟进', key: 'never' }
+      ToptabMapOptions: [
+        { label: '我执行的', key: 'myExcute' },
+        { label: '我创建的', key: 'myCreate' },
+        { label: '抄送给我的', key: 'copy' },
       ],
       activeName:'all',
+      TopactiveName:'myExcute',
       modelType:'myCustomer'
     }
   },
   watch: {
-    activeName(val) {
-      this.$router.push(`${this.$route.path}?tab=${val}`)
+     TopactiveName(val) {
+      this.$router.push(`${this.$route.path}?tab=${val}&subtab=${this.activeName}`)
     }
   },
   created() {
     // init the default selected tab
     const tab = this.$route.query.tab
     if (tab) {
-      this.activeName = tab
+      this.TopactiveName = tab
     }
     this.$store.dispatch('customer/setmodelType','myCustomer')
   },

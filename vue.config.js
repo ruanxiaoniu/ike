@@ -6,14 +6,14 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || '爱客' // page title
+const name = defaultSettings.title || 'i客' // page title
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
 // For example, Mac: sudo npm run
 // You can change the port by the following methods:
 // port = 9528 npm run dev OR npm run dev --port = 9528
-const port = process.env.port || process.env.npm_config_port || 9528 // dev port
+const port = process.env.port || process.env.npm_config_port || 8081 // dev port
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -36,18 +36,42 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    proxy: {
-      // change xxx-api/login => mock/login
-      // detail: https://cli.vuejs.org/config/#devserver-proxy
-      [process.env.VUE_APP_BASE_API]: {
-        target: `http://127.0.0.1:${port}/mock`,
+    proxy:{
+      [process.env.VUE_APP_BASE_API]:{
+        target:process.env.VUE_APP_BASE_API,
         changeOrigin: true,
-        pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
-        }
+        pathRewrite: {['^' + process.env.VUE_APP_BASE_API]: ''}
       }
-    },
-    after: require('./mock/mock-server.js')
+    }
+    // proxy: {
+    //   // change xxx-api/login => mock/login
+    //   // detail: https://cli.vuejs.org/config/#devserver-proxy
+    //   // [process.env.VUE_APP_BASE_API+'/user/info']: {
+    //   //   target: `http://127.0.0.1:${port}/mock`,
+    //   //   // target: `http://10.20.5.31:8081`,
+    //   //   changeOrigin: true,
+    //   //   pathRewrite: {
+    //   //     ['^' + process.env.VUE_APP_BASE_API]: ''
+    //   //   }
+    //   // },
+    //   // [process.env.VUE_APP_BASE_API]: {
+    //   //   // target: `http://127.0.0.1:${port}/mock`,
+    //   //   target: process.env.BACKGROUND_APPLICATION_URL,
+    //   //   changeOrigin: true,
+    //   //   pathRewrite: {
+    //   //     ['^' + process.env.VUE_APP_BASE_API]: ''
+    //   //   }
+    //   // }
+    //   [process.env.VUE_APP_BASE_API]: {
+    //     // target: `http://127.0.0.1:${port}/mock`,
+    //     target: `http://10.78.3.13:8081`,
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       ['^' + process.env.VUE_APP_BASE_API]: ''
+    //     }
+    //   },
+    // },
+    // after: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

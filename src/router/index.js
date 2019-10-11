@@ -68,38 +68,38 @@ export const constantRoutes = [
   {
     path:'/crm',
     component:Layout,
-    redirect:'/crm/allcustomers',
+    redirect:'/crm/allcustomer',
     name:"CRM",
     meta:{title:'CRM',icon:'all'},
     children:[
       {
-        path: 'allcustomers',
+        path: 'allcustomer',
         component: () => import('@/views/crm/allcustomers/index'),
-        name: 'Allcustomers',
+        name: 'Allcustomer',
         meta: { title: '全部客户'}
       },
       {
-        path: 'mycustomers',
+        path: 'mycustomer',
         component: () => import('@/views/crm/mycustomers/index'),
-        name: 'Mycustomers',
+        name: 'Mycustomer',
         meta: { title: '我的客户'}
       },
       {
-        path: 'contact-follow',
+        path: 'follow',
         component: () => import('@/views/crm/contact-follow/index'),
-        name: 'Contact-Follow',
+        name: 'Follow',
         meta: { title: '联系跟进' }
       },
       {
-        path: 'follow-plan',
+        path: 'plan',
         component: () => import('@/views/crm/follow-plan/index'),
-        name: 'Follow-Plan',
+        name: 'Plan',
         meta: { title: '跟进计划' }
       },
       {
-        path: 'follow-task',
+        path: 'task',
         component: () => import('@/views/crm/follow-task/index'),
-        name: 'Follow-Task',
+        name: 'Task',
         meta: { title: '跟进任务' }
       },
       {
@@ -119,7 +119,7 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'index',
+        path: 'product',
         name: 'Product',
         component: () => import('@/views/product/index'),
         meta: { title: '产品管理', icon: 'product' }
@@ -131,36 +131,42 @@ export const constantRoutes = [
    * 包括成交订单、订单回款、订单退款和费用开支
    */
   {
-    path:'/finance',
+    path:'/financial',
     component:Layout,
-    name:'Finance',
-    redirect:'/finance/success-order',
+    name:'Financial',
+    redirect:'/financial/order',
     meta:{title:'财务',icon:'finance'},
     children:[
       {
-        path: 'success-order',
+        path: 'order',
         component: () => import('@/views/finance/success-order/index'),
-        name: 'Success-Order',
+        name: 'Order',
         meta: { title: '成交订单' }
       },
       {
-        path: 'return',
+        path: 'payback',
         component: () => import('@/views/finance/return/index'),
-        name: 'Return',
-        meta: { title: '订单回款' }
+        name: 'Payback',
+        meta: { title: '回款管理' }
+      },
+      {
+        path: 'plan',
+        component: () => import('@/views/finance/plan/index'),
+        name: 'Plan',
+        meta: { title: '回款计划' }
       },
       {
         path: 'refund',
         component: () => import('@/views/finance/refund/index'),
         name: 'Refund',
-        meta: { title: '订单退款' }
+        meta: { title: '退款管理' }
       },
-      {
-        path: 'expenses',
-        component: () => import('@/views/finance/expenses/index'),
-        name: 'Expenses',
-        meta: { title: '费用开支' }
-      }
+      // {
+      //   path: 'expenses',
+      //   component: () => import('@/views/finance/expenses/index'),
+      //   name: 'Expenses',
+      //   meta: { title: '费用开支' }
+      // }
     ]
   },
    /**
@@ -168,26 +174,26 @@ export const constantRoutes = [
    * 包括内部消息、个人信息、密码管理
    */
   {
-    path:'/personal-center',
-    name:'Personal-Center',
+    path:'/personal',
+    name:'Personal',
     component:Layout,
     meta:{title:'个人中心',icon:'personal'},
     children:[
       {
-        path:'inner-info',
-        name:'Inner-Info',
+        path:'message',
+        name:'Message',
         component:()=>import('@/views/personal-center/inner-info/index'),
         meta:{title:'内部消息'},
       },
       {
-        path:'personal-info',
-        name:'Personal-Info',
+        path:'info',
+        name:'Info',
         component:()=>import('@/views/personal-center/personal-info/index'),
         meta:{title:'个人信息'},
       },
       {
-        path:'password',
-        name:'Password',
+        path:'pwd',
+        name:'PWD',
         component:()=>import('@/views/personal-center/password/index'),
         meta:{title:'密码管理'},
       },
@@ -203,14 +209,14 @@ export const constantRoutes = [
     meta:{title:'管理中心',icon:'manage'},
     children: [
       {
-        path: 'permission',
-        name: 'Permission',
+        path: 'role',
+        name: 'Role',
         component: () => import('@/views/manage/permission/index'),
         meta: { title: '职位权限管理' }
       },
       {
-        path: 'employees',
-        name: 'Employees',
+        path: 'dept',
+        name: 'Dept',
         component: () => import('@/views/manage/employees/index'),
         meta: { title: '部门与员工' }
       }
@@ -221,29 +227,29 @@ export const constantRoutes = [
    * 包括客户统计、订单统计、产品统计
    */
   {
-    path:'/statistics',
+    path:'/count',
     component:Layout,
-    redirect:'/statistics/customers',
-    name:'Statistics',
+    redirect:'/count/customer',
+    name:'count',
     meta:{title:'统计',icon:'statistics'},
     children:[
       {
-        path:'customers',
-        name:'Customers',
+        path:'customer',
+        name:'Customer',
         component:()=>import('@/views/statistics/customers/index'),
-        meta:{title:'客户统计'},
+        meta:{title:'客户'},
       },
       {
         path:'order',
         name:'Order',
         component:()=>import('@/views/statistics/order/index'),
-        meta:{title:'订单统计'},
+        meta:{title:'订单'},
       },
       {
         path:'product',
         name:'Product',
         component:()=>import('@/views/statistics/product/index'),
-        meta:{title:'产品统计'},
+        meta:{title:'产品'},
       },
     ]
 

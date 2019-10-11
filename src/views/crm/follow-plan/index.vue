@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import tabPane from '../allcustomers/TabPane/index'
+import tabPane from './TabPane/index'
 
 export default {
   name: 'Tab',
@@ -20,10 +20,10 @@ export default {
     return {
       tabMapOptions: [
         { label: '全部', key: 'all' },
-        { label: '今日新增', key: 'today_add' },
-        { label: '今天跟进', key: 'today_follow' },
-        { label: '30天未跟进', key: 'thirty' },
-        { label: '从未跟进', key: 'never' }
+        { label: '今日跟进计划', key: 'today_follow' },
+        { label: '明天跟进计划', key: 'tomorrow_follow' },
+        { label: '后天跟进计划', key: 'after_tomorrow' },
+        { label: '本周跟进计划', key: 'this_week' }
       ],
       activeName:'all',
       modelType:'myCustomer'

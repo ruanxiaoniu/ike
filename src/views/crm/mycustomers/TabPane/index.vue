@@ -1,6 +1,6 @@
 <template>
 <div>
-   <div>
+   <!-- <div>
      <el-select v-show="modelType=='allCustomer'" size="small" v-model="selection" placeholder="请选择" >
        <el-row>
          <el-col span="24">
@@ -50,7 +50,6 @@
       width="150px"
       element-loading-text="请给我点时间！"
       prop="customer_name"
-
     >
       <template slot-scope="scope">
         <span class="link-type">{{ scope.row.customer_name }}</span>
@@ -105,7 +104,7 @@
     </el-table-column>
   </el-table>
   <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-  
+   -->
   <!-- <el-dialog title="客户详情" :visible.sync="showDialogFlag" v-if="title=='customer_name'">
     <show></show>
   </el-dialog>
@@ -116,6 +115,7 @@
   <el-dialog v-else :title="textMap[title]" :visible.sync="showDialogFlag" width="30%">
     <update :type="title"></update>
   </el-dialog> -->
+  <myCustomer></myCustomer>
 </div>
   
 </template>
@@ -123,6 +123,7 @@
 <script>
 import { getCustomerAll ,getCustomerToday} from '@/api/customer'
 import pagination from '@/components/Pagination'
+import myCustomer from '../../allcustomers/TabPane/index'
 // import show from '../show/index'
 // import update from '../update/index'
 // import search from '../search/index'
@@ -130,6 +131,7 @@ import pagination from '@/components/Pagination'
 export default {
   components:{
     pagination,
+    myCustomer,
     // show,
     // update,
     // search,
@@ -183,6 +185,7 @@ export default {
   created() {    
     this.getList()
     this.modelType=this.$store.getters.modelType
+    console.log(this.modelType)
   },
   methods: {
     getList() {
