@@ -26,7 +26,7 @@
 
           </el-tab-pane>
             <el-tab-pane  label="阶段修改记录">
-
+              <stageLog></stageLog>
           </el-tab-pane>
         </el-tabs>
 </template>
@@ -35,7 +35,9 @@ import customerDetail from '../../../public/customer/part-detail'
 import history from '../../../crm/contact-follow/index'
 import planDetail from '../../../crm/follow-plan/index'
 import taskDetail from '../../../crm/follow-task/index'
-import relation from '../../../public/customer/relation'
+import relation from '../../customer/relation'
+// import relation from '../../../public/customer/relation'
+import stageLog from '../stage-log'
 export default {
   components:{
     customerDetail,
@@ -43,6 +45,7 @@ export default {
     relation,
     planDetail,
     taskDetail,
+    stageLog
   }
 }
 </script>

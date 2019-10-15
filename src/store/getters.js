@@ -8,5 +8,7 @@ const getters = {
   rowList:state=>state.product.rowList,
   dialogFormVisible:state=>state.product.dialogFormVisible,
   modelType:state=>state.customer.modelType,
+  customerRowList:state=>state.customer.customerRowList,
+  customerUpdateDialogVisible:state=>state.customer.updateDialogVisible
 }
 export default getters

@@ -183,9 +183,9 @@ export default {
     }
   },
   created() {    
-    this.getList()
+    // this.getList()
     this.modelType=this.$store.getters.modelType
-    console.log(this.modelType)
+    // console.log(this.modelType)
   },
   methods: {
     getList() {
@@ -207,12 +207,12 @@ export default {
       //      this.total = response.data.total
       //    })
       // }
-       getCustomerAll(this.listQuery).then(response=>{
-           console.log(this.listQuery)
-           this.list=response.data.items
-           this.loading = false
-           this.total = response.data.total
-         })
+      //  getCustomerAll(this.listQuery).then(response=>{
+      //      console.log(this.listQuery)
+      //      this.list=response.data.items
+      //      this.loading = false
+      //      this.total = response.data.total
+      //    })
       
       
     },

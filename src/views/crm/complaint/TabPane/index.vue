@@ -165,7 +165,7 @@ export default {
       operation_type:'',//判断是修改还是其他操作,update为修改
       selection:'所有成员',
       list: null,
-      total:0,
+      total:10,
       title:'',
       showDialogFlag:false,
       listQuery: {

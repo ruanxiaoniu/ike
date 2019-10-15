@@ -19,10 +19,10 @@
             label="姓名"
             min-width="90px"
             element-loading-text="请给我点时间！"
-            prop="level_name"
+            prop="relationName"
           >
             <template slot-scope="scope">
-              <span class="link-type">{{ scope.row.level_name }}</span>
+              <span class="link-type">{{ scope.row.relationName }}</span>
             </template>
           </el-table-column>
            <el-table-column
@@ -30,70 +30,71 @@
             label="性别"
             min-width="90px"
             element-loading-text="请给我点时间！"
-            prop="level_name"
+            prop="relationSex"
           >
             <template slot-scope="scope">
-              <span class="link-type">{{ scope.row.level_name }}</span>
+              <span class="link-type">{{ scope.row.relationSex }}</span>
             </template>
           </el-table-column>
           <el-table-column
             align="center"
             label="职务"
             min-width="90px"
-            prop="level_explain"
+            prop="relationPosition"
           >
             <template slot-scope="scope">
-              <span class="link-type">{{ scope.row.level_name }}</span>
+              <span class="link-type">{{ scope.row.relationPosition }}</span>
             </template>
           </el-table-column>
            <el-table-column
             align="center"
             label="称呼"
             min-width="90px"
-            prop="level_criteria"
+            prop="relationCall"
           >
             <template slot-scope="scope">
-              <span class="link-type">{{ scope.row.level_criteria }}</span>
+              <span class="link-type">{{ scope.row.relationCall }}</span>
             </template>
           </el-table-column>
           <el-table-column
             align="center"
             label="手机号"
             min-width="100px"
-            prop="level_criteria"
+            prop="relationPhone"
           >
             <template slot-scope="scope">
-              <span class="link-type">{{ scope.row.level_criteria }}</span>
+              <span class="link-type">{{ scope.row.relationPhone }}</span>
             </template>
           </el-table-column>
           <el-table-column
             align="center"
             label="邮箱"
             min-width="100px"
-            prop="level_criteria"
+            prop="relationEmail"
           >
             <template slot-scope="scope">
-              <span class="link-type">{{ scope.row.level_criteria }}</span>
+              <span class="link-type">{{ scope.row.relationEmail }}</span>
             </template>
           </el-table-column>
           <el-table-column
             align="center"
             label="是否主联系人"
             min-width="100px"
-            prop="level_criteria"
+            prop="relationPrimary"
           >
             <template slot-scope="scope">
-              <span class="link-type">{{ scope.row.level_criteria }}</span>
+              <span class="link-type" v-if="scope.row.relationPrimary==0">否</span>
+              <span class="link-type" v-else>是</span>
             </template>
           </el-table-column>
           <el-table-column
             align="center"
             label="座机号"
             min-width="100px"
-            prop="level_criteria"
+            prop="landlineNumber"
           >
             <template slot-scope="scope">
-              <span class="link-type">{{ scope.row.level_criteria }}</span>
+              <span class="link-type">{{ scope.row.landlineNumber }}</span>
             </template>
           </el-table-column>
      </el-table>
@@ -103,6 +104,7 @@
 </template>
 <script>
 import pagination from '@/components/Pagination'
+import {getOneRelation} from '@/api/cunstomer'
 export default {
   components:{
     pagination,
@@ -111,20 +113,27 @@ export default {
     return {
       total:10,
       list: null,
+      rowList:null,
       listQuery: {
         page: 1,
         limit: 20,
         sort: '+id'
       },
-      list:[
-        {
-          level_name:'11',
-          level_explain:'11',
-          level_criteria:'11'
-        }
-      ]
-        
     }
   },
+  created() {
+    this.rowList=this.$store.getters.customerRowList
+    this.getRelation()
+  },
+  methods:{
+    getRelation(){
+      const params={
+        Cid:this.rowList.id
+      }
+      getOneRelation(params).then(res=>{
+        this.list=res.data
+      })
+    }
+  }
 }
 </script>

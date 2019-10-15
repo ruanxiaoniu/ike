@@ -71,6 +71,7 @@ export default {
     return {
       total:10,
       list: null,
+      updateDialogVisible:false,
       listQuery: {
         page: 1,
         limit: 20,

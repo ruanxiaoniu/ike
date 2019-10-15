@@ -106,17 +106,19 @@ export default {
       })
     },
     handleLogin() {
-      console.log(this.redirect)
       this.loading = true
       // this.$router.push({ path: this.redirect || '/' })
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$router.push({ path: this.redirect || '/' })
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
+          console.log("hhhh")  
+          // this.$router.push({ path: this.redirect || '/' })
+          this.$store.dispatch('user/login', this.loginForm).then((res) => {       
+            console.log("hhhh")     
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
+
             this.loading = false
           })
         } else {

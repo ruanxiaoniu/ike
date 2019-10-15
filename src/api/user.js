@@ -6,7 +6,8 @@ export function login(data) {
   //   method: 'post',
   //   data
   // })
-  
+  console.log(data)
+
   return request({
     url: `/Authen/login?name=${data.username}&pwd=${data.password}`,
     method: 'post',

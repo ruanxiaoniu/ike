@@ -36,40 +36,35 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    proxy:{
-      [process.env.VUE_APP_BASE_API]:{
-        target:process.env.VUE_APP_BASE_API,
+    proxy: {
+      '/api': {
+        target :'http://10.78.3.13:8081',
+        ws: true,
         changeOrigin: true,
-        pathRewrite: {['^' + process.env.VUE_APP_BASE_API]: ''}
-      }
+        pathRewrite:{
+          '^/api':'http://10.78.3.13:8081'
+        }
+      },
     }
+    // proxy:{
+    //   [process.env.VUE_APP_BASE_API]:{
+    //     target:process.env.VUE_APP_BASE_API,
+    //     changeOrigin: true,
+    //     pathRewrite: {['^' + process.env.VUE_APP_BASE_API]: ''}
+    //   }
+    // }
     // proxy: {
     //   // change xxx-api/login => mock/login
     //   // detail: https://cli.vuejs.org/config/#devserver-proxy
-    //   // [process.env.VUE_APP_BASE_API+'/user/info']: {
-    //   //   target: `http://127.0.0.1:${port}/mock`,
-    //   //   // target: `http://10.20.5.31:8081`,
-    //   //   changeOrigin: true,
-    //   //   pathRewrite: {
-    //   //     ['^' + process.env.VUE_APP_BASE_API]: ''
-    //   //   }
-    //   // },
-    //   // [process.env.VUE_APP_BASE_API]: {
-    //   //   // target: `http://127.0.0.1:${port}/mock`,
-    //   //   target: process.env.BACKGROUND_APPLICATION_URL,
-    //   //   changeOrigin: true,
-    //   //   pathRewrite: {
-    //   //     ['^' + process.env.VUE_APP_BASE_API]: ''
-    //   //   }
-    //   // }
     //   [process.env.VUE_APP_BASE_API]: {
-    //     // target: `http://127.0.0.1:${port}/mock`,
-    //     target: `http://10.78.3.13:8081`,
+    //     target: `http://127.0.0.1:${port}/mock`,
+    //     // target: `http://10.20.5.31:8081`,
     //     changeOrigin: true,
     //     pathRewrite: {
     //       ['^' + process.env.VUE_APP_BASE_API]: ''
     //     }
     //   },
+     
     // },
     // after: require('./mock/mock-server.js')
   },
