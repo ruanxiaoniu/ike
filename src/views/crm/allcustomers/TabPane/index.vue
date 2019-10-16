@@ -111,9 +111,9 @@
   <el-dialog title="客户详情" :visible.sync="showDialogFlag" v-if="title=='customerName'" width="60%">
     <show></show>
   </el-dialog>
-  <el-dialog v-else-if="operation_type!='update'" :title="textMap[title]" :visible.sync="showDialogFlag">
-    <search v-if="title=='search'"></search>
-    <add v-else-if="title=='add'"></add>
+  <el-dialog v-else-if="operation_type!='update'" :title="textMap[title]" :visible.sync="showDialogFlag" @setdialog="setDialog">
+    <search v-if="title=='search'" @setdialog="setDialog"></search>
+    <add v-else-if="title=='add'" @updatelist="getList"></add>
   </el-dialog>
   <el-dialog v-else :title="textMap[title]" :visible.sync="showDialogFlag" width="30%">
     <update :type="title"></update>
@@ -275,6 +275,10 @@ export default {
       this.title=type
       this.operation_type='other'
       this.showDialogFlag=true
+    },
+    //设置dialog
+    setDialog(){
+      this.showDialogFlag=false
     }
   }
 }

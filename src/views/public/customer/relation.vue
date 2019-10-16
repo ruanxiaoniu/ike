@@ -28,12 +28,13 @@
            <el-table-column
             align="center"
             label="性别"
-            min-width="90px"
+            min-width="80px"
             element-loading-text="请给我点时间！"
             prop="relationSex"
           >
             <template slot-scope="scope">
-              <span class="link-type">{{ scope.row.relationSex }}</span>
+              <span class="link-type" v-if="scope.row.relationSex">男</span>
+              <span class="link-type" v-else>女</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -69,7 +70,7 @@
           <el-table-column
             align="center"
             label="邮箱"
-            min-width="100px"
+            min-width="150px"
             prop="relationEmail"
           >
             <template slot-scope="scope">
@@ -104,7 +105,7 @@
 </template>
 <script>
 import pagination from '@/components/Pagination'
-import {getOneRelation} from '@/api/cunstomer'
+import {getOneRelation} from '@/api/customer'
 export default {
   components:{
     pagination,

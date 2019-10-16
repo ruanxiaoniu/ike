@@ -205,3 +205,15 @@ export function getOneRelation(params){
     params,
   })
 }
+
+
+//新建客户
+export function addCustomer(params){
+  console.log("新建啦啦啦")
+  console.log(params)
+  return request({
+    url:'/customer/create',
+    method:'post',
+    data:params,
+  })
+}

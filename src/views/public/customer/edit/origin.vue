@@ -29,7 +29,7 @@
     <div class="editBtn">
       <el-button v-if="!addFlag" size="small" type="success" @click="add">添加</el-button>
       
-      <el-button @click="select" size="small" type="primary">选择</el-button>
+      <!-- <el-button @click="select" size="small" type="primary">选择</el-button> -->
     </div>
     
   </div>
