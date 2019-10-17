@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 import qs from 'qs'
 
-//获取全部客户信息
+//获取全部客户信息/根据多条件搜索
 export function getCustomerAll(params){
   return request({
-    url: '/customer/listAllCustomer',
+    url: '/customer/listByCriteria',
     method: 'get',
     params,
     
@@ -15,7 +15,7 @@ export function getCustomerById(params) {
   console.log("api")
   console.log(params)
   return request({
-    url: '/customer/listByEid',
+    url: '/customer/listMyCustomer',
     method: 'get',
     params,
     

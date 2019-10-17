@@ -9,6 +9,7 @@ const getters = {
   dialogFormVisible:state=>state.product.dialogFormVisible,
   modelType:state=>state.customer.modelType,
   customerRowList:state=>state.customer.customerRowList,
-  customerUpdateDialogVisible:state=>state.customer.updateDialogVisible
+  customerUpdateDialogVisible:state=>state.customer.updateDialogVisible,
+  customerTableList:state=>state.customer.customerTableList
 }
 export default getters

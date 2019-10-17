@@ -3,6 +3,7 @@ import { resolve, reject } from 'q'
 const state={
   modelType:'',
   customerRowList:null,
+  customerTableList:null,
   updateDialogVisible:false
 }
 
@@ -16,6 +17,9 @@ const mutations={
   },
   SET_UPDATEDIALOGVISIBLE:(state,updateDialogVisible)=>{
     state.updateDialogVisible=updateDialogVisible
+  },
+  SETCUSTOMERTABLELIST:(state,tableList)=>{
+    state.customerTableList=tableList
   }
 }
 
@@ -28,6 +32,9 @@ const actions={
    },
    setupdateDialogVisible({commit},updateDialogVisible){
      commit('SET_UPDATEDIALOGVISIBLE',updateDialogVisible)
+   },
+   setCustomerTableList({commit},tableList){
+     commit('SETCUSTOMERTABLELIST',tableList)
    }
   //  getAllList({commit},params){
   //    console.log("pa"+params)

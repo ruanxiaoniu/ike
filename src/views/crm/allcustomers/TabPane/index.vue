@@ -1,28 +1,35 @@
 <template>
 <div>
    <div>
-     <el-select v-show="modelType=='allCustomer'" size="small" v-model="selection" placeholder="请选择" >
+     <el-select  size="small" v-model="selection" placeholder="请选择" >
        <el-row>
          <el-col span="24">
             <el-option-group>
-              <el-option label="所有成员" value="所有成员" >所有成员</el-option>
+              <el-option label="所有成员" value="所有成员"></el-option>
             </el-option-group>
          </el-col>
        </el-row>
        <el-row>
          <el-col span="12">
             <el-option-group label="指定成员">
-              <el-option label="成员A" value="成员A">成员A</el-option>
-              <el-option label="成员B" value="成员B">成员B</el-option>
-            </el-option-group>
-         </el-col>
-         <el-col span="12">
-            <el-option-group label="指定部门">
-                <el-option label="部门A" value="部门A">部门A</el-option>
-                <el-option label="部门B" value="部门B">部门B</el-option>
+                <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
             </el-option-group>
          </el-col>
        </el-row>
+      
+     </el-select>
+     <el-select v-model="sortName" placeholder="排序" style="width:200px">
+       <el-option label="客户id" value="c.id"></el-option>
+       <el-option label="客户名" value="c.customer_name"></el-option>
+       <el-option label="联系人名称" value="re_name"></el-option>
+       <el-option label="跟进时间" value="ftime"></el-option>
+       <el-option label="客户状态" value="c.customer_state"></el-option>
+       <el-option label="客户阶段id" value="c.customer_stage_id"></el-option>
+       <el-option label="客户来源" value="c.customer_origin_id"></el-option>
+     </el-select>
+     <el-select v-model="sortType" placeholder="排序方式" style="width:200px">
+       <el-option label="降序" value="desc"></el-option>
+       <el-option label="升序" value="asc"></el-option>
      </el-select>
       <el-button size="small" icon="el-icon-search" @click="handle('search')">
             搜索
@@ -95,8 +102,8 @@
       <template slot-scope="scope">
         
         <i class="el-icon-time" v-show="scope.row.listFollowTime"/>
-        <span class="link-type" v-if="scope.row.listFollowTime==null" @click="operation(scope.row,scope.$index,'listFollowTime')">未跟进</span>
-        <span class="link-type" v-else  @click="operation(scope.row,scope.$index,'listFollowTime')">{{ scope.row.listFollowTime }}</span>
+        <span class="link-type" v-if="scope.row.lastFollowTime==null" @click="operation(scope.row,scope.$index,'listFollowTime')">未跟进</span>
+        <span class="link-type" v-else  @click="operation(scope.row,scope.$index,'listFollowTime')">{{ scope.row.lastFollowTime }}</span>
 
       </template>
     </el-table-column>
@@ -112,7 +119,7 @@
     <show></show>
   </el-dialog>
   <el-dialog v-else-if="operation_type!='update'" :title="textMap[title]" :visible.sync="showDialogFlag" @setdialog="setDialog">
-    <search v-if="title=='search'" @setdialog="setDialog"></search>
+    <search v-if="title=='search'" @setdialog="setDialog" :selection="selection" :sortType="sortType" :sortName="sortName" @updatecustomer="getList"></search>
     <add v-else-if="title=='add'" @updatelist="getList"></add>
   </el-dialog>
   <el-dialog v-else :title="textMap[title]" :visible.sync="showDialogFlag" width="30%">
@@ -125,6 +132,7 @@
 
 <script>
 import { getCustomerById,getCustomerAll} from '@/api/customer'
+import {getEmployeeAll} from '@/api/employee'
 import pagination from '@/components/Pagination'
 import show from '../../../public/customer/all-detail/index'
 import update from '../update/index'
@@ -158,9 +166,12 @@ export default {
     return {
       operation_type:'update',//判断是修改还是其他操作,update为修改
       selection:'所有成员',
+      employeeOptions:null,
       list: null,
       total:0,
       title:'',
+      sortName:'',
+      sortType:'',
       showDialogFlag:false,
       page:1,
       // listQuery: {
@@ -182,20 +193,26 @@ export default {
         listFollowTime:'修改最后跟进时间',
         employeeName:'修改负责人'
       },
-      modelType:'',
-      currentIndex:0
+      currentIndex:0,
+      // query:{
+      //   pageNum:1,
+      //   pageSize:10,
+      // }
     }
   },
   created() {    
     console.log("刷新了吗？")
+    console.log(this.$route.query.tab)
     this.modelType=this.$store.getters.modelType
     this.getList()
+    this.getEmployee()
+    console.log(this.$route.query.tab)
   },
    watch:{
        watchRowlist:{
          deep:true,
          handler:function(newval){             
-             this.list[0]=newval             
+             this.list[this.currentIndex]=newval             
          }
        },
        watchDialogFlag:{
@@ -204,31 +221,99 @@ export default {
           //  console.log("watch")
           //  console.log(newval)
          }
-       }
+       },
+       watchTableList:{
+         deep:true,
+         handler:function(newval){ 
+           console.log("watchtable啦啦啦啦")            
+             this.list=newval     
+             console.log(this.list,newval)        
+         }
+       },
+       watchTab:{
+         deep:true,
+         handler:function(newval){ 
+                
+             this.getList()
+         }
+       },
+       selection(newVal){
+         
+          // console.log(this.selection)
+          this.getList()
+        },
+        sortName(newVal){
+          console.log("selection啦啦啦啦")            
+              console.log(newVal) 
+          this.getList()
+        },
+        sortType(newVal){
+          this.getList()
+        }
     },
+    
     computed: {
       watchRowlist(){
         return this.$store.getters.customerRowList
       },
       watchDialogFlag(){
         return this.$store.getters.customerUpdateDialogVisible
+      },
+      watchTableList(){
+        return this.$store.getters.customerTableList
+      },
+      watchTab(){
+        return this.$route.query.tab
       }
     },
   methods: {
+    //获取所有成员，用于搜索
+    getEmployee(){
+      getEmployeeAll().then(res=>{
+        this.employeeOptions=res.data
+        console.log("employee")
+        console.log(this.employeeOptions)
+      }).catch(err=>{
+        console.log(err)
+      })
+    },
     getList() {
       this.loading = true
-      const params={
-           Eid:3,
-          //  pageNum:this.listQuery.pageNum,
-          //  pageSize:this.listQuery.pageSize
-           pageNum:1,
-           pageSize:10
-      }
-      const query={
+      let employeeId=''
+       let query={
         pageNum:1,
-        pageSize:10
+        pageSize:10,
       }
+      if(this.selection!=="所有成员"){
+        console.log("bushi")
+          this.$set(query,'employeeIds',this.selection)
+      }
+      if(this.sortName!=''){
+        this.$set(query,'sortName',this.sortName)
+      }
+      if(this.sortType!=''){
+        this.$set(query,'sortType',this.sortType)
+      }
+      console.log("selecion")
+      console.log(this.selection)
+      if(this.$route.query.tab==='today_add'){//今天新增
+           this.$set(query,'isToday',"true")
+      }else if(this.$route.query.tab==='today_follow'){//今天跟进
+          this.$set(query,'differMin',0)
+      }else if(this.$route.query.tab==='never'){//从未跟进
+            this.$set(query,'isFollowed',"true")
+      }else if(this.$route.query.tab==='thirty'){//30天未跟进
+            this.$set(query,'differMax',30)
+            // query={
+            //   differMax:30,
+            //   employeeIds:employeeId
+            // }
+         }
       if(this.modelType=='allCustomer'){ //全部客户
+        
+       
+          console.log("query")
+         console.log(query)
          getCustomerAll(query).then(res=>{
           //  this.listQuery=res.data.pageInfo
            this.list=res.data.records
@@ -237,22 +322,25 @@ export default {
            this.loading = false
            this.total=res.data.total
            this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
+            this.$store.dispatch('customer/setCustomerTableList',this.list)
+         }).catch(err=>{
+           console.log(err)
          })
       }else if(this.modelType=='myCustomer'){ //根据id查询用户
         getCustomerById(params).then(response=>{
-          //  this.listQuery=response.data.pageInfo
-          //  this.list=response.data.customerList
-          //  this.loading = false
-          //  this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
-        //    console.log("showDialogFlag")
-        //  console.log(this.$store.getters.customerUpdateDialogVisible)
-         this.listQuery=response.data.pageInfo
-           this.list=response.data.records
-           console.log("hhh")
-           console.log(this.list)
-           this.loading = false
-           this.total=response.data.total
-           this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
+              //  this.listQuery=response.data.pageInfo
+              //  this.list=response.data.customerList
+              //  this.loading = false
+              //  this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
+            //    console.log("showDialogFlag")
+            //  console.log(this.$store.getters.customerUpdateDialogVisible)
+              this.list=res.data.records
+              console.log("hhh")
+              console.log(this.list)
+              this.loading = false
+              this.total=res.data.total
+              this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
+              this.$store.dispatch('customer/setCustomerTableList',this.list)
          })
       }  
     },

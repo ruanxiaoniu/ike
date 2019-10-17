@@ -3,19 +3,19 @@
      <div style="margin-top:20px">
       <el-timeline>
         <el-timeline-item
-          v-for="(activity, index) in activities"
+          v-for="(item, index) in followList"
           :key="index"
           @mouseover.native="enter(index)"
           @mouseout.native="leave(index)"
           icon="people"
-          timestamp="跟进结果">
+          :timestamp="item.followResult">
              <!-- <span>{{index}}</span> -->
-             <span class="detail" @click="show('employee')">录入人</span> <span @click="show('followDetail')" class="detail">跟进时间</span>
+             <span class="detail" @click="show('employee')">{{item.employeeName}}</span> <span @click="show('followDetail')" class="detail">{{item.followTime}}</span>
               <p></p>
               <div>
                 <span>跟进方式:</span>
-                <span class="detail" @click="show('relation')">联系方式</span>
-                <span class="detail" @click="show('customer')">[客户名称]</span>
+                <span class="detail" @click="show('relation')">{{item.followWay}}</span>
+                <span class="detail" @click="show('customer')">[{{item.customerName}}]</span>
               </div>
               <div  style="float:right" >
                   <el-button size="small" icon="el-icon-delete">删除</el-button>
@@ -41,6 +41,7 @@ import followDetail from '../../crm/contact-follow/detail/index'
 import relation from '../../public/customer/relation'
 import customer from '../../public/customer/all-detail/index'
 import employee from '../../public/employee/index'
+import {getFollowAll} from '@/api/follow'
 export default {
   components:{
     followDetail,
@@ -60,19 +61,22 @@ export default {
       reverse: true,
       btnFlag:['false'],
       type:'',
-      activities: [{
-        content: '活动按期开始',
-        timestamp: '2018-04-15'
-      }, {
-        content: '通过审核',
-        timestamp: '2018-04-13'
-      }, {
-        content: '创建成功',
-        timestamp: '2018-04-11'
-      }],
+      followList:null
+     
     }
   },
+  created() {
+    this.getFollow()
+  },
   methods:{
+    //获取所有跟进信息
+    getFollow(){
+      getFollowAll().then(res=>{
+        this.followList=res.data.records
+      }).catch(err=>{
+        console.log(err)
+      })
+    },
     show(type){
       this.dialogFlag=true
       this.type=type
