@@ -110,9 +110,9 @@ export const constantRoutes = [
       }
     ]
   },
-   /**
+  /**
    * 产品
-   * 
+   *
    */
   {
     path: '/product',
@@ -127,7 +127,7 @@ export const constantRoutes = [
     ]
   },
    /**
-   * 
+   *
    * 包括成交订单、订单回款、订单退款和费用开支
    */
   {
