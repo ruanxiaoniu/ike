@@ -115,8 +115,8 @@
   </el-table>
   <!-- <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="page" :limit.sync="listQuery.pageSize" @pagination="getList" /> -->
   
-  <el-dialog title="客户详情" :visible.sync="showDialogFlag" v-if="title=='customerName'" width="60%">
-    <show></show>
+  <el-dialog title="客户详情" :visible.sync="DialogFlag" v-if="title=='customerName'" width="60%">
+    <show v-if="title=='customerName'"></show>
   </el-dialog>
   <el-dialog v-else-if="operation_type!='update'" :title="textMap[title]" :visible.sync="showDialogFlag" @setdialog="setDialog">
     <search v-if="title=='search'" @setdialog="setDialog" :selection="selection" :sortType="sortType" :sortName="sortName" @updatecustomer="getList"></search>
@@ -173,6 +173,8 @@ export default {
       sortName:'',
       sortType:'',
       showDialogFlag:false,
+      DialogFlag:false,
+      updateDialogFlag:false,
       page:1,
       // listQuery: {
       //   pageNum: 1,//当前页面的数据数量
@@ -191,7 +193,7 @@ export default {
         relationPhone:'修改主联系手机号',
         landLinePhone:'修改主联系座机号',
         listFollowTime:'修改最后跟进时间',
-        employeeName:'修改负责人'
+        employeeName:'负责人详情'
       },
       currentIndex:0,
       // query:{
@@ -218,8 +220,6 @@ export default {
        watchDialogFlag:{
          handler:function(newval){
            this.showDialogFlag=newval
-          //  console.log("watch")
-          //  console.log(newval)
          }
        },
        watchTableList:{
@@ -232,14 +232,12 @@ export default {
        },
        watchTab:{
          deep:true,
-         handler:function(newval){ 
-                
+         handler:function(newval){
+             this.$store.dispatch('customer/setupdateDialogVisible',false) 
              this.getList()
          }
        },
        selection(newVal){
-         
-          // console.log(this.selection)
           this.getList()
         },
         sortName(newVal){
@@ -304,45 +302,20 @@ export default {
             this.$set(query,'isFollowed',"true")
       }else if(this.$route.query.tab==='thirty'){//30天未跟进
             this.$set(query,'differMax',30)
-            // query={
-            //   differMax:30,
-            //   employeeIds:employeeId
-            // }
-         }
-      if(this.modelType=='allCustomer'){ //全部客户
-        
+      }
        
-          console.log("query")
-         console.log(query)
-         getCustomerAll(query).then(res=>{
-          //  this.listQuery=res.data.pageInfo
-           this.list=res.data.records
-           console.log("hhh")
-           console.log(this.list)
-           this.loading = false
-           this.total=res.data.total
-           this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
-            this.$store.dispatch('customer/setCustomerTableList',this.list)
-         }).catch(err=>{
-           console.log(err)
-         })
-      }else if(this.modelType=='myCustomer'){ //根据id查询用户
-        getCustomerById(params).then(response=>{
-              //  this.listQuery=response.data.pageInfo
-              //  this.list=response.data.customerList
-              //  this.loading = false
-              //  this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
-            //    console.log("showDialogFlag")
-            //  console.log(this.$store.getters.customerUpdateDialogVisible)
-              this.list=res.data.records
-              console.log("hhh")
-              console.log(this.list)
-              this.loading = false
-              this.total=res.data.total
-              this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
-              this.$store.dispatch('customer/setCustomerTableList',this.list)
-         })
-      }  
+      getCustomerAll(query).then(res=>{
+      //  this.listQuery=res.data.pageInfo
+        this.list=res.data.records
+        console.log("hhh")
+        console.log(this.list)
+        this.loading = false
+        this.total=res.data.total
+        this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
+        this.$store.dispatch('customer/setCustomerTableList',this.list)
+      }).catch(err=>{
+        console.log(err)
+      })
     },
    
     update(val){
@@ -350,10 +323,15 @@ export default {
       console.log(val)
     },
     operation(row,index,title){
+         if(title=='customerName'){
+            this.DialogFlag=true
+         }else{
+            this.showDialogFlag=true
+         }
          this.operation_type='update'
          this.title=title
          this.currentIndex=index
-         this.showDialogFlag=true
+         
          this.$store.dispatch('customer/setcustomerRowList',row)
          this.$store.dispatch('customer/setupdateDialogVisible',true)
          console.log("setupdateDialogVisibel")
@@ -366,7 +344,12 @@ export default {
     },
     //设置dialog
     setDialog(){
-      this.showDialogFlag=false
+      if(this.title=='customerName'){
+        this.DialogFlag=false
+      }else{
+        this.showDialogFlag=false
+        this.$store.dispatch('customer/setupdateDialogVisible',false)
+      }
     }
   }
 }

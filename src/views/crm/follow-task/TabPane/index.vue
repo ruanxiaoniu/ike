@@ -19,6 +19,13 @@
               <el-option label="成员B" value="成员B">成员B</el-option>
             </el-option-group>
      </el-select>
+      <el-select v-model="sortName" placeholder="排序" style="width:200px" size="small" >
+       <el-option label="跟进任务创建时间" value="fa.create_time"></el-option>
+     </el-select>
+     <el-select v-model="sortType" placeholder="排序方式" style="width:200px" size="small" >
+       <el-option label="降序" value="desc"></el-option>
+       <el-option label="升序" value="asc"></el-option>
+     </el-select>
       <el-button size="small" icon="el-icon-search" @click="operation('search')">
             搜索
       </el-button>

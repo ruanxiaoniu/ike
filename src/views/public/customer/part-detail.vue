@@ -119,13 +119,3 @@ export default {
   },
 }
 </script>
-<style scoped>
-/* .top{
-  background-color: rgba(235, 229, 229, 0.966);
-  font-size:16px;
-  margin-left: 0px;
-  height: 40px;
-  line-height: 40px;
-  padding-left: 10px;
-} */
-</style>

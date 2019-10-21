@@ -24,8 +24,8 @@
                 :loading="loading">
                 <el-option
                   v-for="item in employeeOptions"
-                  :key="item.value"
-                  :label="item.roleName"
+                  :key="item.id"
+                  :label="item.name"
                   :value="item.id">
                 </el-option>
               </el-select>
@@ -144,7 +144,8 @@ import stageEdit from '../../../public/customer/edit/stage'
 import levelEdit from '../../../public/customer/edit/level'
 import originEdit from '../../../public/customer/edit/origin'
 import {getCustomerAllOrigin,getCustomerAllStage,getCustomerAllLevel,addCustomer} from '@/api/customer'
-import {getEmployeAll} from '@/api/employee'
+import {getEmployeeAll} from '@/api/employee'
+import { log } from 'util'
 export default {
   components:{
     stageEdit,
@@ -221,6 +222,7 @@ export default {
     }
   },
   created() {
+    
     this.getEmployee()
     this.getStage()
     this.getLevel()
@@ -229,7 +231,8 @@ export default {
   methods:{
     //获取员工信息
     getEmployee(){
-      getEmployeAll().then(res=>{
+      console.log("哈哈哈")
+      getEmployeeAll().then(res=>{
          this.employeeOptions=res.data
          this.employeeFilter=res.data
       }).catch(err=>{
@@ -267,7 +270,7 @@ export default {
           setTimeout(() => {
             this.loading = false;
             this.employeeOptions = this.employeeFilter.filter(item => {
-              return item.roleName.toLowerCase()
+              return item.name.toLowerCase()
                 .indexOf(query.toLowerCase()) > -1;
             });
           }, 100);

@@ -12,7 +12,7 @@
         <relationPrimary v-if="type=='relationPhone'"></relationPrimary>
         <!-- 修改主联系座机号 -->
         <landlineNumber v-if="type=='landLinePhone'"></landlineNumber>
-        <!-- 修改最后跟进时间 -->
+        <!-- 跟进详情 -->
         <endFollow v-if="type=='listFollowTime'"></endFollow>
         <!-- 修改负责人 -->
         <employee v-if="type=='employeeName'"></employee>    

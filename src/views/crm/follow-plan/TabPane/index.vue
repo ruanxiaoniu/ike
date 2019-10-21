@@ -1,28 +1,28 @@
 <template>
 <div>
    <div>
-     <el-select v-show="modelType=='allCustomer'" size="small" v-model="selection" placeholder="请选择" >
-       <el-row>
-         <el-col span="24">
-            <el-option-group>
-              <el-option label="所有成员" value="所有成员" >所有成员</el-option>
-            </el-option-group>
-         </el-col>
-       </el-row>
-       <el-row>
-         <el-col span="12">
-            <el-option-group label="指定成员">
-              <el-option label="成员A" value="成员A">成员A</el-option>
-              <el-option label="成员B" value="成员B">成员B</el-option>
-            </el-option-group>
-         </el-col>
-         <el-col span="12">
-            <el-option-group label="指定部门">
-                <el-option label="部门A" value="部门A">部门A</el-option>
-                <el-option label="部门B" value="部门B">部门B</el-option>
-            </el-option-group>
-         </el-col>
-       </el-row>
+     <el-select 
+        size="small" 
+        v-model="selection" 
+        placeholder="请选择" 
+        filterable
+        remote
+        reserve-keyword
+        :remote-method="remoteMethod"
+      >
+        <el-option-group>
+          <el-option label="所有成员" value="所有成员"></el-option>
+        </el-option-group>
+        <el-option-group label="指定成员">
+          <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
+        </el-option-group>
+     </el-select>
+     <el-select v-model="sortName" placeholder="排序" style="width:200px" size="small" >
+       <el-option label="跟进计划创建时间" value="fp.plan_time"></el-option>
+     </el-select>
+     <el-select v-model="sortType" placeholder="排序方式" style="width:200px" size="small" >
+       <el-option label="降序" value="desc"></el-option>
+       <el-option label="升序" value="asc"></el-option>
      </el-select>
       <el-button size="small" icon="el-icon-search" @click="handle('search')">
             搜索
@@ -101,7 +101,6 @@
 </template>
 
 <script>
-import { getCustomerAll ,getCustomerToday} from '@/api/customer'
 import pagination from '@/components/Pagination'
 import customer from '../../../public/customer/all-detail/index'
 import planDetail from '../../../public/follow/plan-detail'
@@ -109,6 +108,9 @@ import update from '../update/index'
 import search from '../search/index'
 import add from '../add/index'
 import relation from '../../../public/customer/relation'
+
+import {getFollowAll,deleteFollow} from '@/api/follow'
+import {getEmployeeAll} from '@/api/employee'
 export default {
   components:{
     pagination,
@@ -161,44 +163,123 @@ export default {
         end_follow:'修改最后跟进时间',
         employee:'修改负责人'
       },
-      modelType:'',
+      sortName:'',
+      sortType:'',
+      searchQuery:{},
+      reverse: true,
+      employeeOptions:null,
+      employeeFilter:null,
+      selection:'所有成员',
     }
   },
   created() {    
-    this.getList()
-    this.modelType=this.$store.getters.modelType
+    this.getEmployee()
   },
   methods: {
+     /**
+     * 获取所有成员，用于搜索
+     * method:getEmployee()
+     */
+    getEmployee(){
+      getEmployeeAll().then(res=>{
+        this.employeeOptions=res.data
+        this.employeeFilter=res.data
+        // console.log("employee")
+        // console.log(this.employeeOptions)
+      }).catch(err=>{
+        console.log(err)
+      })
+    },
+    /**
+     * 清空params
+     */
+    clearParams(){
+      for(let key in this.params){
+        delete this.params[key]
+      }
+    },
+     /**
+     * 检查变化
+     * method:checkTab()
+     */
+    checkTab(){
+        const tab=this.$route.query.tab
+        if(tab=='myfollow'){
+          this.clearParams()
+          console.log("不是清空了？")
+          console.log(this.params)
+          if(this.searchQuery){
+              this.params=this.searchQuery
+          }
+          this.$set(this.params,'isMyself','true')
+
+        }else if(tab=='today_follow'){
+           this.clearParams()
+          if(this.searchQuery){
+              this.params=this.searchQuery
+          }
+          this.$set(this.params,'isToday','true')
+          console.log(this.params)
+        }else if(tab=='yesterday'){
+           this.clearParams()
+          if(this.searchQuery){
+              this.params=this.searchQuery
+          }
+          this.$set(this.params,'yesterday','true')
+          console.log(this.params)
+        }else if(tab=='this_week'){
+           this.clearParams()
+          if(this.searchQuery){
+             
+              this.params=this.searchQuery
+          }
+          this.$set(this.params,'isWeek','true')
+          console.log(this.params)
+        }else if(tab=='this_month'){
+           this.clearParams()
+          if(this.searchQuery){
+              this.params=this.searchQuery
+          }
+          this.$set(this.params,'isMouth','true')
+        }else{
+           this.clearParams()
+          if(this.searchQuery){
+              this.params=this.searchQuery
+          }
+          console.log(this.params)
+        }
+        
+        if(this.selection!='所有成员'){
+          this.$set(this.params,'employeeIds',this.selection)
+        }
+       
+        if(this.sortType){
+          this.$set(this.params,'sortType',this.sortType)
+        }
+        if(this.sortName){
+          this.$set(this.params,'sortName',this.sortName)
+        }
+    },
+     /**
+     * 远程搜索负责人
+     * method:remoteMethod()
+     */
+    remoteMethod(query){
+      if (query !== '') {
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.employeeOptions = this.employeeFilter.filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1;
+          });
+        }, 100);
+      }else{
+        this.employeeOptions=this.employeeFilter
+      }
+    },
     text(){
         alert('hh')
-    },
-    getList() {
-      this.loading = true
-
-      //全部客户
-      // if(this.type==='all'){
-      //    getCustomerAll(this.listQuery).then(response=>{
-      //      console.log(this.listQuery)
-      //      this.list=response.data.items
-      //      this.loading = false
-      //      this.total = response.data.total
-      //    })
-      // }else if(this.type==='today_add'){//今日新增
-      //   getCustomerToday(this.listQuery).then(response=>{
-      //      console.log(this.listQuery)
-      //      this.list=response.data.items
-      //      this.loading = false
-      //      this.total = response.data.total
-      //    })
-      // }
-       getCustomerAll(this.listQuery).then(response=>{
-           console.log(this.listQuery)
-           this.list=response.data.items
-           this.loading = false
-           this.total = response.data.total
-         })
-      
-      
     },
     operation(type){
          this.operation_type=type

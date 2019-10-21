@@ -26,7 +26,9 @@ import origin from './components/origin'
 import relationPrimary from './components/relationPrimary'
 import landlineNumber from './components/landlineNumber'
 import endFollow from './components/endFollow'
-import employee from './components/employee'
+// import employee from './components/employee'
+import employee from '../../../public/employee/index'
+
 
 export default {
   props:['type'],

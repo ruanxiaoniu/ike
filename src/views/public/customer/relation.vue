@@ -80,7 +80,7 @@
           <el-table-column
             align="center"
             label="是否主联系人"
-            min-width="100px"
+            min-width="110px"
             prop="relationPrimary"
           >
             <template slot-scope="scope">
@@ -107,6 +107,7 @@
 import pagination from '@/components/Pagination'
 import {getOneRelation} from '@/api/customer'
 export default {
+  props:['Cid'],
   components:{
     pagination,
   },
@@ -115,6 +116,9 @@ export default {
       total:10,
       list: null,
       rowList:null,
+      params:{
+        Cid:''
+      },
       listQuery: {
         page: 1,
         limit: 20,
@@ -124,14 +128,42 @@ export default {
   },
   created() {
     this.rowList=this.$store.getters.customerRowList
+    console.log("raltionlaal")
+    if(this.Cid){
+      this.params.Cid=this.Cid
+    }else{
+      this.params.Cid=this.rowList.id
+    }
+    
     this.getRelation()
+  },
+  watch:{
+     watchCid:{
+       deep:true,
+       handler:function(val){
+          this.params.Cid=val
+          console.log("relation啦啦啦")
+          console.log(this.params)
+          this.getRelation()
+       }
+     },
+     Cid(newVal){
+       this.params.Cid=newVal
+        console.log("relation啦啦啦")
+        console.log(this.params)
+        this.getRelation()
+     }
+  },
+  computed: {
+    watchCid(){
+      return this.$store.getters.customerRowList.id
+    }
   },
   methods:{
     getRelation(){
-      const params={
-        Cid:this.rowList.id
-      }
-      getOneRelation(params).then(res=>{
+      console.log("RRRR")
+      console.log(this.params)
+      getOneRelation(this.params).then(res=>{
         this.list=res.data
       })
     }

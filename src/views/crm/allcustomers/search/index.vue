@@ -217,10 +217,6 @@ export default {
          }
          console.log(this.creatRang)
          if(this.creatRang){
-              // const date1=new Date(this.formatDate(this.creatRang[0]))
-              // const date2=new Date(this.formatDate(this.creatRang[1]))
-              // this.searchQuery.createMin=date1.getTime();
-              // this.searchQuery.createMax=date2.getTime();
               this.searchQuery.createMin=this.formatDate(this.creatRang[0]);
               this.searchQuery.createMax=this.formatDate(this.creatRang[1]);
          }

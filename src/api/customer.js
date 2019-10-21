@@ -206,7 +206,14 @@ export function getOneRelation(params){
   })
 }
 
-
+//获取某个联系人信息
+export function getRelationDetail(params){
+  return request({
+    url:'/relation/getDetail',
+    method:'get',
+    params,
+  })
+}
 //新建客户
 export function addCustomer(params){
   console.log("新建啦啦啦")

@@ -1,14 +1,14 @@
 <template>
   <div>
       <el-form  ref="customer" :rules="rules" :model="customer" label-position="left" label-width="150px" style="width: 500px; margin-left:50px;">
-        <el-form-item label="客户id" prop="customer_name">
+        <el-form-item label="客户" prop="customerId">
           <el-row>
             <el-col span="18">
               <el-input v-model="customer.customer_name"></el-input>
             </el-col>
           </el-row> 
         </el-form-item>
-        <el-form-item label="联系人id" prop="customer_stage">
+        <el-form-item label="联系人" prop="relationId">
           <el-row>
             <el-col span="18">
               <el-input v-model="customer.customer_stage"></el-input>

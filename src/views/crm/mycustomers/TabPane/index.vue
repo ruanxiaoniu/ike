@@ -1,23 +1,6 @@
 <template>
 <div>
    <div>
-     <el-select v-show="modelType=='allCustomer'" size="small" v-model="selection" placeholder="请选择" >
-       <el-row>
-         <el-col span="24">
-            <el-option-group>
-              <el-option label="所有成员" value="所有成员"></el-option>
-            </el-option-group>
-         </el-col>
-       </el-row>
-       <el-row>
-         <el-col span="12">
-            <el-option-group label="指定成员">
-                <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
-            </el-option-group>
-         </el-col>
-       </el-row>
-      
-     </el-select>
      <el-select v-model="sortName" placeholder="排序" style="width:200px">
        <el-option label="客户id" value="c.id"></el-option>
        <el-option label="客户名" value="c.customer_name"></el-option>
@@ -190,10 +173,10 @@ export default {
         originName:'修改客户来源',
         relationPhone:'修改主联系手机号',
         landLinePhone:'修改主联系座机号',
-        listFollowTime:'修改最后跟进时间',
-        employeeName:'修改负责人'
+        listFollowTime:'跟进详情',
+        employeeName:'员工详情'
       },
-      modelType:'',
+      // modelType:'',
       currentIndex:0,
       // query:{
       //   pageNum:1,
@@ -203,11 +186,7 @@ export default {
   },
   created() {    
     console.log("刷新了吗？")
-    console.log(this.$route.query.tab)
-    this.modelType=this.$store.getters.modelType
-    this.getList()
-    this.getEmployee()
-    console.log(this.$route.query.tab)
+    this.getMyList()
   },
    watch:{
        watchRowlist:{
@@ -234,22 +213,20 @@ export default {
        watchTab:{
          deep:true,
          handler:function(newval){ 
-                
-             this.getList()
+            this.$store.dispatch('customer/setupdateDialogVisible',false) 
+             this.getMyList()
          }
        },
        selection(newVal){
-         
-          // console.log(this.selection)
-          this.getList()
+          this.getMyList()
         },
         sortName(newVal){
           console.log("selection啦啦啦啦")            
               console.log(newVal) 
-          this.getList()
+          this.getMyList()
         },
         sortType(newVal){
-          this.getList()
+          this.getMyList()
         }
     },
     
@@ -268,30 +245,10 @@ export default {
       }
     },
   methods: {
-    //获取所有成员，用于搜索
-    getEmployee(){
-      getEmployeeAll().then(res=>{
-        this.employeeOptions=res.data
-        console.log("employee")
-        console.log(this.employeeOptions)
-      }).catch(err=>{
-        console.log(err)
-      })
-    },
-    getList() {
-      this.loading = true
-      let employeeId=''
-       let query={
-        pageNum:1,
-        pageSize:10,
-      }
-      if(this.selection!=="所有成员"){
-        console.log("bushi")
-          this.$set(query,'employeeIds',this.selection)
-      }
-      if(this.sortName!=''){
-        this.$set(query,'sortName',this.sortName)
-      }
+    //判断Tab的值
+    checkTab(query){
+      console.log("check")
+      console.log(query)
       if(this.sortType!=''){
         this.$set(query,'sortType',this.sortType)
       }
@@ -301,57 +258,33 @@ export default {
            this.$set(query,'isToday',"true")
       }else if(this.$route.query.tab==='today_follow'){//今天跟进
           this.$set(query,'differMin',0)
-            // query={
-            //   differMin:0,
-            //   employeeIds:employeeId
-            // }
-         }else if(this.$route.query.tab==='never'){//从未跟进
+      }else if(this.$route.query.tab==='never'){//从未跟进
             this.$set(query,'isFollowed',"true")
-            //  query={
-            //   isFollowed:"true",
-            //   employeeIds:employeeId
-            // }
-         }else if(this.$route.query.tab==='thirty'){//30天未跟进
+      }else if(this.$route.query.tab==='thirty'){//30天未跟进
             this.$set(query,'differMax',30)
-            // query={
-            //   differMax:30,
-            //   employeeIds:employeeId
-            // }
-         }
-      if(this.modelType=='allCustomer'){ //全部客户
-        
+      }
+      return query
+    },
+
+    getMyList() {
+      this.loading = true
+      let employeeId=''
+       let query={
+        pageNum:1,
+        pageSize:10,
+      }
+      console.log("query")
+       console.log(query)
+      query=this.checkTab(query)
        
-          console.log("query")
-         console.log(query)
-         getCustomerAll(query).then(res=>{
-          //  this.listQuery=res.data.pageInfo
-           this.list=res.data.records
-           console.log("hhh")
-           console.log(this.list)
-           this.loading = false
-           this.total=res.data.total
-           this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
+      getCustomerById(query).then(res=>{
+            this.list=res.data.records
+            this.loading = false
+            this.total=res.data.total
+            this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
             this.$store.dispatch('customer/setCustomerTableList',this.list)
-         }).catch(err=>{
-           console.log(err)
-         })
-      }else if(this.modelType=='myCustomer'){ //根据id查询用户
-        getCustomerById(params).then(response=>{
-              //  this.listQuery=response.data.pageInfo
-              //  this.list=response.data.customerList
-              //  this.loading = false
-              //  this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
-            //    console.log("showDialogFlag")
-            //  console.log(this.$store.getters.customerUpdateDialogVisible)
-              this.list=res.data.records
-              console.log("hhh")
-              console.log(this.list)
-              this.loading = false
-              this.total=res.data.total
-              this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
-              this.$store.dispatch('customer/setCustomerTableList',this.list)
-         })
-      }  
+        })
+      // }  
     },
    
     update(val){
