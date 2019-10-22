@@ -65,8 +65,7 @@ export function deleteProduct(params){
   return request({
     url: '/product/delete',
     method: 'delete',
-    params
-
+    data:params
   })
 }
 
@@ -85,5 +84,55 @@ export function updateProduct(params){
     url: '/product/update',
     method: 'post',
     data:params
+  })
+}
+
+//修改产品类别
+export function updateClass(params){
+  return request({
+    url: '/productClass/update',
+    method: 'put',
+    data:params
+  })
+}
+//添加产品类别
+export function createClass(params){
+  return request({
+    url: '/productClass/create',
+    method: 'post',
+    data:params
+  })
+}
+//删除产品类别
+export function deleteClass(params){
+  return request({
+    url: '/productClass/delete',
+    method: 'delete',
+    params
+  })
+}
+//修改销售单位
+export function updateUnit(params){
+  return request({
+    url: '/saleUnit/update',
+    method: 'put',
+    data:params
+  })
+}
+//添加销售单位
+export function createUnit(params){
+  return request({
+    url: '/saleUnit/create',
+    method: 'post',
+    data:params
+  })
+}
+
+//删除销售单位
+export function deleteUnit(params){
+  return request({
+    url: '/saleUnit/delete',
+    method: 'delete',
+    params
   })
 }

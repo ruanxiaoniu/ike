@@ -33,7 +33,7 @@
     </div>
     <p></p>
   <baseData></baseData>
-  <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+  <!-- <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" /> -->
   <el-dialog title="搜索" :visible.sync="showDialogFlag" v-if="operation_type=='search'">
     <search></search>
   </el-dialog>

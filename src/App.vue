@@ -8,7 +8,7 @@
 import { log } from 'util'
 export default {
   name: 'App',
-  provide(){
+  provide(){  
      return {
       reload:this.reload
     }

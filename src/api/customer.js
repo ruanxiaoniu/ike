@@ -22,6 +22,16 @@ export function getCustomerById(params) {
   })
 }
 
+
+//获取某个客户的详细信息
+export function getCustomerDetail(params){
+  return request({
+    url: '/customer/detail',
+    method: 'get',
+    params,
+  })
+}
+
 //获取阶段表中当前存有的阶段
 export function getCustomerAllStage(){
   return request({

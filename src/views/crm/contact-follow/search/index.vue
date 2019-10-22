@@ -10,7 +10,7 @@
             end-placeholder="结束日期">
           </el-date-picker>
       </el-form-item>
-      <el-form-item v-if="editFlag" label="客户联系人名称" prop="relationName"> 
+      <el-form-item label="客户联系人名称" prop="relationName"> 
         <el-input v-model="followList.relationName"></el-input>
       </el-form-item>
       <el-form-item v-if="editFlag" label="客户名称" prop="customerName">
@@ -45,7 +45,7 @@
       </el-form-item>
     </el-form>
     <div style="margin-left:600px;margin-top:50px">
-        <el-button  size="small" icon="el-icon-cancel" @click="cancel">取消</el-button>
+        <!-- <el-button  size="small" icon="el-icon-cancel" @click="cancel">取消</el-button> -->
         <el-button  size="small" type="primary" @click="search('followForm')">确认</el-button>
     </div>
   </div>
@@ -135,20 +135,42 @@ export default {
      * method:cancel()
      */
     cancel(){
-      this.$emit('setedit')
+      this.$emit('setdialog')
+      this.followList={
+        followWay:'',
+        customerStatus:'',
+        customerName:'',
+        relationName:'',
+        minTime:'',
+        maxTime:'',
+        employeeIds:'' 
+      },
+      this.followTime=''
+    
     },
     /**
      * 点击确定，验证并提交表单，触发父组件方法
      * method:cancel()
      */
-    search(formName){
+    search(){
       //处理搜索数据
       if(this.followTime){
-          this.followList.minTime=this.formatDate(this.creatRang[0]);
-          this.followList.maxTime=this.formatDate(this.creatRang[1]);
+          this.followList.minTime=moment(this.followTime[0]).format('YYYY-MM-DD')
+          this.followList.maxTime=moment(this.followTime[1]).format('YYYY-MM-DD')
       }
+    
       //返回搜索数据给数据
       this.$emit('updatelist',this.followList)
+      this.followList={
+        followWay:'',
+        customerStatus:'',
+        customerName:'',
+        relationName:'',
+        minTime:'',
+        maxTime:'',
+        employeeIds:'' 
+      },
+      this.followTime=''
     }
   }
 }

@@ -48,9 +48,9 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column  type="selection" align="center"  />
-      <el-table-column align="center" label="产品名称" min-width="187" >
+      <el-table-column align="center" label="产品名称" min-width="150" >
         <template slot-scope="scope">
-          <span class="link-type" @click="operation(scope.row,'productDetail')">{{ scope.row.productName }}</span>
+          <span class="link-type" @click="productDetail(scope.row)">{{ scope.row.productName }}</span>
         </template>
       </el-table-column>
       
@@ -102,14 +102,13 @@
         </template>
       </el-table-column>
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="fetchData" />
+    <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getProduct" />
     
     <el-dialog :title="textMap[type]" :visible.sync="dialogFlag" width="60%" >
       <employee v-if="type=='employee'" :id="employeeId"></employee>
-      <productDetail v-else-if="type=='productDetail'" :productId='productId'></productDetail>
       <dealDetail v-else-if="type=='successProduct'" :productId='productId'></dealDetail>
       <search v-else-if="type=='search'" @setdialog="setDialogFlag" @updatelist="updateList"></search>
-      <updateAdd v-else-if="title=='operate'" :edit='editFlag' :productId="productId" @setdialog="setDialogFlag" @seteditflag="setEditFlag" @updatelist="updateList"></updateAdd>
+      <updateAdd v-else-if="title=='operate'" :edit='editFlag' :pid="productId" @setdialog="setDialogFlag" @seteditflag="setEditFlag" @updatelist="updateList"></updateAdd>
     </el-dialog>
   </div>
 </template>
@@ -149,10 +148,10 @@ export default {
       listLoading: true,
       flag:false,//是否点击搜索
       total: 0,
-      listQuery: {
-        page: 1,
-        limit: 20,
-        sort: '+id'
+      listQuery:{
+        total:0,
+        page:1,//跳转页码
+        size:10,//每页显示的数据条数
       },
       params:{},
       title:'',
@@ -208,12 +207,15 @@ export default {
       this.listLoading = true
       // console.log(this.listQuery)
       this.checkTab()
+     
+      this.$set(this.params,'pageNum',this.listQuery.page)
+      this.$set(this.params,'pageSize',this.listQuery.size)
       getProductList(this.params).then(response=>{
         console.log(response.data.records)
-        this.list = response.data.records
-
         this.listLoading = false
-         this.total = response.data.total
+        this.list = response.data.records
+        this.listQuery.total=response.data.total
+        
       })
     },
     /**
@@ -228,10 +230,11 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let query={}
+          let query=[]
 
           this.multipleSelection.forEach(item=>{
-            this.$set(query,'id',item.id)
+            // this.$set(query,'id',item.id)
+            query.push(item.id)
           })
           console.log("qeryyyyy")
           console.log(query)
@@ -240,6 +243,7 @@ export default {
               type: 'success',
               message: '删除成功!'
             });
+            this.updateList()
           }).catch(err=>{
             this.$message({
               type: 'error',
@@ -321,6 +325,13 @@ export default {
        this.dialogFlag=true
        
     },
+      /**
+     * 产品详情
+     * method:productDetail()
+     */
+    productDetail(row){
+      this.$router.push({name:'ProductDetail',query:{productId:row.id,productName:row.productName}})
+    },
      /**
      * 不同点击搜索和新建进行不同的操作
      * method:handle()
@@ -339,33 +350,18 @@ export default {
      */
     edit(row,type,flag){
       this.productId=row.id
+      console.log("iddddd")
+      console.log(this.productId)
       this.type=type
       this.title='operate'
       this.editFlag=true
+      this.dialogFlag=true
     },
-    // setStatus(row, column, cell, event){
-      
-    //   this.$store.dispatch('product/setRowList',row)
-    //   if(column.label==="产品名称"){//显示改产品详情
-        
-    //     this.$store.dispatch('product/setStatus','product_detail')
-    //     this.$store.dispatch('product/setDialogStatus',true)
-    //   }else if(column.label==="成交数量"||column.label==="成交总额度"||column.label==="成交次数"||column.label==="成交成本总额"||column.label==="成交总利润"){
-    //     this.$store.dispatch('product/setStatus','deal_detail')
-    //     this.$store.dispatch('product/setDialogStatus',true)
-    //   }else if(column.label==="意向客户数"||column.label==="成交客户数"){//显示客户详情
-    //      this.$store.dispatch('product/setStatus','customer_detail')
-    //      this.$store.dispatch('product/setDialogStatus',true)
-    //   }else if(column.label==="录入人"){
-    //     this.$store.dispatch('product/setStatus','personal_detail')
-    //     this.$store.dispatch('product/setDialogStatus',true)
-    //   }
-    //   this.flag=false
-    // },
     /**
      * 设置dialog
      */
     setDialogFlag(){
+      console.log("lllllllllllllll")
       this.dialogFlag=false
     },
      /**
@@ -381,13 +377,11 @@ export default {
       if(this.type=='search'){
         this.searchQuery=searchQuery
       }
+      console.log("search......")
+      console.log(this.searchQuery)
       this.getProduct()
+      this.dialogFlag=false
     },
-  
-    // search(){
-    //    this.$store.dispatch('product/setDialogStatus',true)
-    //    this.flag=true
-    // },
      handleSelectionChange(val) {
       this.multipleSelection = val
       console.log(this.multipleSelection)

@@ -307,10 +307,26 @@ export default {
             this.$emit('setdialog')
             // this.resetForm()
             this.$message.success("新建成功！")
-            console.log("新建啦啦啦")
-            console.log(res)
+            // console.log("新建啦啦啦")
+            // console.log(res)
             //清空
-            
+             this.customer={
+                  customerName:'',
+                  employeeId:'',
+                  customerStageId:'',
+                  customerState:'',
+                  customerIntroduce:'',
+                  customerAddress:'',
+                  customerLevelId:'',
+                  customerOriginId:'',
+                  relationCall:'',
+                  relationEmail:'',
+                  relationName:'',
+                  relationPhone:'',
+                  relationPosition:'',
+                  relationSex:'',
+                  landlineNumber:''
+                }
           }).catch(err=>{
              console.log("失败啦啦啦")
             console.log(err)

@@ -60,7 +60,7 @@
 
     >
       <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,scope.$index,'customerName')">{{ scope.row.customerName }}</span>
+        <span class="link-type" @click="customerDetail(scope.row)">{{ scope.row.customerName }}</span>
       </template>
     </el-table-column>
 
@@ -113,7 +113,7 @@
       </template>
     </el-table-column>
   </el-table>
-  <!-- <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="page" :limit.sync="listQuery.pageSize" @pagination="getList" /> -->
+  <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getList" />
   
   <el-dialog title="客户详情" :visible.sync="DialogFlag" v-if="title=='customerName'" width="60%">
     <show v-if="title=='customerName'"></show>
@@ -168,20 +168,18 @@ export default {
       selection:'所有成员',
       employeeOptions:null,
       list: null,
-      total:0,
+      listQuery:{
+        total:0,
+        page:1,//跳转页码
+        size:10,//每页显示的数据条数
+      },
+     
       title:'',
       sortName:'',
       sortType:'',
       showDialogFlag:false,
       DialogFlag:false,
       updateDialogFlag:false,
-      page:1,
-      // listQuery: {
-      //   pageNum: 1,//当前页面的数据数量
-      //   pageSize: 20,//页面大小
-      //   total:0,//数据总数量
-      //   totalPage:0,//数据总页面
-      // },
       loading: false,
       textMap:{
         search:'搜索',
@@ -196,10 +194,6 @@ export default {
         employeeName:'负责人详情'
       },
       currentIndex:0,
-      // query:{
-      //   pageNum:1,
-      //   pageSize:10,
-      // }
     }
   },
   created() {    
@@ -279,8 +273,8 @@ export default {
       this.loading = true
       let employeeId=''
        let query={
-        pageNum:1,
-        pageSize:10,
+        pageNum:this.listQuery.page,
+        pageSize:this.listQuery.size,
       }
       if(this.selection!=="所有成员"){
         console.log("bushi")
@@ -303,21 +297,26 @@ export default {
       }else if(this.$route.query.tab==='thirty'){//30天未跟进
             this.$set(query,'differMax',30)
       }
-       
+     
       getCustomerAll(query).then(res=>{
       //  this.listQuery=res.data.pageInfo
         this.list=res.data.records
         console.log("hhh")
         console.log(this.list)
         this.loading = false
-        this.total=res.data.total
+        this.listQuery.total=res.data.total
         this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
         this.$store.dispatch('customer/setCustomerTableList',this.list)
       }).catch(err=>{
         console.log(err)
       })
     },
-   
+    /**
+    * 客户详情
+    */
+    customerDetail(row){
+       this.$router.push({name:'CustomerDetail',query:{customerId:row.id,customerName:row.customerName}})
+    },
     update(val){
       console.log("val")
       console.log(val)

@@ -107,6 +107,23 @@ export const constantRoutes = [
         component: () => import('@/views/crm/complaint/index'),
         name: 'Complaint',
         meta: { title: '客户投诉' }
+      },
+      
+    ]
+  },
+  /**
+   * 客户详情
+   */
+  {
+    path: '/customerDetail',
+    component: Layout,
+    children: [
+      {
+        path: 'customerDetail',
+        name: 'CustomerDetail',
+        component: () => import('@/views/public/customer/all-detail/index'),
+        meta: { title: '客户详情', icon: 'product' },
+        hidden:true
       }
     ]
   },
@@ -123,6 +140,19 @@ export const constantRoutes = [
         name: 'Product',
         component: () => import('@/views/product/index'),
         meta: { title: '产品管理', icon: 'product' }
+      }
+    ]
+  },
+  {
+    path: '/productDetail',
+    component: Layout,
+    children: [
+      {
+        path: 'productDetail',
+        name: 'ProductDetail',
+        component: () => import('@/views/product/show-detail/index'),
+        meta: { title: '产品详情', icon: 'product' },
+        hidden:true
       }
     ]
   },

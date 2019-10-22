@@ -96,7 +96,7 @@
       </template>
     </el-table-column>
   </el-table>
-  <!-- <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="page" :limit.sync="listQuery.pageSize" @pagination="getList" /> -->
+  <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getMyList" />
   
   <el-dialog title="客户详情" :visible.sync="showDialogFlag" v-if="title=='customerName'" width="60%">
     <show></show>
@@ -151,18 +151,15 @@ export default {
       selection:'所有成员',
       employeeOptions:null,
       list: null,
-      total:0,
       title:'',
       sortName:'',
       sortType:'',
       showDialogFlag:false,
-      page:1,
-      // listQuery: {
-      //   pageNum: 1,//当前页面的数据数量
-      //   pageSize: 20,//页面大小
-      //   total:0,//数据总数量
-      //   totalPage:0,//数据总页面
-      // },
+      listQuery:{
+        total:0,
+        page:1,//跳转页码
+        size:10,//每页显示的数据条数
+      },
       loading: false,
       textMap:{
         search:'搜索',
@@ -178,10 +175,7 @@ export default {
       },
       // modelType:'',
       currentIndex:0,
-      // query:{
-      //   pageNum:1,
-      //   pageSize:10,
-      // }
+      
     }
   },
   created() {    
@@ -269,9 +263,9 @@ export default {
     getMyList() {
       this.loading = true
       let employeeId=''
-       let query={
-        pageNum:1,
-        pageSize:10,
+        let query={
+        pageNum:this.listQuery.page,
+        pageSize:this.listQuery.size,
       }
       console.log("query")
        console.log(query)
@@ -280,7 +274,7 @@ export default {
       getCustomerById(query).then(res=>{
             this.list=res.data.records
             this.loading = false
-            this.total=res.data.total
+            this.listQuery.total=res.data.total
             this.showDialogFlag=this.$store.getters.customerUpdateDialogVisible
             this.$store.dispatch('customer/setCustomerTableList',this.list)
         })
