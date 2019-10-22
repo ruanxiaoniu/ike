@@ -1,66 +1,78 @@
 <template>
   <div>
     <div>
-      <el-button type="primary" size="small">上一级</el-button>
-      <el-button type="primary" size="small">下一级</el-button>
+      <el-button type="primary" size="small" v-if="params.id>0" @click="preClass">上一级</el-button>
     </div>
     <div>
-      <ul>
-        <li v-for="(item,index) in classList">
-          <span>{{item.productClassName}}</span>
-          <el-input v-model="item.edit"></el-input>
-          <el-link type="primary" @click="updateCurrent(item,true)">修改当前级</el-link>
+      <el-table :data="classList">
+        <el-table-column>
+          <template slot-scope="scope">
+            <el-input v-if="scope.row.edit" v-model="scope.row.className"></el-input>
+            <span v-else>{{scope.row.className}}</span>
+           
+          </template>
+        </el-table-column>
+        <el-table-column align="right">
+          <template slot-scope="scope">
            <el-button
               v-if="scope.row.edit"
               class="cancel-btn"
               size="small"
               type="warning"
-              @click="cancelEdit(item,index)"
+              @click="cancelEdit(scope.row,index)"
             >
               取消
             </el-button>
-            <el-button @click="save(item)" size="small" type="primary"  v-if="item.edit">保存</el-button>
-            <el-button size="small" icon="el-icon-edit" v-else @click="item.edit=!item.edit">修改</el-button>
-            <el-button size="small" type="danger" @click="deletelist(item)">删除</el-button>
-        </li>
-      </ul>
-      <div>
+            <el-button @click="save(scope.row)" size="small" type="primary"  v-if="scope.row.edit">保存</el-button>
+            <el-button size="small" icon="el-icon-edit" v-else-if="!scope.row.edit" @click="scope.row.edit=!scope.row.edit">修改当前级</el-button>
+            <el-button size="small" icon="el-icon-edit"   @click="nextClass(scope.row)">修改下一级</el-button>
+            <el-button size="small" type="danger" @click="deletelist(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div style="margin-top:100px">
          <el-button v-if="!addFlag" size="small" type="success" @click="add">添加</el-button>
       </div>
     </div>
   </div>
 </template>
 <script>
-import {getClassById} from '@/api/product'
+import {getClassById,updateClass,createClass,deleteClass} from '@/api/product'
 export default {
   data() {
     return {
-      classList:null,
+      classList:[],
       editFlag:false,
       orignList:null,
       addFlag:false,
+      preId:0,
       params:{
         id:0
       }
     }
+  },
+  created(){
+     console.log("类别修改")
+     this.getProductPre()
   },
   methods:{
     /**
      * 请求各个级别的类别
      */
     getProductPre(){
+      
       getClassById(this.params).then(res=>{
-          this.classList=res.data
+          const items=res.data
+          console.log(this.classList)
           this.classList=items.map(ele=>{
-           this.$set(ele,'edit',false)
-           ele.originp=ele.levelName
-           ele.originproductClassName=ele.productClassName
-           return ele
-         }).catch(err=>{
-            console.log(err)
-          })
-         
+              this.$set(ele,'edit',false)
+              ele.originclassName=ele.className
+              return ele
+           })
+      }).catch(err=>{
+        console.log(err)
       })
+         
     },
      /**
       * 取消编辑，恢复原来的值
@@ -76,7 +88,7 @@ export default {
         console.log(this.classList)
       }else{//取消修改
           //还原原来的值
-          row.productClassName=row.originproductClassName
+          row.className=row.originclassName
           row.edit=false    
       }
     },
@@ -84,25 +96,40 @@ export default {
      * 删除
      */
     deletelist(row){
-      const params={
-        id:row.id
-      }
-      console.log("delete")
-       deleteLevel(params).then(res=>{
-            this.$message.success("删除成功！")
-            this.getLevel()
-            this.$emit('updatelist')
-       }).catch(err=>{
-         console.log(err)
-          this.$message.error("修改失败，请重试！")
-       })
+       this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          /**
+           * 删除请求
+           */
+           const query={
+              id:row.id
+            }
+            console.log("delete")
+            deleteClass(query).then(res=>{
+                  this.$message.success("删除成功！")
+                  this.getProductPre()
+                  this.$emit('updateclasslist')
+            }).catch(err=>{
+              console.log(err)
+                this.$message.error("删除失败，请重试！")
+            })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+     
     },
     /**
      * 添加
      */
      add(){
       const list={
-         productClassName: '',
+         className: '',
          edit:true,
       }
       this.classList.push(list)
@@ -114,12 +141,16 @@ export default {
         /**
          * 添加请求
          */
-          addLevel(row).then(res=>{
+          let query={
+            className:row.className,
+            previousClassId:this.params.id
+          }
+          createClass(query).then(res=>{
             this.$message.success("添加成功！")
             this.addFlag=false
             row.edit=false
             this.getProductPre()
-            this.$emit('updatelist')
+            this.$emit('updateclasslist')
           }).catch(err=>{
             this.$message.error("添加失败，请重试！")
           })
@@ -128,9 +159,11 @@ export default {
         /**
          * 修改请求
          */
-        updateLevelAll(row).then(res=>{
+        console.log("修改class")
+        console.log(row)
+        updateClass(row).then(res=>{
             //修改以后续的修改使用
-            row.originproductClassName=row.productClassName
+            row.originclassName=row.className
             row.edit=false      
             this.$message.success("修改成功！")
             this.$emit('updateclasslist')
@@ -140,6 +173,21 @@ export default {
       }
      
     },
+    /**
+     * 点击上一级
+     */
+    preClass(){
+      this.params.id=this.preId
+      this.getProductPre()
+    },
+    /**
+     * 点击下一级
+     */
+    nextClass(row){
+      this.preId=row.previousClassId
+      this.params.id=row.id
+      this.getProductPre()
+    }
   }
 }
 </script>

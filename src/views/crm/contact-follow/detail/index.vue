@@ -41,7 +41,7 @@
 </template>
 <script>
 export default {
-  props:['type'],
+  props:['type','Cid'],
   data() {
     return {
       base:{

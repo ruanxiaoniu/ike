@@ -19,7 +19,7 @@
             </el-col>
             <el-col span="2"></el-col>
             <el-col span="4">
-              <el-button size="small" icon="el-icon-edit" @click="clickEdit('class')">编辑</el-button>
+              <el-button size="small" icon="el-icon-edit" @click="clickEdit('classedit')">编辑</el-button>
             </el-col>
           </el-row>
        </el-form-item>
@@ -112,8 +112,8 @@
        <el-button size="small" type="primary" v-else @click="add('productList')">新建</el-button>
      </div>
      <el-dialog :visible.sync="editDialog" :title="textMap[title]" append-to-body>
-        <editClass v-if="title=='class'" @updteclasslist="updateClassList"></editClass>
-        <editUnit v-else-if="title=='unit'" @updteunitlist="updateUnitList"></editUnit>
+        <editClass v-if="title=='classedit'" @updateclasslist="updateClassList"></editClass>
+        <editUnit v-else-if="title=='unit'" @updateunitlist="updateUnitList"></editUnit>
      </el-dialog>
   </div>
 </template>
@@ -143,7 +143,7 @@ export default {
        editDialog:false,
        title:'',
        textMap:{
-         class:'产品类别管理',
+         classedit:'产品类别管理',
          unit:'销售单位管理'
        },
        editQuery:{
@@ -356,14 +356,14 @@ export default {
      */
     updateClassList(){
       this.getClass()
-      this.editDialog=false
+      // this.editDialog=false
     },
      /**
      * 由编辑子组件更新单位选项
      */
     updateUnitList(){
       this.getUnit()
-      this.editDialog=false
+      // this.editDialog=false
     },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${ file.name }？`);

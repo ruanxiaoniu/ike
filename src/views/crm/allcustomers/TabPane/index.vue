@@ -60,7 +60,7 @@
 
     >
       <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,scope.$index,'customerName')">{{ scope.row.customerName }}</span>
+        <span class="link-type" @click="customerDetail(scope.row)">{{ scope.row.customerName }}</span>
       </template>
     </el-table-column>
 
@@ -297,7 +297,7 @@ export default {
       }else if(this.$route.query.tab==='thirty'){//30天未跟进
             this.$set(query,'differMax',30)
       }
-       
+     
       getCustomerAll(query).then(res=>{
       //  this.listQuery=res.data.pageInfo
         this.list=res.data.records
@@ -311,7 +311,12 @@ export default {
         console.log(err)
       })
     },
-   
+    /**
+    * 客户详情
+    */
+    customerDetail(row){
+       this.$router.push({name:'CustomerDetail',query:{customerId:row.id,customerName:row.customerName}})
+    },
     update(val){
       console.log("val")
       console.log(val)

@@ -109,6 +109,7 @@ export default {
        return moment(date).format('YYYY-MM-DD HH:MM:SS')
     }
   },
+  props:['Cid'],
   data() {
     return {
       textMap:{
@@ -148,6 +149,7 @@ export default {
     }
   },
   created() {
+    
     this.getEmployee()
     this.getFollow()
   },
@@ -201,9 +203,15 @@ export default {
     getFollow(){
       //检查tab
       this.checkTab()
-      console.log("params!!!")
+      
       this.$set(this.params,'pageNum',this.listQuery.page)
       this.$set(this.params,'pageSize',this.listQuery.size)
+      if(this.Cid){
+        console.log("Ciiiiiii")
+        console.log(this.Cid)
+        this.$set(this.params,'customerId',this.Cid)
+      }
+      console.log("params!!!")
       console.log(this.params)
       getFollowAll(this.params).then(res=>{
         this.followList=res.data.records

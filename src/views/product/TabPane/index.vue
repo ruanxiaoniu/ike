@@ -50,7 +50,7 @@
       <el-table-column  type="selection" align="center"  />
       <el-table-column align="center" label="产品名称" min-width="150" >
         <template slot-scope="scope">
-          <span class="link-type" @click="operation(scope.row,'productDetail')">{{ scope.row.productName }}</span>
+          <span class="link-type" @click="productDetail(scope.row)">{{ scope.row.productName }}</span>
         </template>
       </el-table-column>
       
@@ -106,7 +106,6 @@
     
     <el-dialog :title="textMap[type]" :visible.sync="dialogFlag" width="60%" >
       <employee v-if="type=='employee'" :id="employeeId"></employee>
-      <productDetail v-else-if="type=='productDetail'" :productId='productId'></productDetail>
       <dealDetail v-else-if="type=='successProduct'" :productId='productId'></dealDetail>
       <search v-else-if="type=='search'" @setdialog="setDialogFlag" @updatelist="updateList"></search>
       <updateAdd v-else-if="title=='operate'" :edit='editFlag' :pid="productId" @setdialog="setDialogFlag" @seteditflag="setEditFlag" @updatelist="updateList"></updateAdd>
@@ -326,6 +325,13 @@ export default {
        this.dialogFlag=true
        
     },
+      /**
+     * 产品详情
+     * method:productDetail()
+     */
+    productDetail(row){
+      this.$router.push({name:'ProductDetail',query:{productId:row.id,productName:row.productName}})
+    },
      /**
      * 不同点击搜索和新建进行不同的操作
      * method:handle()
@@ -355,6 +361,7 @@ export default {
      * 设置dialog
      */
     setDialogFlag(){
+      console.log("lllllllllllllll")
       this.dialogFlag=false
     },
      /**
@@ -370,7 +377,10 @@ export default {
       if(this.type=='search'){
         this.searchQuery=searchQuery
       }
+      console.log("search......")
+      console.log(this.searchQuery)
       this.getProduct()
+      this.dialogFlag=false
     },
      handleSelectionChange(val) {
       this.multipleSelection = val

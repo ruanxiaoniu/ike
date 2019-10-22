@@ -1,7 +1,13 @@
 <template>
   <div>
+    <div style="margin-bottom:30px">
+      <el-button icon="el-icon-back" type="success" size="small">返回</el-button>
+      <el-button icon="el-icon-plus" type="primary" size="small">新建</el-button>
+      <el-button icon="el-icon-edit" size="small">修改</el-button>
+      <el-button icon="el-icon-delete" size="small">删除</el-button>
+    </div>
       <div class="top">基本信息:</div>
-      <el-form :model="base">
+      <el-form :model="base" style="margin-left:50px">
           <el-form-item label="录入人：">
             <span>{{base.createUserName}}</span>
           </el-form-item>
@@ -9,7 +15,7 @@
             <span>{{base.createTime}}</span>
           </el-form-item>
           <el-form-item label="成交次数：">
-            <span @click="orderDetail">{{base.orderTimes}}</span>
+            <span  class="link-type" @click="orderDetail">{{base.orderTimes}}</span>
           </el-form-item>
             <el-form-item label="成交数量：">
             <span @click="orderDetail">{{base.orderNum}}</span>
@@ -25,7 +31,7 @@
           </el-form-item>
       </el-form>
        <div class="top">产品信息:</div>   
-       <el-form :model="productDetail">
+       <el-form :model="productDetail" style="margin-left:50px">
         <el-form-item label="产品分类：" prop="productClassName">
             <span>{{productDetail.productClassName}}</span>
           </el-form-item>
