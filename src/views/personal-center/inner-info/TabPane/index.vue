@@ -77,14 +77,12 @@
     components: {
       pagination
     },
-
     props: {
       type: {
         type: String,
         default: 'un_read'
       }
     },
-
     data() {
       return {
         list: null,
@@ -102,7 +100,6 @@
         ids: []
       }
     },
-
     created() {
       this.getList()
     },
@@ -119,11 +116,11 @@
         return this.$route.query.tab
       }
     },
-
     filters: {
       formatDate(time) {
         return moment(time).format('YYYY年MM月DD日 hh时mm分')
-      }, statusFilter(status) {
+      },
+      statusFilter(status) {
         const statusMap = {
           0: 'success',
           1: 'info'
@@ -131,12 +128,10 @@
         return statusMap[status]
       }
     },
-
     methods: {
       handleSelectionChange(val) {
         this.multipleSelection = val
       },
-
       handle(type) {
         if (type === 'delete') {
           this.batchDelete()
@@ -146,7 +141,6 @@
           this.setUnRead()
         }
       },
-
       getList() {
         this.loading = true
         let query = {
@@ -175,7 +169,7 @@
 
       },
 
-      checkIsSelect() {
+      checkAndSetSelect() {
         this.ids = []
         this.multipleSelection.forEach((x) => {
           this.ids.push(x.id)
@@ -187,7 +181,7 @@
       },
 
       batchDelete() {
-        if (this.checkIsSelect() === false) {
+        if (this.checkAndSetSelect() === false) {
           return
         }
         this.$confirm('将选中记录删除, 是否继续?', '提示', {
@@ -206,9 +200,8 @@
           })
         })
       },
-
       setIsRead() {
-        if (this.checkIsSelect() === false) {
+        if (this.checkAndSetSelect() === false) {
           return
         }
         this.$confirm('将选中消息置为已读", 是否继续?', '提示', {
@@ -227,7 +220,7 @@
         })
       },
       setUnRead() {
-        if (this.checkIsSelect() === false) {
+        if (this.checkAndSetSelect() === false) {
           return
         }
         this.$confirm('将选中消息置为未读", 是否继续?', '提示', {
@@ -245,7 +238,6 @@
           })
         })
       },
-
       checkMsg(id, content) {
         this.$alert('<strong>' + content + '</strong>', '消息详情', {
           dangerouslyUseHTMLString: true

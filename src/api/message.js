@@ -41,3 +41,13 @@ export function batchToRead(params){
     data :  params
   })
 }
+
+batchToUnRead
+//将消息状态置为已读 - 批量
+export function batchToUnRead(params){
+  return request({
+    url: 'message/batchToUnRead',
+    method: 'put',
+    data :  params
+  })
+}

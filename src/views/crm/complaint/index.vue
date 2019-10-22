@@ -3,7 +3,7 @@
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
-          <tab-pane v-if="activeName==item.key" :type="item.key"  />
+          <tab-pane v-if="activeName===item.key" :type="item.key"  />
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -18,15 +18,13 @@ export default {
   components: { tabPane },
   data() {
     return {
-       tabMapOptions: [
+      tabMapOptions: [
         { label: '全部', key: 'all' },
-        { label: '由我负责的', key: 'my_responsibility.' },
-        { label: '已处理的', key: 'processed' },
-        { label: '未处理的', key: 'unprocessed' },
-        { label: '自定义', key: 'customize' }
+        { label: '由我负责的', key: 'cur_handle' },
+        { label: '已处理的', key: 'is_handle' },
+        { label: '未处理的', key: 'un_handle' }
       ],
-      activeName:'all',
-      modelType:'myCustomer'
+      activeName: 'all'
     }
   },
   watch: {
@@ -40,10 +38,10 @@ export default {
     if (tab) {
       this.activeName = tab
     }
-    this.$store.dispatch('customer/setmodelType','myCustomer')
+    // this.$store.dispatch('customer/setmodelType','myCustomer')
   },
   mounted(){
-    
+
   },
   methods: {
     showCreatedTimes() {
