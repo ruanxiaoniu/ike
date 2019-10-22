@@ -73,7 +73,7 @@
               
         </el-timeline-item>
       </el-timeline>
-
+      <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getFollow" />
       <el-dialog :title="textMap[type]" :visible.sync="dialogFlag" append-to-body="true" width="60%" :before-close="setEditFlag">
         <followDetail v-if="type=='followDetail'" :id="followId" :edit="editFlag" @setedit="setEditFlag" @updatefollow="getFollow"></followDetail>
         <relation v-else-if="type=='relation'" :Rid="relationId"></relation>
@@ -94,14 +94,15 @@ import {getFollowAll,deleteFollow} from '@/api/follow'
 import {getEmployeeAll} from '@/api/employee'
 import search from '../../crm/contact-follow/search/index'
 import moment from 'moment'
-
+import pagination from '@/components/Pagination'
 export default {
   components:{
     followDetail,
     relation,
     customer,
     employee,
-    search
+    search,
+    pagination
   },
   filters:{
     formateDate(date){
@@ -119,6 +120,11 @@ export default {
         add:'新建跟进',
        
       },
+      listQuery:{
+        total:0,
+        page:1,//跳转页码
+        size:10,//每页显示的数据条数
+      },
       sortName:'',
       sortType:'',
       searchQuery:{},
@@ -127,7 +133,10 @@ export default {
       btnFlag:['false'],
       type:'',
       followList:null,
-      params:{},
+      params:{
+        pageNum:1,
+        pageSize:10
+      },
       employeeOptions:null,
       employeeFilter:null,
       selection:'所有成员',
@@ -193,9 +202,12 @@ export default {
       //检查tab
       this.checkTab()
       console.log("params!!!")
+      this.$set(this.params,'pageNum',this.listQuery.page)
+      this.$set(this.params,'pageSize',this.listQuery.size)
       console.log(this.params)
       getFollowAll(this.params).then(res=>{
         this.followList=res.data.records
+        this.listQuery.total=res.data.total
       }).catch(err=>{
         console.log(err)
       })

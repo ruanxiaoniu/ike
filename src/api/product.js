@@ -65,8 +65,7 @@ export function deleteProduct(params){
   return request({
     url: '/product/delete',
     method: 'delete',
-    params
-
+    data:params
   })
 }
 
@@ -81,6 +80,8 @@ export function createProduct(params){
 
 //修改产品
 export function updateProduct(params){
+  console.log("xiugai xiuagi a??????")
+  console.log(params)
   return request({
     url: '/product/update',
     method: 'post',

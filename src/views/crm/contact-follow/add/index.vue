@@ -56,7 +56,7 @@
 
       <el-dialog :title="textMap[title]" :visible.sync="dialogFlag" append-to-body>
         <level v-if="title=='level'"></level>
-        <stage v-else-if="title=='stage'"></stage>
+        <stage v-else-if="title=='stage'" ></stage>
         <origin v-else></origin>
       </el-dialog>
   </div>

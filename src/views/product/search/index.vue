@@ -14,6 +14,7 @@
                   placeholder="请选择产品类别"
                   style="width:100%"
                   :show-all-levels="false"
+                  @change="handleChange"
                 >
                </el-cascader>
             </el-col>
@@ -150,7 +151,6 @@
             <el-input v-model="searchData.orderProfitMin"></el-input>
           </el-col>
           </el-row>
-          <!-- <el-input v-model="searchData.profit"></el-input> -->
         </el-form-item>
         
         <el-form-item label="录入人">
@@ -159,7 +159,7 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <div>
+      <div style="margin-left:500px">
         <el-button size="small" @click="cancel">取消</el-button>
         <el-button size="small" type="primary" @click="search">确定</el-button>
       </div>
@@ -287,23 +287,39 @@ export default {
     cancel(){
       this.$emit('setdialog')
     },
+    handleChange(val){
+     console.log("bbbbbb")
+     console.log(val)
+     console.log(this.productClassId)
+    },
     /**
      * 点击确认
      */
     search(){
       if(this.ttm){
-          this.searchData.beginTtm=this.formatDate(this.ttm[0]);
-          this.searchData.endTtm=this.formatDate(this.ttm[1]);
+        console.log("tttm")
+        console.log(typeof this.ttm[0])
+        // this.searchData.beginTtm=this.ttm[0]
+        // this.searchData.endTtm=this.ttm[1]
+         this.searchData.beginTtm=moment(this.ttm[0]).format('YYYY-MM-DD')
+        this.searchData.endTtm=moment(this.ttm[1]).format('YYYY-MM-DD')
       }
       if(this.createTime){
-          this.searchData.beginTtm=this.formatDate(this.createTime[0]);
-          this.searchData.endTtm=this.formatDate(this.createTime[1]);
+         console.log("createTime")
+        console.log(this.createTime)
+        this.searchData.BeginCreateTime=moment(this.createTime[0]).format('YYYY-MM-DD')
+        this.searchData.EndCreateTime=moment(this.createTime[1]).format('YYYY-MM-DD')
+      }
+      if(this.productClassId.length>0){
+        let l=this.productClassId.length-1
+        this.searchData.productClassId=this.productClassId[l]
       }
       console.log("search----")
       console.log(this.searchData)
       this.$emit('updatelist',this.searchData)
       this.$emit('setdialog')
-    }
+    },
+     
   }
 }
 </script>
