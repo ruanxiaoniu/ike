@@ -112,7 +112,7 @@ import taskDetail from '../../../public/follow/task-detaol'
 import update from '../update/index'
 import search from '../search/index'
 import add from '../add/index'
-import relation from '../../../public/customer/relation'
+import relation from '../../../public/relation/relation'
 export default {
   components:{
     pagination,

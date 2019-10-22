@@ -107,7 +107,7 @@ import planDetail from '../../../public/follow/plan-detail'
 import update from '../update/index'
 import search from '../search/index'
 import add from '../add/index'
-import relation from '../../../public/customer/relation'
+import relation from '../../../public/relation/relation'
 
 import {getFollowAll,deleteFollow} from '@/api/follow'
 import {getEmployeeAll} from '@/api/employee'

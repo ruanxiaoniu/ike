@@ -87,7 +87,7 @@
 </template>
 <script>
 import followDetail from '../../public/follow/follow-detail'
-import relation from '../../public/customer/relationById'
+import relation from '../../public/relation/relationById'
 import customer from '../../public/customer/all-detail/index'
 import employee from '../../public/employee/index'
 import {getFollowAll,deleteFollow} from '@/api/follow'
