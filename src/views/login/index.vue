@@ -43,9 +43,10 @@
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
+      <div class="tips" style="margin-top: -30px;">
+        <!--<span style="margin-right:10px;">username: admin</span>
+        <span style="margin-right: 10px" > password: any</span>-->
+        <el-button type="text" @click="forgetPwd">forget password</el-button>
       </div>
 
     </el-form>
@@ -54,6 +55,8 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { sendAuthCode } from '@/api/user'
+import { checkAuthCode } from '@/api/user'
 
 export default {
   name: 'Login',
@@ -111,10 +114,10 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          console.log("hhhh")  
+          console.log("hhhh")
           // this.$router.push({ path: this.redirect || '/' })
-          this.$store.dispatch('user/login', this.loginForm).then((res) => {       
-            console.log("hhhh")     
+          this.$store.dispatch('user/login', this.loginForm).then((res) => {
+            console.log("hhhh")
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
@@ -126,7 +129,66 @@ export default {
           return false
         }
       })
-    }
+    },
+    forgetPwd(){
+      this.$prompt('请输入邮箱','找回密码', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: '邮箱格式不正确'
+      }).then(({ value }) => {
+        sendAuthCode(value).then(response =>{
+          if(response.data.code == 0){
+            this.$message({
+              type: 'success',
+              message: '验证码已发送至邮箱: ' + value
+            });
+
+            setTimeout(() =>{
+              this.$prompt('请输入验证码','验证码',{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputPattern: /^[\S\n\s]{6,6}$/,
+                inputErrorMessage: '验证码格式不正确'
+              }).then(({ value }) => {
+                checkAuthCode(value).then(response =>{
+                  console.log("coderes: "+response.data.code);
+                  if(response.data.code == 0){
+                    console.log("===="+response.data);
+                    console.log("===="+response.data.code);
+                    console.log("===="+response.data.msg);
+                  }else {
+                    this.$message({
+                      type: 'error',
+                      message: '验证码错误!'
+                    });
+                  }
+                });
+                }).catch(() => {
+                this.$message({
+                  type: 'warning',
+                  message: '取消输入验证码'
+                });
+
+              });
+
+            },3000);
+
+          }else{
+            this.$message({
+              type: 'error',
+              message: '邮箱错误,请检查后重新输入!: '
+            });
+          }
+        })
+
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '取消输入'
+        });
+      });
+    },
   }
 }
 </script>

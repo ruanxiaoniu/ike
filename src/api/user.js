@@ -26,6 +26,22 @@ export function getInfo(token) {
 export function logout() {
   return request({
     url: `/Authen/logout`,
-    method: 'post'
+    method: 'get'
+  })
+}
+
+export function  sendAuthCode(data) {
+  console.log("email: "+data);
+  return request({
+    url: `/Authen/getAuthCode?toEmail=${data}`,
+    method: 'get'
+  })
+}
+
+export function  checkAuthCode(data) {
+  console.log("code: "+data);
+  return request({
+    url: `/Authen/checkAuthCode?InputAuthCode=${data}`,
+    method: 'get'
   })
 }
