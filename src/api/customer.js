@@ -10,6 +10,15 @@ export function getCustomerAll(params){
     
   })
 }
+//获取客户ID和客户名称
+export function getCustomerInfo(params){
+  return request({
+    url: '/customer/IdAndNameAll',
+    method: 'get',
+    params,
+    
+  })
+}
 //获取某个用户的所有客户
 export function getCustomerById(params) {
   console.log("api")
