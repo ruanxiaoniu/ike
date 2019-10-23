@@ -19,11 +19,11 @@ export default {
   data() {
     return {
       tabMapOptions: [
-        { label: '全部', key: 'all' },
+         { label: '全部', key: 'all' },
+        { label: '我负责的', key: 'myfollow' },
         { label: '今日跟进计划', key: 'today_follow' },
-        { label: '明天跟进计划', key: 'tomorrow_follow' },
-        { label: '后天跟进计划', key: 'after_tomorrow' },
-        { label: '本周跟进计划', key: 'this_week' }
+        { label: '昨天跟进计划', key: 'yesterday' },
+        { label: '本周跟进计划', key: 'this_week' },
       ],
       activeName:'all',
       modelType:'myCustomer'

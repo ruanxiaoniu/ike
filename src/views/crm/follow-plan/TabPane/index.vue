@@ -18,20 +18,23 @@
         </el-option-group>
      </el-select>
      <el-select v-model="sortName" placeholder="排序" style="width:200px" size="small" >
-       <el-option label="跟进计划创建时间" value="fp.plan_time"></el-option>
+       <el-option label="跟进计划创建时间" value="fp.plan_date"></el-option>
      </el-select>
      <el-select v-model="sortType" placeholder="排序方式" style="width:200px" size="small" >
        <el-option label="降序" value="desc"></el-option>
        <el-option label="升序" value="asc"></el-option>
      </el-select>
-      <el-button size="small" icon="el-icon-search" @click="handle('search')">
+      <el-button size="small" icon="el-icon-search" @click="searchPlan('search')">
             搜索
       </el-button>
-      <el-button  size="small"  icon="el-icon-delete">
+      <el-button  size="small"  icon="el-icon-delete" @click="planDelete">
             删除
       </el-button>
-       <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="handle('add')" >
+       <el-button :loading="downloadLoading" size="small" icon="el-icon-plus" @click="addPlan(false,'add')" >
         新建
+      </el-button>
+       <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="editPlan(true,'edit')" >
+        修改
       </el-button>
       <el-button :loading="downloadLoading" size="small" icon="el-icon-upload" @click="handleDownload">
         导入
@@ -41,61 +44,56 @@
       </el-button>
     </div>
     <p></p>
-  <el-table :data="list" border fit highlight-current-row style="width: 100%"  >
+  <el-table :data="planList" border fit highlight-current-row style="width: 100%"  @selection-change="handleSelectionChange" >
    <el-table-column  type="selection" align="center"  />
     <el-table-column
       v-loading="loading"
       align="center"
-      label="跟进时间"
+      label="计划时间"
       min-width="150px"
       element-loading-text="请给我点时间！"
-      prop="customer_name"
-
+      prop="planDate"
+     
     >
       <template slot-scope="scope">
-        <span class="link-type" @click="operation('planDetail')">{{ scope.row.customer_name }}</span>
+        <span class="link-type" @click="handle('planDetail',scope.row)">{{ scope.row.planDate }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column min-width="180px" align="center" label="客户联系人名称[客户名]" prop="customer_state">
+    <el-table-column min-width="180px" align="center" label="客户联系人名称[客户名]">
       <template slot-scope="scope">
-        <span class="link-type" @click="operation('relation')">{{ scope.row.customer_state}}</span>
-        <span class="link-type" @click="operation('customer')">[客户名]</span>
+        <span class="link-type" @click="handle('relation',scope.row)">{{ scope.row.relationName}}</span>
+        <span class="link-type" @click="handle('customer',scope.row)">[{{ scope.row.customerName}}]</span>
       </template>
     </el-table-column>
 
-    <el-table-column min-width="100px" align="center" label="计划内容" prop="customer_stage">
+    <el-table-column min-width="100px" align="center" label="计划内容" prop="planContent">
       <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.customer_stage }}</span>
+        <span>{{ scope.row.planContent }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column min-width="100px" align="center" label="员工名称" prop="customer_level">
+    <el-table-column min-width="100px" align="center" label="员工名称" prop="employeeName">
       <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.customer_level }}</span>
+        <span>{{ scope.row.employeeName }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column min-width="100px" label="是否完成" prop="customer_origin">
+    <el-table-column min-width="100px" label="是否完成" prop="iscomplete">
        <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.customer_origin }}</span>
+        <span  v-if="scope.row.iscomplete==1||scope.row.iscomplete==null">未完成</span>
+        <span  v-if="scope.row.iscomplete==0">已完成</span>
       </template>
     </el-table-column>
   </el-table>
-  <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+  <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getPlan" />
   
-  <el-dialog :title="textMap[operation_type]" :visible.sync="showDialogFlag"  width="60%">
-    <relation v-if="operation_type=='relation'"></relation>
-    <customer v-else-if="operation_type=='customer'"></customer>
-    <planDetail v-else-if="operation_type=='planDetail'"></planDetail>
+  <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag"  width="60%" @before-close="setClose">
+    <relation v-if="title=='relation'" :Rid="Rid"></relation>
+    <planDetail v-else-if="title=='planDetail'" :planId="planId" @updatelist="getPlan"></planDetail>
+    <updateAdd v-else-if="title=='add'||title=='edit'" :editFlag="editFlag" :planId="planId" @setdialog='showDialogFlag=!showDialogFlag' @updatelist="getPlan"></updateAdd>
+    <search v-else-if="title=='search'" @updatelist="searchUpdate"></search>
   </el-dialog>
-  <!-- <el-dialog v-else-if="operation_type!='update'" :title="textMap[title]" :visible.sync="showDialogFlag">
-    <search v-if="title=='search'"></search>
-    <add v-else-if="title=='add'"></add>
-  </el-dialog>
-  <el-dialog v-else :title="textMap[title]" :visible.sync="showDialogFlag" width="30%">
-    <update :type="title"></update>
-  </el-dialog> -->
 </div>
   
 </template>
@@ -104,21 +102,19 @@
 import pagination from '@/components/Pagination'
 import customer from '../../../public/customer/all-detail/index'
 import planDetail from '../../../public/follow/plan-detail'
-import update from '../update/index'
 import search from '../search/index'
-import add from '../add/index'
-import relation from '../../../public/relation/relation'
-
-import {getFollowAll,deleteFollow} from '@/api/follow'
+import relation from '../../../public/relation/relationById'
+import updateAdd from '../add/index'
+import {planAll,deleteFollow,deletePlan} from '@/api/follow'
 import {getEmployeeAll} from '@/api/employee'
+
 export default {
   components:{
     pagination,
     customer,
     relation,
-    update,
+    updateAdd,
     search,
-    add,
     planDetail,
   },
   filters: {
@@ -139,29 +135,24 @@ export default {
   },
   data() {
     return {
-      operation_type:'',//判断是修改还是其他操作,update为修改
       selection:'所有成员',
       list: null,
       total:0,
       title:'',
       showDialogFlag:false,
-      listQuery: {
-        page: 1,
-        limit: 20,
-        sort: '+id'
+      listQuery:{
+        total:0,
+        page:1,//跳转页码
+        size:10,//每页显示的数据条数
       },
       loading: false,
       textMap:{
         search:'搜索',
         add:'新增客户',
+        edit:'修改客户信息',
         planDetail:'跟进计划详情',
         customer:'客户详情',
         relation:'联系人详情',
-        customer_origin:'修改客户来源',
-        relation_primary:'修改主联系手机号',
-        landline_number:'修改主联系座机号',
-        end_follow:'修改最后跟进时间',
-        employee:'修改负责人'
       },
       sortName:'',
       sortType:'',
@@ -170,10 +161,39 @@ export default {
       employeeOptions:null,
       employeeFilter:null,
       selection:'所有成员',
+      params:{},
+      planId:'',
+      Rid:'', 
+      editFlag:false,
+      multipleSelection: [],
+    }
+  },
+  watch:{
+    watchTab:{
+      deep:true,
+      handler:function(val){
+        this.getPlan()
+      }
+    },
+    selection(newVal){
+      this.selection=newVal
+      this.getPlan()
+    },
+    sortName(newVal){
+          this.getPlan()
+    },
+    sortType(newVal){
+      this.getPlan()
+    }
+  },
+  computed: {
+    watchTab(){
+      return this.$route.query.tab
     }
   },
   created() {    
     this.getEmployee()
+    this.getPlan()
   },
   methods: {
      /**
@@ -191,6 +211,22 @@ export default {
       })
     },
     /**
+     * 获取所有跟进计划内容
+    */
+    getPlan(){
+      this.listLoading = true
+      this.checkTab()
+      this.$set(this.params,'pageNum',this.listQuery.page)
+      this.$set(this.params,'pageSize',this.listQuery.size)
+      planAll(this.params).then(res=>{
+        this.listLoading = false
+        this.planList=res.data.records
+        this.listQuery.total=res.data.total
+      }).catch(err=>{
+
+      })
+    },
+    /**
      * 清空params
      */
     clearParams(){
@@ -198,6 +234,10 @@ export default {
         delete this.params[key]
       }
     },
+     /**
+     * 检查变化
+     * method:checkTab()
+     */
      /**
      * 检查变化
      * method:checkTab()
@@ -235,12 +275,6 @@ export default {
           }
           this.$set(this.params,'isWeek','true')
           console.log(this.params)
-        }else if(tab=='this_month'){
-           this.clearParams()
-          if(this.searchQuery){
-              this.params=this.searchQuery
-          }
-          this.$set(this.params,'isMouth','true')
         }else{
            this.clearParams()
           if(this.searchQuery){
@@ -278,16 +312,120 @@ export default {
         this.employeeOptions=this.employeeFilter
       }
     },
-    text(){
-        alert('hh')
+    /**
+     * 存储表格选择
+     */
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+      console.log("数组大小")
+      console.log(this.multipleSelection)
     },
-    operation(type){
-         this.operation_type=type
-         this.showDialogFlag=true
+    /**
+     * 显示产品详情、客户详情、联系人详情
+     */
+    handle(type,row){
+      if(type=='customer'){
+         this.$router.push({name:'CustomerDetail',query:{customerId:row.customerId}})
+      }else{
+        this.title=type
+        console.log("tirlrrlrlr")
+        console.log(type)
+        this.planId=row.id
+        this.Rid=row.relationId
+        this.showDialogFlag=true
+      }
     },
-    handle(type){
+    /**
+     * 新增计划
+     */
+    addPlan(flag,title){
+      this.editFlag=flag
+      this.title=title
+      this.showDialogFlag=true
+    },
+    /**
+     * 修改信息
+    */
+    editPlan(flag,title){
+      console.log('修改数组')
+      console.log(this.multipleSelection)
+      if(this.multipleSelection.length<=0){
+        this.$message.error('请选择需要修改产品！')
+      }else if(this.multipleSelection.length>1){
+        this.$message.error('只能选择一项进行修改！')
+      }else{
+        this.editFlag=flag
+        this.title=title
+        this.showDialogFlag=true
+        this.planId=this.multipleSelection[0].id
+      }
+    },
+    /**
+     * 关闭前设置editFlag
+     */
+    setClose(){
+      this.editFlag=false
+      this.showDialogFlag=false
+    },
+    /**
+     * 删除
+     */
+     planDelete(){
+      if(this.multipleSelection.length>0){
+        console.log("选择")
+        console.log(this.multipleSelection)
+        this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let ids=[]
+
+          this.multipleSelection.forEach(item=>{
+            // this.$set(query,'id',item.id)
+            ids.push(item.id)
+          })
+          console.log("qeryyyyy")
+          console.log(ids)
+          deletePlan(ids).then(res=>{
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.getPlan()
+          }).catch(err=>{
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            });
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      }else{
+        console.log("未选择")
+         this.$message({
+              type: 'error',
+              message: '请选择!'
+            });
+      }
+    },
+    /**
+     * 高级搜索
+     */
+    searchUpdate(val){
+       this.searchQuery=val
+       this.showDialogFlag=false
+       this.getPlan()
+    },
+    /**
+     * 点击搜索
+     */
+    searchPlan(type){
       this.title=type
-      this.operation_type='other'
       this.showDialogFlag=true
     }
   }

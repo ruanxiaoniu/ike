@@ -49,7 +49,22 @@ export function planAll(params){
     params,
   })
 }
-
+//更新计划为失败
+export function planFail(params){
+  return request({
+    url:'/followPlan/fail',
+    method: 'put',
+    data:params,
+  })
+}
+//更新计划为已完成
+export function planComplete(params){
+  return request({
+    url:'/followPlan/complete',
+    method: 'put',
+    data:params,
+  })
+}
 //获取某条跟进计划详情
 export function planDetail(params){
   return request({
@@ -68,12 +83,12 @@ export function updatePlan(params){
   })
 }
 
-//删除某条跟进计划
+//删除跟进计划
 export function deletePlan(params){
   return request({
-    url:'/followPlan/delete',
+    url:'/followPlan/deleteByIds',
     method: 'delete',
-    params,
+    data:params,
   })
 }
 

@@ -1,130 +1,273 @@
 <template>
   <div>
-      <el-form  ref="customer" :rules="rules" :model="customer" label-position="left" label-width="150px" style="width: 500px; margin-left:50px;">
-        <el-form-item label="客户id" prop="customer_name">
-          <el-row>
-            <el-col span="18">
-              <el-input v-model="customer.customer_name"></el-input>
-            </el-col>
-          </el-row> 
-        </el-form-item>
-        <el-form-item label="联系人id" prop="customer_stage">
-          <el-row>
-            <el-col span="18">
-              <el-input v-model="customer.customer_stage"></el-input>
-            </el-col>
-            <el-col span="6" style="text-align:right">
-              <el-button size="small" icon="el-icon-edit" @click="handle('stage')">编辑</el-button>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="跟进时间" prop="customer_level">
-          <el-row>
-            <el-col span="18">
-              <el-input v-model="customer.customer_level"></el-input>
-            </el-col>
-            <el-col span="6" style="text-align:right">
-              <el-button size="small" icon="el-icon-edit" @click="handle('level')">编辑</el-button>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="跟进方式" prop="customer_stage">
-          <el-row>
-            <el-col span="18">
-              <el-input v-model="customer.customer_stage"></el-input>
-            </el-col>
-          </el-row> 
-        </el-form-item>
-        <el-form-item label="跟进细节" prop="customer_origin">
-          <el-input v-model="customer.customer_level"></el-input>
-        </el-form-item>
-        <el-form-item label="跟进结果" prop="custoemr_introduce">
+      <el-form  ref="followPlan" :rules="rules" :model="followPlan" label-position="left" label-width="150px" style="width: 500px; margin-left:50px;">
+        <el-form-item label="客户" prop="customerId">
            <el-row>
-            <el-col span="18">
-              <el-input v-model="customer.customer_stage"></el-input>
-            </el-col>
-          </el-row> 
+          <el-col span="18">
+            <!-- 可进行远程搜索 -->
+            <el-select
+              v-model="followPlan.customerId"
+              filterable
+              remote
+              reserve-keyword
+              style="width:100%"
+              placeholder="请输入关键词"
+              :remote-method="remoteMethod"
+              :loading="loading"
+            >
+              <el-option
+                v-for="item in customerOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-col>
+        </el-row>
         </el-form-item>
-         <el-form-item label="客户状态" prop="customer_address">
-            <el-row>
+        <el-form-item label="联系人" prop="relationId">
+          <el-row>
             <el-col span="18">
-              <el-input type="textarea" v-model="customer.customer_stage"></el-input>
+              <el-select v-model="followPlan.relationId" placeholder="请选择联系人">
+                <el-option v-for="(item) in relationList" :key="item.id" :label="item.relationName" :value="item.id"/>
+              </el-select>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="跟进计划时间" prop="planDate">
+          <el-row>
+          <el-col span="18">
+            <el-date-picker
+                v-model="followPlan.planDate"
+                type="datetime"
+                placeholder="选择跟进计划时间"/>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="跟进计划内容" prop="planContent">
+          <el-row>
+            <el-col span="18">
+              <el-input type="textarea" v-model="followPlan.planContent"></el-input>
             </el-col>
           </el-row> 
         </el-form-item>
       </el-form>
-
-      <el-dialog :title="textMap[title]" :visible.sync="dialogFlag" append-to-body>
-        <level v-if="title=='level'"></level>
-        <stage v-else-if="title=='stage'"></stage>
-        <origin v-else></origin>
-      </el-dialog>
+      <div style="margin-left:500px">
+        <el-button size="small" @click="cancel">取消</el-button>
+        <el-button size="small" v-if="editFlag" type="primary" @click="editPlan('followPlan')">保存</el-button>
+        <el-button size="small" v-else type="success" @click="add('followPlan')">添加</el-button>
+      </div>
   </div>
 </template>
 <script>
-import level from '../../../public/customer/level'
-import stage from '../../../public/customer/stage'
-import origin from '../../../public/customer/origin'
+import {updatePlan,planDetail,addPlan} from '@/api/follow'
+import { getCustomerInfo,getOneRelation} from '@/api/customer'
 export default {
+  props:['editFlag','planId'],
   components:{
-     level,
-     stage,
-     origin,
   },
   data() {
     return {
-      title:'',
-      dialogFlag:false,
-      textMap:{
-        stage:'客户阶段管理',
-        level:'客户等级管理',
-        origin:'客户来源管理'
+      followPlan:{
+        planDate:'',
+        planContent:'',
+        relationId:'',
+        customerId:'',
       },
-      customer:{
-        customer_name:'',
-        customer_stage:'',
-        customer_state:'',
-        customer_introduce:'',
-        customer_address:'',
-        customer_level:'',
-        customer_origin:''
-      },
-      follow:{
-        end_follow:'',
-        create_time:'',
-        create_user:'',
-        follow_count:''
-      },
-      order:{
-        success_count:'',
-        end_time:'',
-        product_count:'',
-        total:'',
-        profit:'',
-
-      },
-      complaint:{
-        complaint_count:'',
-        complaint_type:'',
-        complaint_method:'',
-        urge:'',
-      },
-      return_refund:{
-        return_total:'',
-        own_total:'',
-        return_total:'',
-        return_count:'',
-        end_time:'',
-        end_total:'',
-        return_total:'',
+      customerFilter:null,
+      customerOptions:null,
+      relationList:null,
+      Cid:'',
+      loading:false,
+      rules:{
+        customerId:[
+          { required:true,message:'请选择客户',trigger:'blur'}
+        ],
+        relationId:[
+          { required:true,message:'请选择联系人',trigger:'blur'}
+        ],
+        planDate:[
+          {required:true,message:'请输入计划时间',trigger:'blur'}
+        ]
       }
     }
   },
-  methods:{
-    handle(type){
-      this.title=type
-      this.dialogFlag=true
+  watch: {
+    "followPlan.customerId":function (newVal) {
+      this.Cid=newVal
+      if(newVal!=''){
+        console.log(newVal)
+        this.getRelation()
+      }
+    },
+    editFlag(newVal){
+      
+        if(this.editFlag){
+          this.getPlan()
+        }
+    },
+    planId(newVal){
+      if(newVal){
+        this.getPlan()
+      }
+    },
+    // Cid(newVal){
+    //   if(newVal){
+    //     console.log("添加计划")
+    //     console.log(newVal)
+    //     this.getRelation()
+    //   }
+    // }
+  },
+  created() {
+    this.getCustomer()
+    if(this.editFlag){
+      this.getPlan()
     }
+     
+  },
+  methods:{
+     /**
+    获取所有客户信息
+     */
+     getCustomer(){
+       console.log("kehu xinxi ")
+       getCustomerInfo().then(res=>{
+         this.customerOptions=res.data
+         this.customerFilter=res.data
+       }).catch(err=>{
+
+       })
+     },
+     /**
+      获取所有客户联系人信息
+    */
+     getRelation(){
+       let params={
+         Cid:this.Cid
+       }
+       console.log("Ciiiiiiiii")
+       console.log(this.Cid)
+       getOneRelation(params).then(res=>{
+        //  if(res.data.length>0){
+        //    res.data.forEach((item,index)=>{
+        //      this.relationList[index].relationName=item.relationName
+        //      this.relationList[index].relationId=item.id
+        //    })
+        //   console.log("relationList")
+        //   console.log(this.relationList)
+        //  }else{
+        //    this.relationList=[]
+        //  }
+         this.relationList=res.data
+       }).catch(err=>{
+         
+       })
+     },
+     /**
+      * 获取某条计划信息
+      */
+     getPlan(){
+       if(this.editFlag){
+         const params={
+           id:this.planId
+        }
+        planDetail(params).then(res=>{
+          this.followPlan=res.data
+          this.followPlan.relationId=res.data.customerName 
+          if(this.editFlag){
+            this.Cid=res.data.customerId
+            console.log("this.Cid")
+            console.log(this.Cid)
+          } 
+         }).catch(err=>{
+
+         })
+       }
+     },
+    
+     /**
+      * 修改信息
+      */
+     editPlan(formName){
+       if(this.editFlag){
+         this.$refs[formName].validate(valid=>{
+           if(valid){
+             
+              updatePlan(this.followPlan).then(res=>{
+                this.$message.success('修改成功！')
+                this.$emit('updatelist')
+                this.$emit('setdialog')
+                this.followPlan={
+                  planDate:'',
+                  planContent:'',
+                  relationId:'',
+                  customerId:'',
+                }
+              }).catch(err=>{
+
+              })
+           }else{
+             return false
+           }
+         })
+        
+       }
+     },
+     /**
+      * 添加计划信息
+      */
+     add(formName){
+       this.$refs[formName].validate(valid=>{
+         if(valid){
+           addPlan(this.followPlan).then(res=>{
+             this.$message.success('添加成功！')
+             this.$emit('updatelist')
+                this.$emit('setdialog')
+                this.followPlan={
+                  planDate:'',
+                  planContent:'',
+                  relationId:'',
+                  customerId:'',
+                }
+            }).catch(err=>{
+                this.$message.error('添加失败，请重试')
+            })
+         }else{
+           return false
+         }
+       })
+     },
+     /**
+      * 远程搜索客户
+      */
+    remoteMethod(query){
+       if (query !== '') {
+          this.loading = true;
+          setTimeout(() => {
+            this.loading = false;
+            this.customerOptions = this.customerFilter.filter(item => {
+              return item.name.toLowerCase()
+                .indexOf(query.toLowerCase()) > -1;
+            });
+          }, 100);
+        }else{
+          this.customerOptions=this.customerFilter
+          
+        }
+    },
+    /**
+      * 点击取消
+    */
+     cancel(){
+        this.$emit('setdialog')
+        this.followPlan={
+          planDate:'',
+          planContent:'',
+          relationId:'',
+          customerId:'',
+        }
+     },
   }
 }
 </script>

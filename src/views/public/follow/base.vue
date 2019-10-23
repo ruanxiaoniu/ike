@@ -68,18 +68,19 @@
               <div  style="float:right" >
                   <el-button size="small" icon="el-icon-delete" @click="deletefollow(item.id,index)">删除</el-button>
                   <el-button size="small" icon="el-icon-edit" @click="edit('followDetail',true,item)">修改</el-button>
-                  <el-button size="small" icon="el-icon-document" @click="show('followDetail',item)">详情</el-button>
+                  <el-button size="small" icon="el-icon-document" @click="show('followDetail',false,item)">详情</el-button>
               </div>
               
         </el-timeline-item>
       </el-timeline>
       <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getFollow" />
       <el-dialog :title="textMap[type]" :visible.sync="dialogFlag" append-to-body="true" width="60%" :before-close="setEditFlag">
-        <followDetail v-if="type=='followDetail'" :id="followId" :edit="editFlag" @setedit="setEditFlag" @updatefollow="getFollow"></followDetail>
+        <followDetail v-if="type=='followDetail'" :id="followId" :edit="editFlag" @setdialog="setDialogFlag" @updatefollow="getFollow"></followDetail>
         <relation v-else-if="type=='relation'" :Rid="relationId"></relation>
         <customer v-else-if="type=='customer'" :Cid="customerId"></customer>
         <employee v-else-if="type=='employee'" :id="employeeId"></employee>
-        <search v-if="type=='search'" @updatelist='updateList'></search>
+        <search v-else-if="type=='search'" @updatelist='updateList'></search>
+        <addFollow v-else-if="type=='add'" @updatelist='updateList' @setdialog="setDialogFlag"></addFollow>
       </el-dialog>
      
   </div>
@@ -90,6 +91,7 @@ import followDetail from '../../public/follow/follow-detail'
 import relation from '../../public/relation/relationById'
 import customer from '../../public/customer/all-detail/index'
 import employee from '../../public/employee/index'
+import addFollow from '../../crm/contact-follow/add/index'
 import {getFollowAll,deleteFollow} from '@/api/follow'
 import {getEmployeeAll} from '@/api/employee'
 import search from '../../crm/contact-follow/search/index'
@@ -102,7 +104,8 @@ export default {
     customer,
     employee,
     search,
-    pagination
+    pagination,
+    addFollow
   },
   filters:{
     formateDate(date){
@@ -160,7 +163,7 @@ export default {
         this.getFollow()
       }
     },
-     selection(newVal){
+    selection(newVal){
        this.selection=newVal
         console.log("selection啦啦啦啦")            
           console.log(newVal) 
@@ -294,7 +297,7 @@ export default {
      * 不同点击显示不同弹框模块
      * method:show()
      */
-    show(type,item){
+    show(type,editFlag,item){
       this.followId=item.id
       this.employeeId=item.employeeId
       this.relationId=item.relationId
@@ -303,6 +306,7 @@ export default {
       console.log(this.employeeId)
       this.type=type
       this.dialogFlag=true
+       this.editFlag=editFlag
     },
     /**
      * 点击修改
@@ -331,16 +335,18 @@ export default {
            * 删除请求
            */
           deleteFollow(query).then(res=>{
-              this.followList.splice(index,1)
               this.$message({
                 type: 'success',
                 message: '删除成功!'
               });
+              this.getFollow()
           }).catch(err=>{
               this.$message({
                 type: 'error',
                 message: '删除失败，请重试!'
               });
+              console.log("shibai ")
+              console.log(err)
           })
           
         }).catch(() => {
@@ -379,6 +385,15 @@ export default {
      */
     setEditFlag(){
       console.log("seeeee")
+      this.dialogFlag=false
+      this.editFlag=false
+      
+    },
+      /**
+     * 跟新dialog
+     * method:setEditFlag()
+     */
+    setDialogFlag(){
       this.dialogFlag=false
       this.editFlag=false
       
