@@ -355,7 +355,7 @@ export default {
       console.log('修改数组')
       console.log(this.multipleSelection)
       if(this.multipleSelection.length<=0){
-        this.$message.error('请选择需要修改产品！')
+        this.$message.error('请选择需要修改计划！')
       }else if(this.multipleSelection.length>1){
         this.$message.error('只能选择一项进行修改！')
       }else{

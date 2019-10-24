@@ -56,13 +56,7 @@
             v-if="editFlag"
             style="width:100%"
           >
-            <el-option-group>
-              <el-option label="所有成员" value="所有成员"></el-option>
-            </el-option-group>
-            <el-option-group label="指定成员">
-              <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
-
-            </el-option-group>
+            <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
         </el-select>
         <span v-else>{{follow.employeeName}}</span>
       </el-form-item>

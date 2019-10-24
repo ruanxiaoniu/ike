@@ -9,10 +9,36 @@
       <div class="top">基本信息:</div>
       <el-form :model="base" style="margin-left:50px">
           <el-form-item label="录入人：">
-            <span>{{base.createUserName}}</span>
+            <el-row>
+              <el-col span="10">
+                  <el-select 
+                    size="small" 
+                    v-model="base.createUserName" 
+                    placeholder="请选择" 
+                    filterable
+                    remote
+                    reserve-keyword
+                    :remote-method="remoteMethod"
+                    v-if="editFlag"
+                    style="width:100%"
+                  >
+                    <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
+                  </el-select> 
+                  <span v-else>{{base.createUserName}}</span>
+              </el-col>
+            </el-row>  
           </el-form-item>
           <el-form-item label="录入时间：">
-            <span>{{base.createTime}}</span>
+             <el-row>
+              <el-col span="10">
+                <el-date-picker
+                v-model="base.createTime"
+                type="datetime"
+                placeholder="选择录入时间"
+                v-if="editFlag" />
+                <span v-else>{{base.createTime}}</span>
+              </el-col>
+            </el-row> 
           </el-form-item>
           <el-form-item label="成交次数：">
             <span  class="link-type" @click="orderDetail('dealProduct')">{{base.orderTimes}}</span>
@@ -32,7 +58,7 @@
       </el-form>
        <div class="top">产品信息:</div>   
        <el-form :model="productDetail" style="margin-left:50px">
-        <el-form-item label="产品分类：" prop="productClassName">
+          <el-form-item label="产品分类：" prop="productClassName">
             <el-row>
               <el-col span="10">
                 <el-cascader
@@ -167,6 +193,7 @@ import {getProductDetail,getSaleUnit,getAllClass} from '@/api/product'
 
 import dealProduct from './dealProduct'
 import addProduct from '../../product/update-add/index'
+import {getEmployeeAll} from '@/api/employee'
 export default {
   props:['productId'],
   components:{
@@ -195,6 +222,8 @@ export default {
       dialogFlag:false,
       editFlag:false,
       productClass:[],
+      employeeOptions:null,
+      employeeFilter:null,
     }
   },
   watch:{
@@ -277,7 +306,36 @@ export default {
       }).catch(err=>{
       })
     },
-   
+     /**
+     * 获取所有成员，用于搜索
+     * method:getEmployee()
+     */
+    getEmployee(){
+      getEmployeeAll().then(res=>{
+        this.employeeOptions=res.data
+        this.employeeFilter=res.data
+      }).catch(err=>{
+        console.log(err)
+      })
+    },
+      /**
+     * 远程搜索负责人
+     * method:remoteMethod()
+     */
+    remoteMethod(query){
+      if (query !== '') {
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.employeeOptions = this.employeeFilter.filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1;
+          });
+        }, 100);
+      }else{
+        this.employeeOptions=this.employeeFilter
+      }
+    },
     /**
      * 点击返回
      */

@@ -169,8 +169,8 @@ export default {
                       message: '验证码通过!'
                     });
                 }).catch(err=>{
-                    console.log("errrrrrrr")
-                    console.log(err.code)
+                    // console.log("errrrrrrr")
+                    // console.log(err.code)
                     this.$message({
                       type: 'error',
                       message: '验证码错误!'

@@ -190,7 +190,10 @@ export default {
     }
   },
   created(){
+    
     if(this.edit){//若是修改
+    console.log("产品修改")
+    console.log(this.pid)
       console.log(this.edit)
       this.editFlag=this.edit
       this.editQuery={
@@ -208,14 +211,15 @@ export default {
      */
      getProductById(){
        if(this.edit){
-         
+          console.log("search")
+          console.log(this.editQuery)
           getOneProduct(this.editQuery).then(res=>{
             this.productList=res.data.product
             this.productList.productClassId=res.data.product.productClassName
             this.fileList=res.data.productPicFile
             this.TextFile=res.data.productTextFile
             console.log("edddddd")
-         console.log(this.productList)
+            console.log(this.productList)
           }).catch(err=>{
           })
        }
