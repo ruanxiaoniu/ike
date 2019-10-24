@@ -297,6 +297,14 @@ export default {
             this.$emit('setdialog')
             this.$emit('seteditflag')
             this.$emit('updatelist')
+            this.productList={
+                productClassId:'',
+                productName:'',
+                salePrice:'',
+                cost:'',
+                saleUnitId:'',
+                onSale:''
+              }
           }).catch(err=>{
             this.$message.error('添加失败，请重试！')
           })

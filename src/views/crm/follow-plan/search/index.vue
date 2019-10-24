@@ -16,6 +16,12 @@
          <el-form-item label="计划内容" prop="planContent"> 
           <el-input v-model="searchQuery.planContent"></el-input>
         </el-form-item>
+        <el-form-item label="是否执行" prop="isExecute"> 
+          <span>
+              <el-radio v-model="isExecute" :label="0">已执行</el-radio>
+              <el-radio v-model="isExecute" :label="1">未执行</el-radio>
+            </span>
+        </el-form-item>
         <el-form-item label="是否完成" prop="iscomplete"> 
           <span>
               <el-radio v-model="iscomplete" :label="0">完成</el-radio>
@@ -34,14 +40,16 @@ export default {
   data() {
     return {
       iscomplete:'',
+      isExecute:'',
       planTime:'',
       searchQuery:{
-        iscomplete:'',
-        notcomplete:'',
+        isComplete:'',
+        notComplete:'',
         planContent:'',
         customerName:'',
         minDate:'',
-        maxDate:''
+        maxDate:'',
+        notExecute:''
       },
     }
   },
@@ -56,10 +64,15 @@ export default {
           this.searchQuery.minDate=moment(this.planTime[0]).format('YYYY-MM-DD')
           this.searchQuery.maxDate=moment(this.planTime[1]).format('YYYY-MM-DD')
       }
-      if(this.iscomplete==1){
-        this.searchQuery.iscomplete="true"
+      
+      if(this.isExecute==1){
+        this.searchQuery.notExecute="true"
       }else{
-        this.searchQuery.notcomplete="true"
+        if(this.iscomplete==1){
+          this.searchQuery.notComplete="true"
+        }else{
+          this.searchQuery.isComplete="true"
+        }
       }
     
       //返回搜索数据给数据
@@ -74,6 +87,7 @@ export default {
       },
       this.planTime=''
       this.iscomplete=''
+      this.isExecute=''
     }
   },
 }

@@ -78,6 +78,7 @@ export default {
       customerOptions:null,
       relationList:null,
       Cid:'',
+      originRelationId:'',//原始联系人Id
       loading:false,
       rules:{
         customerId:[
@@ -149,16 +150,6 @@ export default {
        console.log("Ciiiiiiiii")
        console.log(this.Cid)
        getOneRelation(params).then(res=>{
-        //  if(res.data.length>0){
-        //    res.data.forEach((item,index)=>{
-        //      this.relationList[index].relationName=item.relationName
-        //      this.relationList[index].relationId=item.id
-        //    })
-        //   console.log("relationList")
-        //   console.log(this.relationList)
-        //  }else{
-        //    this.relationList=[]
-        //  }
          this.relationList=res.data
        }).catch(err=>{
          
@@ -174,7 +165,9 @@ export default {
         }
         planDetail(params).then(res=>{
           this.followPlan=res.data
-          this.followPlan.relationId=res.data.customerName 
+          this.originRelationId=res.data.relationId 
+          this.followPlan.relationId=res.data.relationName 
+          
           if(this.editFlag){
             this.Cid=res.data.customerId
             console.log("this.Cid")
@@ -193,7 +186,15 @@ export default {
        if(this.editFlag){
          this.$refs[formName].validate(valid=>{
            if(valid){
-             
+              console.log("要修改了")
+              console.log(this.followPlan)
+             console.log(typeof this.followPlan.relationId)
+              if(typeof this.followPlan.relationId=='string'){
+               
+                this.followPlan.relationId=this.originRelationId
+               
+              }
+               console.log(this.followPlan)
               updatePlan(this.followPlan).then(res=>{
                 this.$message.success('修改成功！')
                 this.$emit('updatelist')
@@ -205,7 +206,7 @@ export default {
                   customerId:'',
                 }
               }).catch(err=>{
-
+                console.log(err)
               })
            }else{
              return false

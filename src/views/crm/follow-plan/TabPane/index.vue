@@ -81,8 +81,9 @@
 
     <el-table-column min-width="100px" label="是否完成" prop="iscomplete">
        <template slot-scope="scope">
-        <span  v-if="scope.row.iscomplete==1||scope.row.iscomplete==null">未完成</span>
-        <span  v-if="scope.row.iscomplete==0">已完成</span>
+        <span  v-if="scope.row.iscomplete==1">未完成</span>
+        <span  v-else-if="scope.row.iscomplete==0">已完成</span>
+        <span  v-else-if="scope.row.iscomplete==null">未执行</span>
       </template>
     </el-table-column>
   </el-table>
@@ -164,6 +165,7 @@ export default {
       params:{},
       planId:'',
       Rid:'', 
+      planList:null,
       editFlag:false,
       multipleSelection: [],
     }
@@ -219,9 +221,12 @@ export default {
       this.$set(this.params,'pageNum',this.listQuery.page)
       this.$set(this.params,'pageSize',this.listQuery.size)
       planAll(this.params).then(res=>{
+        
         this.listLoading = false
+        console.log("为什么修改不跟你更新")
         this.planList=res.data.records
         this.listQuery.total=res.data.total
+        this.multipleSelection=[]
       }).catch(err=>{
 
       })

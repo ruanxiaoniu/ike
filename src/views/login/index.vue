@@ -138,6 +138,7 @@ export default {
         inputErrorMessage: '邮箱格式不正确'
       }).then(({ value }) => {
         sendAuthCode(value).then(response =>{
+          console.log(response.data)
           if(response.data.code == 0){
             this.$message({
               type: 'success',
@@ -153,18 +154,29 @@ export default {
               }).then(({ value }) => {
                 checkAuthCode(value).then(response =>{
                   console.log("coderes: "+response.data.code);
-                  if(response.data.code == 0){
-                    console.log("===="+response.data);
-                    console.log("===="+response.data.code);
-                    console.log("===="+response.data.msg);
-                  }else {
+                  // if(response.data.code == 0){
+                  //   console.log("===="+response.data);
+                  //   console.log("===="+response.data.code);
+                  //   console.log("===="+response.data.msg);
+                  // }else {
+                  //   this.$message({
+                  //     type: 'error',
+                  //     message: '验证码错误!'
+                  //   });
+                  // }
+                  this.$message({
+                      type: 'success',
+                      message: '验证码通过!'
+                    });
+                }).catch(err=>{
+                    console.log("errrrrrrr")
+                    console.log(err.code)
                     this.$message({
                       type: 'error',
                       message: '验证码错误!'
                     });
-                  }
-                });
-                }).catch(() => {
+                })
+              }).catch(() => {
                 this.$message({
                   type: 'warning',
                   message: '取消输入验证码'
