@@ -1,6 +1,6 @@
 <template>
   <div>
-      <el-form  ref="searchQuery" :rules="rules" :model="searchQuery" label-position="left" label-width="150px" style="width: 500px; margin-left:50px;">
+      <el-form ref="searchQuery" :rules="rules" :model="searchQuery" label-position="left" label-width="150px" style="width: 500px; margin-left:50px;">
         <el-form-item label="计划时间" prop="planDate">
            <el-date-picker
             v-model="planTime"
@@ -13,7 +13,14 @@
         <el-form-item label="客户名称" prop="customerName"> 
           <el-input v-model="searchQuery.customerName"></el-input>
         </el-form-item>
-         <el-form-item label="计划内容" prop="planContent"> 
+        <el-form-item label="联系人名称" prop="relationName"> 
+          <el-input v-model="searchQuery.relationName"></el-input>
+        </el-form-item>
+        <el-form-item label="联系人电话" prop="relationPhone"> 
+          <el-input v-model="searchQuery.relationPhone"></el-input>
+        </el-form-item>
+        
+        <el-form-item label="计划内容" prop="planContent"> 
           <el-input v-model="searchQuery.planContent"></el-input>
         </el-form-item>
         <el-form-item label="是否执行" prop="isExecute"> 
@@ -47,6 +54,8 @@ export default {
         notComplete:'',
         planContent:'',
         customerName:'',
+        relationName:'',
+        relationPhone:'',
         minDate:'',
         maxDate:'',
         notExecute:''
@@ -82,6 +91,8 @@ export default {
         notcomplete:'',
         planContent:'',
         customerName:'',
+        relationName:'',
+        relationPhone:'',
         minDate:'',
         maxDate:''
       },
