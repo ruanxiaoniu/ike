@@ -136,3 +136,12 @@ export function deleteUnit(params){
     params
   })
 }
+
+//获取产品销量信息
+export function getSaleStatist(params){
+  return request({
+    url: '/product/listSaleStatistic',
+    method: 'get',
+    params
+  })
+}

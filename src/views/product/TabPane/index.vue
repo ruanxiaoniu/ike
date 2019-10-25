@@ -26,11 +26,11 @@
       <el-button  size="small"  icon="el-icon-delete" @click="productDelete">
             删除
       </el-button>
-      <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="handle('add',false)" >
+      <el-button size="small" icon="el-icon-edit" @click="handle('add',false)" >
         新建
       </el-button>
      
-      <el-button :loading="downloadLoading" size="small" icon="el-icon-upload" @click="handleDownload">
+      <el-button size="small" icon="el-icon-upload" @click="handleDownload">
         导入
       </el-button>
       <el-button :loading="downloadLoading" size="small" icon="el-icon-document" @click="handleDownload">
@@ -170,6 +170,11 @@ export default {
       sortName:'',
       sortType:'',
       editFlag:'',
+      listLoading: true,
+      downloadLoading: false,
+      filename: '',
+      autoWidth: true,
+      bookType: 'xlsx'
     }
   },
    watch:{
@@ -382,10 +387,42 @@ export default {
       this.getProduct()
       this.dialogFlag=false
     },
-     handleSelectionChange(val) {
+    /**
+     * 多选值
+     */
+    handleSelectionChange(val) {
       this.multipleSelection = val
       console.log(this.multipleSelection)
     },
+    /**
+     * 导出
+     */
+    handleDownload(){
+      this.downloadLoading=true
+      import('@/vendor/Export2Excel').then(excel=>{
+        const tHeader=['产品名称','成交数量','成交总额度','成交成本总额度','成交总利润','录入时间','录入人','销售状态']
+        const filterVal=['productName','orderNum','orderCount','orderCost','orderProfit','createTime','createUserName','onSale']
+        const list=this.list
+        const data=this.formatJson(filterVal,list)
+        excel.export_json_to_excel({
+          header:tHeader,
+          data,
+          fileName:this.fileName,
+          autoWidth:this.autoWidth,
+          bookType:this.bookType
+        })
+        this.downloadLoading = false
+      })
+    },
+     formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          return v[j]
+        }
+      }))
+    }
   }
 }
 </script>

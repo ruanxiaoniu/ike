@@ -4,41 +4,14 @@
       <el-button icon="el-icon-back" type="success" size="small" @click="goBack">返回</el-button>
       <el-button icon="el-icon-plus" type="primary" size="small" @click="addProduct('add')">新建</el-button>
       <el-button icon="el-icon-edit" size="small" @click="editProduct">修改</el-button>
-      <el-button icon="el-icon-delete" size="small">删除</el-button>
     </div>
       <div class="top">基本信息:</div>
-      <el-form :model="base" style="margin-left:50px">
+      <el-form :model="base" label-width="150px" label-position="right">
           <el-form-item label="录入人：">
-            <el-row>
-              <el-col span="10">
-                  <el-select 
-                    size="small" 
-                    v-model="base.createUserName" 
-                    placeholder="请选择" 
-                    filterable
-                    remote
-                    reserve-keyword
-                    :remote-method="remoteMethod"
-                    v-if="editFlag"
-                    style="width:100%"
-                  >
-                    <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
-                  </el-select> 
-                  <span v-else>{{base.createUserName}}</span>
-              </el-col>
-            </el-row>  
+              <span>{{base.createUserName}}</span>
           </el-form-item>
           <el-form-item label="录入时间：">
-             <el-row>
-              <el-col span="10">
-                <el-date-picker
-                v-model="base.createTime"
-                type="datetime"
-                placeholder="选择录入时间"
-                v-if="editFlag" />
-                <span v-else>{{base.createTime}}</span>
-              </el-col>
-            </el-row> 
+              <span>{{base.createTime}}</span>
           </el-form-item>
           <el-form-item label="成交次数：">
             <span  class="link-type" @click="orderDetail('dealProduct')">{{base.orderTimes}}</span>
@@ -57,17 +30,17 @@
           </el-form-item>
       </el-form>
        <div class="top">产品信息:</div>   
-       <el-form :model="productDetail" style="margin-left:50px">
+       <el-form :model="productDetail" ref="productDetail" :rules="rules" style="margin-top:20px" label-width="150px" label-position="right">
           <el-form-item label="产品分类：" prop="productClassName">
             <el-row>
-              <el-col span="10">
+              <el-col span="5">
                 <el-cascader
                   ref="productClass"
-                  v-model="productDetail.productClassName"
+                  v-model="text"
                   :options="productClass"
-                  @active-item-change="handleChange"
+                  :props="pro"
                   placeholder="请选择产品类别"
-                  style="width:100%"
+                  style="width:50%"
                   :show-all-levels="false"
                   v-if="editFlag"
                   >
@@ -82,7 +55,7 @@
           </el-form-item>
           <el-form-item label="产品名称：" prop="productName">
             <el-row>
-              <el-col span="10">
+              <el-col span="5">
                 <el-input v-model="productDetail.productName" v-if="editFlag"></el-input>
                 <span v-else>{{productDetail.productName}}</span>
               </el-col>
@@ -102,13 +75,13 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
             <div>
-              <img  v-for="(item) in productFile" :src="item.url" style="width: 100px; margin-right:5px">
+              <img  v-for="(item) in productFile" :src="item.url" style="width: 50px; margin-right:5px">
             </div>
             
           </el-form-item>
           <el-form-item label="销售单价：">
             <el-row>
-              <el-col span="10">
+              <el-col span="5">
                 <el-input v-if="editFlag" v-model="productDetail.salePrice"></el-input>
                 <span v-else>{{productDetail.salePrice}}</span>
               </el-col>
@@ -116,15 +89,17 @@
           </el-form-item>
           <el-form-item label="销售单位：">
             <el-row>
-              <el-col span="10">
-                <el-input v-if="editFlag" v-model="productDetail.saleUnitName"></el-input>
+              <el-col span="5">
+                <el-select v-if="editFlag" v-model="productDetail.saleUnitId" placeholder="请选择销售单位" style="width:100%">
+                    <el-option v-for="(item) in saleUnit" :key="item.id" :label="item.saleUnitName" :value="item.id"></el-option>
+                </el-select>
                 <span v-else>{{productDetail.saleUnitName}}</span>
               </el-col>
             </el-row> 
           </el-form-item>
           <el-form-item label="成本：">
             <el-row>
-              <el-col span="10">
+              <el-col span="5">
                 <el-input v-if="editFlag" v-model="productDetail.saleUnicosttName"></el-input>
                 <span v-else>{{productDetail.cost}}</span>
               </el-col>
@@ -132,8 +107,8 @@
           </el-form-item>
           <el-form-item label="销售状态：">
             <el-row>
-              <el-col span="10">
-                <el-select v-model="productDetail.onSale" v-if="editFlag">
+              <el-col span="5">
+                <el-select v-model="productDetail.onSale" v-if="editFlag" style="width:100%">
                   <el-option label="上架" value="1"></el-option>
                   <el-option label="下架" value="0"></el-option>
                 </el-select>
@@ -146,19 +121,20 @@
           </el-form-item>
           <el-form-item label="上市时间：">
             <el-row>
-              <el-col span="10">
+              <el-col span="5">
                 <el-date-picker
                 v-model="productDetail.ttm"
                 type="datetime"
-                placeholder="选择跟进计划时间"
-                v-if="editFlag" />
+                placeholder="选择上市时间"
+                v-if="editFlag"
+                style="width:100%" />
                 <span v-else>{{productDetail.ttm}}</span>
               </el-col>
             </el-row> 
           </el-form-item>
           <el-form-item label="产品介绍：">
             <el-row>
-              <el-col span="10">
+              <el-col span="5">
                 <el-input v-if="editFlag" type="textarea" v-model="productDetail.introduction"></el-input>
                 <span v-else>{{productDetail.introduction}}</span>
               </el-col>
@@ -167,18 +143,12 @@
        </el-form>
      
        <div slot="footer" class="dialog-footer">
-        <!-- <el-button v-if="edit" @click="dialogFormVisible = false">
+         <el-button v-if="editFlag" type="success" @click="cancelEdit">
           取消
         </el-button>
-        <el-button v-if="getdialogStatus=='productDetail'" style="color:red">
-          自动创建订单
-        </el-button>
-        <el-button v-if="edit" type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          确认
-        </el-button> -->
-         <!-- <el-button v-else type="primary" @click="edit=!edit">
-            修改
-          </el-button> -->
+         <el-button v-if="editFlag" type="primary" @click="saveEdit">
+            保存
+          </el-button>
       </div>
 
       <el-dialog :title="textMap[title]" :visible.sync="dialogFlag" append-to-body>
@@ -188,12 +158,11 @@
   </div>
 </template>
 <script>
-import {getProductDetail,getSaleUnit,getAllClass} from '@/api/product'
-// import {getClassById,getSaleUnit,getOneProduct,getAllClass,createProduct,updateProduct} from '@/api/product'
-
+import {getProductDetail,getSaleUnit,getAllClass,updateProduct} from '@/api/product'
 import dealProduct from './dealProduct'
 import addProduct from '../../product/update-add/index'
 import {getEmployeeAll} from '@/api/employee'
+import moment from 'moment'
 export default {
   props:['productId'],
   components:{
@@ -210,20 +179,35 @@ export default {
         personal_detail:"个人信息",
       },
       title:'',
+      text:[],
       //产品详情
       base:null,
       productDetail:null,
+      originproductDetail:null,//用于取消修改
       productFile:null,
       params:{
         id:''
       },
-      
+      pro:{
+        label:'label',
+        value:'value',
+        children:'children'
+      },
+      rules:{
+        productName:[
+          {requried:true,message:'请输入产品名称',trigger:'blur'}
+        ],
+        onSale:[
+          {requried:true,message:'请选择销售状态',trigger:'blur'}
+        ]
+      },
       PId:'',
       dialogFlag:false,
       editFlag:false,
       productClass:[],
       employeeOptions:null,
       employeeFilter:null,
+      saleUnit:null
     }
   },
   watch:{
@@ -233,6 +217,9 @@ export default {
     },
     editFlag(newVal){
       if(newVal){
+        this.text.push(this.productDetail.productClassId)
+        console.log("product")
+        console.log(this.text)
         this.getClass()
         this.getUnit()
       }
@@ -252,7 +239,8 @@ export default {
     getDetail(){
       getProductDetail(this.params).then(res=>{
         this.base=res.data.productVO
-        this.productDetail=res.data.product
+        this.productDetail=res.data.productExtVO
+        this.originproductDetail=res.data.productExtVO
         this.productFile=res.data.productFile
       }).catch(err=>{
 
@@ -273,8 +261,9 @@ export default {
         
        getAllClass().then(res=>{
            console.log("uuuuuuu")
+           
          const product=this.clearChildren(res.data)
-        this.productClass=product
+         this.productClass=product
          console.log("pppppp")
          console.log(this.productClass)
       }).catch(err=>{
@@ -331,7 +320,7 @@ export default {
             return item.name.toLowerCase()
               .indexOf(query.toLowerCase()) > -1;
           });
-        }, 100);
+        }, 50);
       }else{
         this.employeeOptions=this.employeeFilter
       }
@@ -359,13 +348,13 @@ export default {
      * 图片上传
      */
     UploadUrlPic(){
-      return 'http://10.64.2.44:8081/product/createPicture'
+      return 'http://5.64.2.44:5051/product/createPicture'
     },
      /**
      * 文档上传
      */
     // UploadUrlText(){
-    //   return 'http://10.64.2.44:8081/product/createText'
+    //   return 'http://5.64.2.44:5051/product/createText'
     // },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${ file.name }？`);
@@ -381,6 +370,32 @@ export default {
     changeHandle(file,fileList){
       console.log("file,fileLisy")
        console.log(file,fileList)
+    },
+    /**
+     * 保存修改
+     */
+    saveEdit(){
+      this.$refs['productDetail'].validate(valid=>{
+        if(valid){
+          /**
+           * 修改请求
+           */
+          updateProduct(this.productDetail).then(res=>{
+            this.$message.success('修改成功！')
+            this.productDetail.ttm=moment(this.productDetail.ttm).format('YYYY-MM-DD HH:MM:SS')
+            this.editFlag=false
+          }).catch(err=>{
+            this.$message.error('修改失败，请重试！')
+          })
+        }
+      })
+    },
+    /**
+     * 取消保存
+     */
+    cancelEdit(){
+      this.productDetail=this.originproductDetail
+      this.editFlag=false
     }
   }
 }

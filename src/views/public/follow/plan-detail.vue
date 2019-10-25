@@ -36,9 +36,9 @@
             <el-row>
               <el-col span="8">
                 <el-date-picker
-                v-model="plan.followTime"
-                type="datetime"
-                placeholder="选择跟进时间"
+                  v-model="plan.followTime"
+                  type="datetime"
+                  placeholder="选择跟进时间"
                  />
               </el-col>
             </el-row>
@@ -134,10 +134,6 @@ export default {
       /***
        * 新增字段
        */
-      this.$set(this.plan,'followWay','')
-      this.$set(this.plan,'followTime','')
-      this.$set(this.plan,'followResult','')
-      this.$set(this.plan,'followDetail','')
       this.$refs['plan'].validate(valid=>{
         if(valid){
           console.log("????????")

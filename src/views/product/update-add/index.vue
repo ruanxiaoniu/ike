@@ -4,7 +4,18 @@
        <el-form-item label="产品分类：">
           <el-row>
             <el-col span="8">
-              
+               <el-cascader
+                 ref="productClass"
+                 :props="props"
+                  v-model="Parr"
+                  :options="productClass"
+                   @active-item-change="handleChange"
+                  placeholder="请选择产品类别"
+                  style="width:100%"
+                  :show-all-levels="false"
+                  v-if="edit"
+                >
+               </el-cascader>
                <el-cascader
                  ref="productClass"
                  :props="props"
@@ -14,6 +25,7 @@
                   placeholder="请选择产品类别"
                   style="width:100%"
                   :show-all-levels="false"
+                  v-else
                 >
                </el-cascader>
             </el-col>
@@ -97,6 +109,17 @@
             </el-col>
           </el-row>
         </el-form-item>
+         <el-form-item label="上市时间：">
+            <el-row>
+              <el-col span="8">
+                <el-date-picker
+                v-model="productList.ttm"
+                type="datetime"
+                placeholder="选择上市时间"
+                style="width:100%" />
+              </el-col>
+            </el-row> 
+          </el-form-item>
         <el-form-item label="介绍：">
           <el-row>
             <el-col span="8">
@@ -108,7 +131,7 @@
      </el-form>
      <div style="margin-left:500px">
        <el-button size="small" @click="cancel">取消</el-button>
-       <el-button size="small" type="primary" v-if="editFlag" @click="editOperate">修改</el-button>
+       <el-button size="small" type="primary" v-if="editFlag" @click="editOperate('productList')">修改</el-button>
        <el-button size="small" type="primary" v-else @click="add('productList')">新建</el-button>
      </div>
      <el-dialog :visible.sync="editDialog" :title="textMap[title]" append-to-body>
@@ -121,6 +144,7 @@
 import {getClassById,getSaleUnit,getOneProduct,getAllClass,createProduct,updateProduct} from '@/api/product'
 import editClass from '../../public/product/productClass'
 import editUnit from '../../public/product/saleUnit'
+import moment from 'moment'
 export default {
   props:['edit','pid'],
   components:{
@@ -152,6 +176,7 @@ export default {
        params:{
         id:0
       },
+      Parr:[],//绑定级联回显
       fileList:[],
       TextFile:[],
       rules:{
@@ -184,7 +209,8 @@ export default {
          salePrice:'',
          cost:'',
          saleUnitId:'',
-         onSale:''
+         onSale:'',
+         introduction:''
        }
        this.getProductById()
     }
@@ -211,15 +237,17 @@ export default {
      */
      getProductById(){
        if(this.edit){
+          this.Parr=[]
           console.log("search")
           console.log(this.editQuery)
           getOneProduct(this.editQuery).then(res=>{
-            this.productList=res.data.product
-            this.productList.productClassId=res.data.product.productClassName
+            this.productList=res.data.productExtVO
+            this.Parr.push(res.data.productExtVO.productClassId)
+            // this.productList.productClassId=res.data.productExtVO.productClassName
             this.fileList=res.data.productPicFile
             this.TextFile=res.data.productTextFile
             console.log("edddddd")
-            console.log(this.productList)
+            console.log(this.Parr)
           }).catch(err=>{
           })
        }
@@ -260,8 +288,7 @@ export default {
     getUnit(){
       getSaleUnit().then(res=>{
         this.saleUnit=res.data
-        console.log("salllll")
-        console.log(this.saleUnit)
+       
       }).catch(err=>{
       })
     },
@@ -291,6 +318,9 @@ export default {
           if(this.productList.productClassId.length>0){
             this.productList.productClassId=this.productList.productClassId[l]
           }
+          // if(this.productList.ttm){
+          //   this.productList.ttm=moment(this.productList.ttm).format('YYYY-MM-DD HH:MM:SS')
+          // }
           console.log("prrpprprp")
           console.log(this.productList.productClassId)
           /**
@@ -320,29 +350,39 @@ export default {
     /**
      * 修改
      */
-    editOperate(){
+    editOperate(formName){
       /**
        * 修改请求
        */
-      let l=this.productList.productClassId.length-1
-      if(this.productList.productClassId.length>0){
-        this.productList.productClassId=this.productList.productClassId[l]
-      }   
-      this.$set(this.productList,'Piclists',this.fileList)
-      this.$set(this.productList,'Textlists',this.TextFile)
-      // let product={
-      //   product:this.productList,
-      // }
-      console.log("xiugai xiuagi a")
-      // console.log(product)
-      updateProduct(this.productList).then(res=>{
-        this.$message.success('修改成功！')
-        this.$emit('setdialog')
-        this.$emit('seteditflag')
-        this.$emit('updatelist')
-      }).catch(err=>{
-        this.$message.error('修改失败，请重试！')
-      })
+       this.$refs[formName].validate(valid=>{
+         if(valid){
+            let l=this.Parr.length
+            // let l=this.productList.productClassId.length-1
+            if(l>0){
+              this.productList.productClassId=this.Parr[l-1]
+            } 
+            console.log("salllll")
+            console.log(this.productList.productClassId)  
+            this.$set(this.productList,'Piclists',this.fileList)
+            this.$set(this.productList,'Textlists',this.TextFile)
+            // let product={
+            //   product:this.productList,
+            // }
+            console.log("xiugai xiuagi a")
+            // console.log(product)
+            updateProduct(this.productList).then(res=>{
+              this.$message.success('修改成功！')
+              this.$emit('setdialog')
+              this.$emit('seteditflag')
+              this.$emit('updatelist')
+            }).catch(err=>{
+              this.$message.error('修改失败，请重试！')
+            })
+         }else{
+           return false
+         }
+       })
+     
     },
     /**
      * 图片上传
