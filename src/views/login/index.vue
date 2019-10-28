@@ -48,15 +48,18 @@
         <span style="margin-right: 10px" > password: any</span>-->
         <el-button type="text" @click="forgetPwd">forget password</el-button>
       </div>
-
     </el-form>
+
   </div>
+
 </template>
+
 
 <script>
 import { validUsername } from '@/utils/validate'
 import { sendAuthCode } from '@/api/user'
 import { checkAuthCode } from '@/api/user'
+import { findPwd } from '@/api/user'
 
 export default {
   name: 'Login',
@@ -86,7 +89,8 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+
     }
   },
   watch: {
@@ -154,23 +158,34 @@ export default {
               }).then(({ value }) => {
                 checkAuthCode(value).then(response =>{
                   console.log("coderes: "+response.data.code);
-                  // if(response.data.code == 0){
-                  //   console.log("===="+response.data);
-                  //   console.log("===="+response.data.code);
-                  //   console.log("===="+response.data.msg);
-                  // }else {
-                  //   this.$message({
-                  //     type: 'error',
-                  //     message: '验证码错误!'
-                  //   });
-                  // }
-                  this.$message({
-                      type: 'success',
-                      message: '验证码通过!'
-                    });
+                   if(response.data.code == 0){
+                     console.log("wd");
+                     this.$prompt('请输入密码','提示', {
+                       confirmButtonText: '确定',
+                       cancelButtonText: '取消',
+                       inputPattern: /^[\S\n\s]{6,6}$/,
+                       inputErrorMessage: '密码不能少于6位'
+                     }).then(({ value}) => {
+                       console.log(value);
+                       findPwd(value).then(response =>{
+                         console.log(response.data.code);
+                       })
+
+                       setTimeout(() =>{
+                         this.$message({
+                           type: 'success',
+                           message: '修改成功,请登陆爽爽! '
+                         })
+                       },3000);
+                     }).catch(() => {
+                       this.$message({
+                         type: 'info',
+                         message: '取消输入'
+                       });
+                     });
+
+                   }
                 }).catch(err=>{
-                    // console.log("errrrrrrr")
-                    // console.log(err.code)
                     this.$message({
                       type: 'error',
                       message: '验证码错误!'

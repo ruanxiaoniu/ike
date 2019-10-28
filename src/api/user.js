@@ -6,7 +6,7 @@ export function login(data) {
   //   method: 'post',
   //   data
   // })
-  console.log(data)
+  console.log(data.username+"===="+data.password)
 
   return request({
     url: `/Authen/login?name=${data.username}&pwd=${data.password}`,
@@ -43,5 +43,13 @@ export function  checkAuthCode(data) {
   return request({
     url: `/Authen/checkAuthCode?InputAuthCode=${data}`,
     method: 'get'
+  })
+}
+
+export function  findPwd(data) {
+  console.log("code: "+data);
+  return request({
+    url: `/Authen/findPwd?newPwd=${data}`,
+    method: 'put'
   })
 }
