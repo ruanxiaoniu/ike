@@ -1,6 +1,6 @@
 <template>
 <div>
-   <div style="margin-top:10px">
+   <div>
       <el-select 
         size="small" 
         v-model="selection" 
@@ -17,13 +17,13 @@
           <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
         </el-option-group>
       </el-select>
-      <el-select v-model="sortName" placeholder="排序" style="width:200px">
-        <el-option label="订单总成本" value="orderCost"></el-option>
-        <el-option label="订单成交总额" value="orderTotal"></el-option>
-        <el-option label="订单实际成交总额" value="orderActualTotal"></el-option>
-        <el-option label="订单时间" value="orderTime"></el-option>
+      <el-select v-model="sortName" placeholder="排序" style="width:200px" size="small">
+        <el-option label="回款时间" value="ob.order_cost"></el-option>
+        <el-option label="回款金额" value="ob.ob.order_actual_total"></el-option>
+        <!-- <el-option label="订单时间" value="ob.ob.order_time"></el-option>
+        <el-option label="订单成交总额" value="ob.order_total"></el-option> -->
      </el-select>
-     <el-select v-model="sortType" placeholder="排序方式" style="width:200px">
+     <el-select v-model="sortType" placeholder="排序方式" style="width:200px" size="small">
        <el-option label="降序" value="DESC"></el-option>
        <el-option label="升序" value="ASC"></el-option>
      </el-select>
@@ -47,52 +47,54 @@
       </el-button>
     </div>
     <p></p>
-  <el-table :data="orderList" border fit highlight-current-row style="width: 100%"  @selection-change="handleSelectionChange">
+  <el-table :data="returnList" border fit highlight-current-row style="width: 100%"  @selection-change="handleSelectionChange">
    <el-table-column  type="selection" align="center"  />
 
-    <el-table-column label="下单时间" min-width="120px" prop="orderTime" align="center">
+    <el-table-column label="回款时间" min-width="100px" prop="payTime" align="center">
       <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'orderDetail')">{{ scope.row.orderTime }}</span>
+        <span class="link-type" @click="operation(scope.row,'retuenDetail')">{{ scope.row.payTime }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column label="负责人" min-width="70px" prop="employeeName" align="center">
+    <el-table-column label="回款金额" min-width="70px" prop="amount" align="center">
+      <template slot-scope="scope">
+        <span class="link-type" @click="operation(scope.row,'retuenDetail')">{{ scope.row.amount }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column min-width="100px" align="center" label="客户联系人[客户名称]" >
+      <template slot-scope="scope">
+        <span class="link-type" @click="operation(scope.row,'relation')">{{ scope.row.relationName}}</span>
+        <span class="link-type" @click="operation(scope.row,'customer')">[{{ scope.row.customerName}}]</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column min-width="150px" label="成交订单" prop="orderbaseMessage" align="center">
+      <template slot-scope="scope">
+         <span>{{scope.row.orderbaseMessage}}</span>
+      </template>
+      
+    </el-table-column>
+
+   <el-table-column align="center" label="支付方式" width="90px" prop="orderCost" >
+      <template slot-scope="scope">
+        <span class="link-type">{{ scope.row.paymentType }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column class-name="status-col" label="负责人姓名" min-width="100px" prop="employeeName" align="center">
       <template slot-scope="scope">
         <span class="link-type" @click="operation(scope.row,'employee')">{{ scope.row.employeeName }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column min-width="100px" align="center" label="客户联系人" prop="relationName" >
-      <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'relation')">{{ scope.row.relationName}}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column min-width="80px" label="成交总额" prop="orderActualTotal" align="center">
-       <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'orderProduct')">{{ scope.row.orderActualTotal }}</span>
-      </template>
-    </el-table-column>
-
-   <el-table-column align="center" label="总成本" width="90px" prop="orderCost" >
-      <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'orderProduct')">{{ scope.row.orderCost }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column class-name="status-col" label="创建时间" min-width="120px" prop="createTime" align="center">
-      <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.createTime }}</span>
-      </template>
-    </el-table-column>
-
   </el-table>
-  <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getOrder" />
+  <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getReturn" />
   
-  <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag" width="60%">
-    <orderDetail v-if="title=='orderProduct'" :Oid="Oid"></orderDetail>
+  <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag">
+    <orderDetail v-if="title=='returnDetail'" :Rid="Rid"></orderDetail>
     <search v-else-if="title=='search'" @updatelist="searchUpdate"></search>
-    <addUpdate v-else-if="title=='add'||title=='edit'" :edit="editFlag" :Oid="Oid" @setdialog="setDialogFlag" @seteditflag="setEditFlag" @updatelist="getOrder"></addUpdate>
+    <addUpdate v-else-if="title=='add'||title=='edit'" :edit="editFlag" :returnId="returnId" @setdialog="setDialogFlag" @seteditflag="setEditFlag" @updatelist="getReturn"></addUpdate>
     <relation v-else-if="title=='relation'" :Rid="Rid"></relation>
     <employee v-else-if="title=='employee'" :id="Eid"></employee>
   </el-dialog>
@@ -100,7 +102,7 @@
 </template>
 
 <script> 
-import {searchOrder,deleteOrder} from '@/api/order'
+import {getAllReturn,deleteReturn} from '@/api/return'
 import {getEmployeeAll} from '@/api/employee'
 import pagination from '@/components/Pagination'
 import show from '../../../public/customer/all-detail/index'
@@ -109,6 +111,7 @@ import search from '../search/index'
 import orderDetail from '../../../public/finance/order/order-detail'
 import relation from '../../../public/relation/relationById'
 import employee from '../../../public/employee/index'
+
 export default {
   components:{
     pagination,
@@ -149,7 +152,7 @@ export default {
       textMap:{
         search:'搜索',
         add:'新增订单信息',
-        orderProduct:'订单详情',
+        returnDetail:'订单详情',
         edit:'修改订单信息',
         relation:'联系人详情',
         employee:'负责人详情'
@@ -157,13 +160,14 @@ export default {
       employeeOptions:null,
       employeeFilter:null,
       selection:'所有成员',
-      orderList:null,
+      returnList:null,
       sortType:'',
       sortName:'',
       searchQuery:null,
       Oid:'',
       Eid:'',
       Rid:'',
+      returnId:'',
       multipleSelection:[],
       params:{},
       editFlag:false
@@ -173,18 +177,18 @@ export default {
     watchTab:{
       deep:true,
       handler:function(val){
-        this.getOrder()
+        this.getReturn()
       }
     },
     sortName(newVal){
       console.log("sortName")         
-        this.getOrder()
+        this.getReturn()
     },
     sortType(newVal){
-      this.getOrder()
+      this.getReturn()
     },
     selection(newVal){
-      this.getOrder()
+      this.getReturn()
     }
   },
    computed: {
@@ -194,7 +198,7 @@ export default {
    
   },
   created() {    
-    this.getOrder()
+    this.getReturn()
     this.getEmployee()
 
   },
@@ -234,14 +238,14 @@ export default {
     /**
      * 获取所有订单信息
      */
-    getOrder(){
+    getReturn(){
       //检查tab
       this.checkTab()
       this.$set(this.params,'pageNum',this.listQuery.page)
       this.$set(this.params,'pageSize',this.listQuery.size)
-      searchOrder(this.params).then(res=>{
+      getAllReturn(this.params).then(res=>{
         this.listLoading = false
-        this.orderList = res.data.list
+        this.returnList = res.data.list
         this.listQuery.total=res.data.total
       })
     },
@@ -327,6 +331,7 @@ export default {
       this.Rid=row.relationId
       this.Eid=row.employeeId
       this.showDialogFlag=true
+      this.returnId=row.id
     },
     /**
      * 设置dialog
@@ -343,7 +348,7 @@ export default {
       }
       console.log("search......")
       console.log(this.searchQuery)
-      this.getOrder()
+      this.getReturn()
       this.showDialogFlag=false
     },
     /**
@@ -390,7 +395,7 @@ export default {
      * 删除
      */
     deleteOrder(){
-       if(this.multipleSelection.length>0){
+        if(this.multipleSelection.length>0){
         console.log("选择")
         console.log(this.multipleSelection)
         this.$confirm('此操作将永久删除, 是否继续?', '提示', {
@@ -408,7 +413,7 @@ export default {
           })
           console.log("qeryyyyy")
           // console.log(order_base_id)
-          deleteOrder(order_base_id).then(res=>{
+          deleteReturn(order_base_id).then(res=>{
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -440,7 +445,7 @@ export default {
     searchUpdate(val){
        this.searchQuery=val
        this.showDialogFlag=false
-       this.getOrder()
+       this.getReturn()
     },
     /**
      * 设置editFlag
