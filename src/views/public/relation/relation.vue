@@ -1,9 +1,6 @@
 <template>
   <div>
     <div>
-      <el-button size="small" icon="el-icon-search" @click="handle('search')">
-            搜索
-      </el-button>
       <el-button  size="small"  icon="el-icon-delete">
             删除
       </el-button>

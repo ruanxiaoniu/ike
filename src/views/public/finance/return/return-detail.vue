@@ -26,9 +26,9 @@
   </div>
 </template>
 <script>
-import {orderById} from '@/api/order'
+import {orderById} from '@/api/return'
 export default {
-  props:['Oid'],
+  props:['Rid'],
   data() {
     return {
       params:{

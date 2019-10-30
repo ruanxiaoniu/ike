@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-table :data="orderList" border fit highlight-current-row style="width: 100%"  @selection-change="handleSelectionChange">
+    <el-table :data="orderList" border fit highlight-current-row style="width: 100%">
    <el-table-column  type="selection" align="center"  />
 
     <el-table-column label="下单时间" min-width="120px" prop="orderTime" align="center">
@@ -38,21 +38,27 @@
         <span class="link-type">{{ scope.row.createTime }}</span>
       </template>
     </el-table-column>
-    <template slot-scope="scope">
-      <el-button size="small" type="success" @click="chose(scope.row.id,scope.$index)">选择</el-button>
-    </template>
-    
+    <el-table-column>
+      <template slot-scope="scope">
+        <el-button size="small" type="success" @click="chose(scope.row.id,scope.$index)">选择</el-button>
+      </template>
+    </el-table-column>
   </el-table>
   <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getOrder" />
   </div>
 </template>
 <script>
 import {searchOrder,deleteOrder} from '@/api/order'
+import pagination from '@/components/Pagination'
 export default {
   props:['Cid'],
+  components:{
+    pagination
+  },
   data() {
     return {
       orderList:null,
+      loading:false,
        listQuery:{
         total:0,
         page:1,//跳转页码
@@ -70,6 +76,7 @@ export default {
 
   },
   created() {
+    console.log("成交订单？？？")
     this.getOrder()
   },
   methods: {
@@ -85,6 +92,8 @@ export default {
         this.listLoading = false
         this.orderList = res.data.list
         this.listQuery.total=res.data.total
+        console.log("成交了嘛")
+        console.log(this.orderList)
       })
     },
     /**

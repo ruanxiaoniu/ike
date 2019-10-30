@@ -17,12 +17,10 @@
           <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
         </el-option-group>
       </el-select>
-      <el-select v-model="sortName" placeholder="排序" style="width:200px" size="small">
+      <!-- <el-select v-model="sortName" placeholder="排序" style="width:200px" size="small">
         <el-option label="回款时间" value="ob.order_cost"></el-option>
         <el-option label="回款金额" value="ob.ob.order_actual_total"></el-option>
-        <!-- <el-option label="订单时间" value="ob.ob.order_time"></el-option>
-        <el-option label="订单成交总额" value="ob.order_total"></el-option> -->
-     </el-select>
+     </el-select> -->
      <el-select v-model="sortType" placeholder="排序方式" style="width:200px" size="small">
        <el-option label="降序" value="DESC"></el-option>
        <el-option label="升序" value="ASC"></el-option>
@@ -30,7 +28,7 @@
       <el-button size="small" icon="el-icon-search" @click="search('search')">
             搜索
       </el-button>
-      <el-button  size="small"  icon="el-icon-delete" @click="deleteReturn">
+      <el-button  size="small"  icon="el-icon-delete" @click="deleteOrder">
             删除
       </el-button>
       <el-button :loading="downloadLoading" size="small" icon="el-icon-plus" @click="addOrder(false,'add')" >
@@ -47,41 +45,34 @@
       </el-button>
     </div>
     <p></p>
-  <el-table :data="returnList" border fit highlight-current-row style="width: 100%"  @selection-change="handleSelectionChange">
+  <el-table :data="refundList" border fit highlight-current-row style="width: 100%"  @selection-change="handleSelectionChange">
    <el-table-column  type="selection" align="center"  />
 
-    <el-table-column label="回款时间" min-width="100px" prop="payTime" align="center">
+    <el-table-column label="退款时间" min-width="100px" prop="refundDate" align="center">
       <template slot-scope="scope">
-        <span>{{ scope.row.payTime }}</span>
+        <span class="link-type" @click="operation(scope.row,'refundDetail')">{{ scope.row.refundDate }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column label="回款金额" min-width="70px" prop="amount" align="center">
+    <el-table-column label="退款金额" min-width="70px" prop="refundAmount" align="center">
       <template slot-scope="scope">
-        <span>{{ scope.row.amount }}</span>
+        <span class="link-type" @click="operation(scope.row,'refundDetail')">{{ scope.row.refundAmount }}</span>
       </template>
     </el-table-column>
 
     <el-table-column min-width="100px" align="center" label="客户联系人[客户名称]" >
       <template slot-scope="scope">
         <span class="link-type" @click="operation(scope.row,'relation')">{{ scope.row.relationName}}</span>
-        <span class="link-type" @click="operation(scope.row,'customer')">[{{ scope.row.customerName}}]</span>
+        <!-- <span class="link-type" @click="operation(scope.row,'customer')">[{{ scope.row.customerName}}]</span> -->
       </template>
     </el-table-column>
 
-    <el-table-column min-width="150px" label="成交订单" prop="orderbaseMessage" align="center">
+    <el-table-column min-width="150px" label="成交订单" prop="orderBaseMessages" align="center">
       <template slot-scope="scope">
-         <span>{{scope.row.orderbaseMessage}}</span>
+         <span>{{scope.row.orderBaseMessages}}</span>
       </template>
       
     </el-table-column>
-
-   <el-table-column align="center" label="支付方式" width="90px" prop="orderCost" >
-      <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.paymentType }}</span>
-      </template>
-    </el-table-column>
-
     <el-table-column class-name="status-col" label="负责人姓名" min-width="100px" prop="employeeName" align="center">
       <template slot-scope="scope">
         <span class="link-type" @click="operation(scope.row,'employee')">{{ scope.row.employeeName }}</span>
@@ -89,12 +80,12 @@
     </el-table-column>
 
   </el-table>
-  <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getReturn" />
+  <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getRefund" />
   
   <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag" append-to-body>
-    <!-- <orderDetail v-if="title=='returnDetail'" :Rid="Rid"></orderDetail> -->
-    <search v-if="title=='search'" @updatelist="searchUpdate"></search>
-    <addUpdate v-else-if="title=='add'||title=='edit'" :edit="editFlag" :returnId="returnId" @setdialog="setDialogFlag" @seteditflag="setEditFlag" @updatelist="getReturn"></addUpdate>
+    <refundDetail v-if="title=='refundDetail'" :Rid="refundId"></refundDetail>
+    <search v-else-if="title=='search'" @updatelist="searchUpdate"></search>
+    <addUpdate v-else-if="title=='add'||title=='edit'" :edit="editFlag" :refundId="refundId" @setdialog="setDialogFlag" @seteditflag="setEditFlag" @updatelist="getRefund"></addUpdate>
     <relation v-else-if="title=='relation'" :Rid="Rid"></relation>
     <employee v-else-if="title=='employee'" :id="Eid"></employee>
   </el-dialog>
@@ -102,13 +93,13 @@
 </template>
 
 <script> 
-import {getAllReturn,deleteReturn} from '@/api/return'
+import {getAllRefund,deleteReturn} from '@/api/refund'
 import {getEmployeeAll} from '@/api/employee'
 import pagination from '@/components/Pagination'
 import show from '../../../public/customer/all-detail/index'
 import addUpdate from '../add-update/index'
 import search from '../search/index'
-import orderDetail from '../../../public/finance/return/return-detail'
+import refundDetail from '../../../public/finance/refund/refund-detail'
 import relation from '../../../public/relation/relationById'
 import employee from '../../../public/employee/index'
 
@@ -117,7 +108,7 @@ export default {
     pagination,
     show,
     search,
-    orderDetail,
+    refundDetail,
     addUpdate,
     relation,
     employee
@@ -152,7 +143,7 @@ export default {
       textMap:{
         search:'搜索',
         add:'新增回款信息',
-        returnDetail:'回款详情',
+        refundDetail:'退款详情',
         edit:'修改订单信息',
         relation:'联系人详情',
         employee:'负责人详情'
@@ -160,14 +151,14 @@ export default {
       employeeOptions:null,
       employeeFilter:null,
       selection:'所有成员',
-      returnList:null,
+      refundList:null,
       sortType:'',
       sortName:'',
       searchQuery:null,
       Oid:'',
       Eid:'',
       Rid:'',
-      returnId:'',
+      refundId:'',
       multipleSelection:[],
       params:{},
       editFlag:false
@@ -177,18 +168,18 @@ export default {
     watchTab:{
       deep:true,
       handler:function(val){
-        this.getReturn()
+        this.getRefund()
       }
     },
-    sortName(newVal){
-      console.log("sortName")         
-        this.getReturn()
-    },
+    // sortName(newVal){
+    //   console.log("sortName")         
+    //     this.getRefund()
+    // },
     sortType(newVal){
-      this.getReturn()
+      this.getRefund()
     },
     selection(newVal){
-      this.getReturn()
+      this.getRefund()
     }
   },
    computed: {
@@ -198,7 +189,7 @@ export default {
    
   },
   created() {    
-    this.getReturn()
+    this.getRefund()
     this.getEmployee()
 
   },
@@ -238,14 +229,14 @@ export default {
     /**
      * 获取所有订单信息
      */
-    getReturn(){
+    getRefund(){
       //检查tab
       this.checkTab()
       this.$set(this.params,'pageNum',this.listQuery.page)
       this.$set(this.params,'pageSize',this.listQuery.size)
-      getAllReturn(this.params).then(res=>{
+      getAllRefund(this.params).then(res=>{
         this.listLoading = false
-        this.returnList = res.data.list
+        this.refundList = res.data.list
         this.listQuery.total=res.data.total
       })
     },
@@ -277,21 +268,21 @@ export default {
           if(this.searchQuery){
               this.params=this.searchQuery
           }
-          this.$set(this.params,'isYesterday','true')
+          this.$set(this.params,'yesterday','true')
           console.log(this.params)
         }else if(tab=='this_month'){
            this.clearParams()
           if(this.searchQuery){
               this.params=this.searchQuery
           }
-          this.$set(this.params,'isThisMonth','true')
+          this.$set(this.params,'isMouth','true')
           console.log(this.params)
         }else if(tab=='last_month'){
            this.clearParams()
           if(this.searchQuery){
               this.params=this.searchQuery
           }
-          this.$set(this.params,'isLastMonth','true')
+          this.$set(this.params,'preMouth','true')
           console.log(this.params)
         }else{
            this.clearParams()
@@ -316,15 +307,14 @@ export default {
      * 点击进行操作
      */
     operation(row,title){
-      if(title=='customer'){
-        this.$router.push({name:'CustomerDetail',query:{customerId:row.customerId,customerName:row.customerName}})
-      }
+     
       this.title=title
       console.log("row")
       console.log(row.id)
+
       this.Rid=row.relationId
       this.Eid=row.employeeId
-      this.returnId=row.id
+      this.refundId=row.id
       this.showDialogFlag=true
       this.editFlag=true
      
@@ -345,7 +335,7 @@ export default {
       }
       console.log("search......")
       console.log(this.searchQuery)
-      this.getReturn()
+      this.getRefund()
       this.showDialogFlag=false
     },
     /**
@@ -377,7 +367,7 @@ export default {
         this.editFlag=flag
         this.title=title
         this.showDialogFlag=true
-        this.returnId=this.multipleSelection[0].id
+        this.refundId=this.multipleSelection[0].id
       }
     },
      /**
@@ -391,7 +381,7 @@ export default {
     /**
      * 删除
      */
-    deleteReturn(){
+    deleteOrder(){
         if(this.multipleSelection.length>0){
         console.log("选择")
         console.log(this.multipleSelection)
@@ -400,16 +390,22 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let returnDetailId=[]
+          let order_base_id=[]
+          // let query={
+          //   order_base_id:[]
+          // }
           this.multipleSelection.forEach(item=>{
-            returnDetailId.push(item.id)
+            // this.$set(query,'id',item.id)
+            order_base_id.push(item.id)
           })
-          deleteReturn(returnDetailId).then(res=>{
+          console.log("qeryyyyy")
+          // console.log(order_base_id)
+          deleteReturn(order_base_id).then(res=>{
             this.$message({
               type: 'success',
               message: '删除成功!'
             });
-            this.getAllReturn()
+            this.getOrder()
           }).catch(err=>{
             this.$message({
               type: 'error',
@@ -436,7 +432,7 @@ export default {
     searchUpdate(val){
        this.searchQuery=val
        this.showDialogFlag=false
-       this.getReturn()
+       this.getRefund()
     },
     /**
      * 设置editFlag

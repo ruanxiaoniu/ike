@@ -142,6 +142,14 @@
     </el-row>
     
     <el-row>
+      <!-- <el-col :span="12">
+        <el-form-item label="下单时间：">
+          <el-date-picker
+                v-model="orderList.orderTimeStr"
+                type="datetime"
+                placeholder="选择下单时间"/>
+        </el-form-item>
+      </el-col> -->
       <el-col :span="12">
         <el-form-item label="备注：">
           <el-input type="textarea" v-model="orderList.note"></el-input>
@@ -177,11 +185,13 @@ export default {
           orderNum:0,
           orderActualTotal:'',
           productId:'',
+          productName:''
         }
       ],
       loading:false,
       Cid:'',
        orderList:{
+         id:'',
          employeeId:'',
          relationId:'',
          productClassId:'',
@@ -190,7 +200,7 @@ export default {
          orderActualTotal:'',
          orderCost:0,
          orderState:'',
-         orderTime:'',
+         orderTimeStr:'',
          paymentMethod:'',
          orderProductVoList:[]
        },
@@ -233,7 +243,7 @@ export default {
       console.log("nnnnnnn")
       console.log(newVal)
       this.editQuery={
-        id:newVal
+        orderBaseId:newVal
       }
       console.log(this.editQuery)
       this.getOrderById()
@@ -267,8 +277,8 @@ export default {
         let TotalPrice=0
         // console.log("计算啦1")
         this.productList.forEach((item,index)=>{
-          this.orderList.orderTotal=this.orderList.orderTotal+item.orderActualTotal
-          this.orderList.orderCost=this.orderList.orderCost+item.cost
+          this.orderList.orderTotal=parseInt(this.orderList.orderTotal)+parseInt(item.orderActualTotal) 
+          this.orderList.orderCost=parseInt(this.orderList.orderCost)+parseInt(item.cost) 
           // console.log("计算啦2")
           console.log(this.orderList.orderTotal)
         })
@@ -318,7 +328,7 @@ export default {
         console.log(this.edit)
         this.editFlag=this.edit
         this.editQuery={
-          id:this.Oid
+          orderBaseId:this.Oid
         }
         this.getOrderById()
     }
@@ -332,17 +342,31 @@ export default {
      */
      getOrderById(){
        if(this.edit){
-          this.Parr=[]
+          this.productList=[]
           console.log("search")
           console.log(this.editQuery)
           orderById(this.editQuery).then(res=>{
-            this.orderList=res.data.productExtVO
-            this.Parr.push(res.data.productExtVO.productClassId)
-            // this.orderList.productClassId=res.data.productExtVO.productClassName
-            this.fileList=res.data.productPicFile
-            this.TextFile=res.data.productTextFile
-            console.log("edddddd")
-            console.log(this.Parr)
+            this.orderList.relationId=res.data.relationId
+            this.orderList.orderActualTotal=res.data.orderActualTotal
+            this.orderList.note=res.data.note
+            this.orderList.customerId=res.data.customerId
+            this.orderList.orderTimeStr=res.data.orderTime
+            this.orderList.id=res.data.id
+            res.data.orderProductVoList.forEach((item,index)=>{
+              let product={
+                            cost:item.saleCost,
+                            salePrice:item.salePrice,
+                            orderNum:item.orderCount,
+                            orderActualTotal:item.totalPrice,
+                            productName:item.productName,
+                            productId:item.productId,
+                          }
+              this.productList.push(product)
+            })
+            console.log("product")
+            console.log(res.data.orderProductVoList)
+            console.log(this.orderList)
+            console.log(this.productList)
           }).catch(err=>{
           })
        }
@@ -528,7 +552,6 @@ export default {
               orderActualTotal:'',
               orderCost:0,
               orderState:'',
-              orderTime:'',
               paymentMethod:'',
               orderProductVoList:[]
             }
@@ -558,28 +581,47 @@ export default {
        */
        this.$refs[formName].validate(valid=>{
          if(valid){
-            let l=this.Parr.length
-            // let l=this.orderList.productClassId.length-1
-            if(l>0){
-              this.orderList.productClassId=this.Parr[l-1]
-            } 
-            console.log("salllll")
-            console.log(this.orderList.productClassId)  
-            this.$set(this.orderList,'Piclists',this.fileList)
-            this.$set(this.orderList,'Textlists',this.TextFile)
-            // let product={
-            //   product:this.orderList,
-            // }
-            console.log("xiugai xiuagi a")
-            // console.log(product)
-            updateOrder(this.orderList).then(res=>{
-              this.$message.success('修改成功！')
-              this.$emit('setdialog')
-              this.$emit('seteditflag')
-              this.$emit('updatelist')
-            }).catch(err=>{
-              this.$message.error('修改失败，请重试！')
+             this.productList.forEach((item,index)=>{
+             let ele={
+              productId:item.productId,
+              orderCount:item.orderNum
+             }
+             this.orderList.orderProductVoList.push(ele)
             })
+            this.orderList.orderTimeStr=moment(this.orderList.orderTimeStr).format('YYYY-MM-DD')
+            console.log("prrpprprp")
+            console.log(this.orderList)
+            updateOrder(this.orderList).then(res=>{
+                this.$message.success('修改成功！')
+                this.$emit('setdialog')
+                this.$emit('seteditflag')
+                this.$emit('updatelist')
+                this.orderList={
+                  employeeId:'',
+                  relationId:'',
+                  productClassId:'',
+                  note:'',
+                  orderTotal:0,
+                  orderActualTotal:'',
+                  orderCost:0,
+                  orderState:'',
+                  paymentMethod:'',
+                  orderProductVoList:[]
+                }
+                this.productList=[
+                    {
+                    cost:'',
+                    salePrice:'',
+                    orderNum:0,
+                    orderActualTotal:'',
+                    productId:'',
+                    }
+                ]
+                }).catch(err=>{
+                  console.log("出错了")
+                  console.log(err)
+                  this.$message.error('修改失败，请重试！')
+                })
          }else{
            return false
          }

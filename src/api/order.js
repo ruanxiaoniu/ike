@@ -50,6 +50,8 @@ export function batchToRead(params){
 
 //修改某个订单信息
 export function updateOrder(params){
+  console.log("params")
+  console.log(params)
   return request({
     url: '/json/orderBase/updateOrderWithProduct',
     method: 'put',
