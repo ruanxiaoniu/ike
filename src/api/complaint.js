@@ -40,3 +40,28 @@ export function batchDelete(params){
     data :  params
   })
 }
+
+//修改投诉记录
+export function updateComplaint(params){
+  return request({
+    url:'/complaint/update',
+    method:'put',
+    params,
+  })
+}
+
+//根据投诉id获取投诉记录
+export function getComplaintById(id){
+  return request({
+    url:`/complaint/getById?id=${id}`,
+    method:'get',
+  })
+}
+
+//根据投诉id获取投诉处理记录
+export function getHandlesById(complaintId){
+  return request({
+    url:`/complaint/handle/listByComplaintId?complaintId=${complaintId}`,
+    method:'get',
+  })
+}

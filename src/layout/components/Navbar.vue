@@ -7,8 +7,8 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+          <img src="https://ike-crm.oss-cn-shenzhen.aliyuncs.com/Snipaste_2019-08-21_16-16-14.jpg" class="user-avatar">
+          <i class="el-icon-caret-bottom"></i>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
@@ -35,6 +35,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import {logout} from '@/api/user'
 
 export default {
   components: {
@@ -53,7 +54,7 @@ export default {
     },
     async logout() {
       await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$router.push('/login?redirect=${this.$route.fullPath}')
     }
   }
 }

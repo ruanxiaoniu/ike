@@ -1,14 +1,14 @@
 <template>
   <div>
       <el-form  ref="customer" :rules="rules" :model="customer" label-position="left" label-width="150px" style="width: 500px; margin-left:50px;">
-        <el-form-item label="负责人" prop="customer_name">
+        <el-form-item label="负责人" prop="chargerName">
           <el-row>
             <el-col span="18">
-              <el-input v-model="customer.customer_name"></el-input>
+              <el-input v-model="customer.chargerName"></el-input>
             </el-col>
-          </el-row> 
+          </el-row>
         </el-form-item>
-        <el-form-item label="客户名称" prop="customer_stage">
+        <el-form-item label="客户名称" prop="customerStage">
           <el-row>
             <el-col span="18">
               <el-input v-model="customer.customer_stage"></el-input>
@@ -33,7 +33,7 @@
             <el-col span="18">
               <el-input v-model="customer.customer_stage"></el-input>
             </el-col>
-          </el-row> 
+          </el-row>
         </el-form-item>
         <el-form-item label="客户联系方式" prop="customer_origin">
           <el-input v-model="customer.customer_level"></el-input>
@@ -43,14 +43,14 @@
             <el-col span="18">
               <el-input v-model="customer.customer_stage"></el-input>
             </el-col>
-          </el-row> 
+          </el-row>
         </el-form-item>
          <el-form-item label="投诉内容" prop="customer_address">
             <el-row>
             <el-col span="18">
               <el-input type="textarea" v-model="customer.customer_stage"></el-input>
             </el-col>
-          </el-row> 
+          </el-row>
         </el-form-item>
       </el-form>
 
@@ -108,15 +108,6 @@ export default {
         complaint_type:'',
         complaint_method:'',
         urge:'',
-      },
-      return_refund:{
-        return_total:'',
-        own_total:'',
-        return_total:'',
-        return_count:'',
-        end_time:'',
-        end_total:'',
-        return_total:'',
       }
     }
   },
