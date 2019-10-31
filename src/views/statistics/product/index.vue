@@ -1,5 +1,5 @@
 <template>
-  <div>
-    产品统计
+  <div style="">
+      <router-view />
   </div>
 </template>

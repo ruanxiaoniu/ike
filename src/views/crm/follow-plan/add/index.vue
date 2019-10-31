@@ -2,7 +2,7 @@
   <div>
       <el-form  ref="followPlan" :rules="rules" :model="followPlan" label-position="left" label-width="150px" style="width: 500px; margin-left:50px;">
         <el-form-item label="客户" prop="customerId">
-           <el-row>
+          <el-row>
           <el-col span="18">
             <!-- 可进行远程搜索 -->
             <el-select

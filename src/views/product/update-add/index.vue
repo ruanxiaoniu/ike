@@ -318,9 +318,6 @@ export default {
           if(this.productList.productClassId.length>0){
             this.productList.productClassId=this.productList.productClassId[l]
           }
-          // if(this.productList.ttm){
-          //   this.productList.ttm=moment(this.productList.ttm).format('YYYY-MM-DD HH:MM:SS')
-          // }
           console.log("prrpprprp")
           console.log(this.productList.productClassId)
           /**

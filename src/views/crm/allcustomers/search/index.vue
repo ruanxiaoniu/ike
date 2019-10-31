@@ -91,16 +91,16 @@
         </el-form-item> 
       <div class="top">投诉信息</div><p></p>
         <el-form-item label="投诉次数" > 
-            <el-row>
+          <el-row>
             <el-col span="11">
-            <el-input v-model="searchQuery.complainMinCount"></el-input>
-          </el-col>
-          <el-col span="2">
-            <span>&nbsp;&nbsp;至</span>
-          </el-col>
-           <el-col span="11">
-            <el-input v-model="searchQuery.complainMaxCount"></el-input>
-          </el-col>
+              <el-input v-model="searchQuery.complainMinCount"></el-input>
+            </el-col>
+            <el-col span="2">
+              <span>&nbsp;&nbsp;至</span>
+            </el-col>
+            <el-col span="11">
+              <el-input v-model="searchQuery.complainMaxCount"></el-input>
+            </el-col>
           </el-row>
         </el-form-item>
       </el-form>

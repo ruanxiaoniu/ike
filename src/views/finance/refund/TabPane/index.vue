@@ -1,6 +1,6 @@
 <template>
 <div>
-   <div style="margin-top:10px">
+   <div>
       <el-select 
         size="small" 
         v-model="selection" 
@@ -17,13 +17,11 @@
           <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
         </el-option-group>
       </el-select>
-      <el-select v-model="sortName" placeholder="排序" style="width:200px">
-        <el-option label="订单总成本" value="orderCost"></el-option>
-        <el-option label="订单成交总额" value="orderTotal"></el-option>
-        <el-option label="订单实际成交总额" value="orderActualTotal"></el-option>
-        <el-option label="订单时间" value="orderTime"></el-option>
-     </el-select>
-     <el-select v-model="sortType" placeholder="排序方式" style="width:200px">
+      <!-- <el-select v-model="sortName" placeholder="排序" style="width:200px" size="small">
+        <el-option label="回款时间" value="ob.order_cost"></el-option>
+        <el-option label="回款金额" value="ob.ob.order_actual_total"></el-option>
+     </el-select> -->
+     <el-select v-model="sortType" placeholder="排序方式" style="width:200px" size="small">
        <el-option label="降序" value="DESC"></el-option>
        <el-option label="升序" value="ASC"></el-option>
      </el-select>
@@ -47,52 +45,47 @@
       </el-button>
     </div>
     <p></p>
-  <el-table :data="orderList" border fit highlight-current-row style="width: 100%"  @selection-change="handleSelectionChange">
+  <el-table :data="refundList" border fit highlight-current-row style="width: 100%"  @selection-change="handleSelectionChange">
    <el-table-column  type="selection" align="center"  />
 
-    <el-table-column label="下单时间" min-width="120px" prop="orderTime" align="center">
+    <el-table-column label="退款时间" min-width="100px" prop="refundDate" align="center">
       <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'orderDetail')">{{ scope.row.orderTime }}</span>
+        <span class="link-type" @click="operation(scope.row,'refundDetail')">{{ scope.row.refundDate }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column label="负责人" min-width="70px" prop="employeeName" align="center">
+    <el-table-column label="退款金额" min-width="70px" prop="refundAmount" align="center">
+      <template slot-scope="scope">
+        <span class="link-type" @click="operation(scope.row,'refundDetail')">{{ scope.row.refundAmount }}</span>
+      </template>
+    </el-table-column>
+
+    <el-table-column min-width="100px" align="center" label="客户联系人[客户名称]" >
+      <template slot-scope="scope">
+        <span class="link-type" @click="operation(scope.row,'relation')">{{ scope.row.relationName}}</span>
+        <!-- <span class="link-type" @click="operation(scope.row,'customer')">[{{ scope.row.customerName}}]</span> -->
+      </template>
+    </el-table-column>
+
+    <el-table-column min-width="150px" label="成交订单" prop="orderBaseMessages" align="center">
+      <template slot-scope="scope">
+         <span>{{scope.row.orderBaseMessages}}</span>
+      </template>
+      
+    </el-table-column>
+    <el-table-column class-name="status-col" label="负责人姓名" min-width="100px" prop="employeeName" align="center">
       <template slot-scope="scope">
         <span class="link-type" @click="operation(scope.row,'employee')">{{ scope.row.employeeName }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column min-width="100px" align="center" label="客户联系人" prop="relationName" >
-      <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'relation')">{{ scope.row.relationName}}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column min-width="80px" label="成交总额" prop="orderActualTotal" align="center">
-       <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'orderProduct')">{{ scope.row.orderActualTotal }}</span>
-      </template>
-    </el-table-column>
-
-   <el-table-column align="center" label="总成本" width="90px" prop="orderCost" >
-      <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'orderProduct')">{{ scope.row.orderCost }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column class-name="status-col" label="创建时间" min-width="120px" prop="createTime" align="center">
-      <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.createTime }}</span>
-      </template>
-    </el-table-column>
-
   </el-table>
-  <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getOrder" />
+  <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getRefund" />
   
-  <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag" width="60%">
-    <orderDetail v-if="title=='orderProduct'" :Oid="Oid"></orderDetail>
+  <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag" append-to-body>
+    <refundDetail v-if="title=='refundDetail'" :Rid="refundId"></refundDetail>
     <search v-else-if="title=='search'" @updatelist="searchUpdate"></search>
-    <addUpdate v-else-if="title=='add'||title=='edit'" :edit="editFlag" :Oid="Oid" @setdialog="setDialogFlag" @seteditflag="setEditFlag" @updatelist="getOrder"></addUpdate>
+    <addUpdate v-else-if="title=='add'||title=='edit'" :edit="editFlag" :refundId="refundId" @setdialog="setDialogFlag" @seteditflag="setEditFlag" @updatelist="getRefund"></addUpdate>
     <relation v-else-if="title=='relation'" :Rid="Rid"></relation>
     <employee v-else-if="title=='employee'" :id="Eid"></employee>
   </el-dialog>
@@ -100,21 +93,22 @@
 </template>
 
 <script> 
-import {searchOrder,deleteOrder} from '@/api/order'
+import {getAllRefund,deleteReturn} from '@/api/refund'
 import {getEmployeeAll} from '@/api/employee'
 import pagination from '@/components/Pagination'
 import show from '../../../public/customer/all-detail/index'
 import addUpdate from '../add-update/index'
 import search from '../search/index'
-import orderDetail from '../../../public/finance/order/order-detail'
+import refundDetail from '../../../public/finance/refund/refund-detail'
 import relation from '../../../public/relation/relationById'
 import employee from '../../../public/employee/index'
+
 export default {
   components:{
     pagination,
     show,
     search,
-    orderDetail,
+    refundDetail,
     addUpdate,
     relation,
     employee
@@ -148,8 +142,8 @@ export default {
       loading: false,
       textMap:{
         search:'搜索',
-        add:'新增订单信息',
-        orderProduct:'订单详情',
+        add:'新增回款信息',
+        refundDetail:'退款详情',
         edit:'修改订单信息',
         relation:'联系人详情',
         employee:'负责人详情'
@@ -157,13 +151,14 @@ export default {
       employeeOptions:null,
       employeeFilter:null,
       selection:'所有成员',
-      orderList:null,
+      refundList:null,
       sortType:'',
       sortName:'',
       searchQuery:null,
       Oid:'',
       Eid:'',
       Rid:'',
+      refundId:'',
       multipleSelection:[],
       params:{},
       editFlag:false
@@ -173,18 +168,18 @@ export default {
     watchTab:{
       deep:true,
       handler:function(val){
-        this.getOrder()
+        this.getRefund()
       }
     },
-    sortName(newVal){
-      console.log("sortName")         
-        this.getOrder()
-    },
+    // sortName(newVal){
+    //   console.log("sortName")         
+    //     this.getRefund()
+    // },
     sortType(newVal){
-      this.getOrder()
+      this.getRefund()
     },
     selection(newVal){
-      this.getOrder()
+      this.getRefund()
     }
   },
    computed: {
@@ -194,7 +189,7 @@ export default {
    
   },
   created() {    
-    this.getOrder()
+    this.getRefund()
     this.getEmployee()
 
   },
@@ -234,14 +229,14 @@ export default {
     /**
      * 获取所有订单信息
      */
-    getOrder(){
+    getRefund(){
       //检查tab
       this.checkTab()
       this.$set(this.params,'pageNum',this.listQuery.page)
       this.$set(this.params,'pageSize',this.listQuery.size)
-      searchOrder(this.params).then(res=>{
+      getAllRefund(this.params).then(res=>{
         this.listLoading = false
-        this.orderList = res.data.list
+        this.refundList = res.data.list
         this.listQuery.total=res.data.total
       })
     },
@@ -259,43 +254,36 @@ export default {
      */
     checkTab(){
         const tab=this.$route.query.tab
-        if(tab=='unpaid'){
+        if(tab=='today'){
           this.clearParams()
           console.log("不是清空了？")
           console.log(this.params)
           if(this.searchQuery){
               this.params=this.searchQuery
           }
-          this.$set(this.params,'orderState',0)
+          this.$set(this.params,'isToday','true')
 
-        }else if(tab=='paid'){
+        }else if(tab=='yestoday'){
            this.clearParams()
           if(this.searchQuery){
               this.params=this.searchQuery
           }
-          this.$set(this.params,'orderState',1)
+          this.$set(this.params,'yesterday','true')
           console.log(this.params)
-        }else if(tab=='returning'){
+        }else if(tab=='this_month'){
            this.clearParams()
           if(this.searchQuery){
               this.params=this.searchQuery
           }
-          this.$set(this.params,'orderState',2)
+          this.$set(this.params,'isMouth','true')
           console.log(this.params)
-        }else if(tab=='refunding'){
+        }else if(tab=='last_month'){
            this.clearParams()
           if(this.searchQuery){
-             
               this.params=this.searchQuery
           }
-          this.$set(this.params,'orderState',3)
+          this.$set(this.params,'preMouth','true')
           console.log(this.params)
-        }else if(tab=='refunded'){
-           this.clearParams()
-          if(this.searchQuery){
-              this.params=this.searchQuery
-          }
-          this.$set(this.params,'orderState',4)
         }else{
            this.clearParams()
           if(this.searchQuery){
@@ -321,18 +309,22 @@ export default {
     operation(row,title){
      
       this.title=title
-      this.Oid=row.id
       console.log("row")
       console.log(row.id)
+
       this.Rid=row.relationId
       this.Eid=row.employeeId
+      this.refundId=row.id
       this.showDialogFlag=true
+      this.editFlag=true
+     
     },
     /**
      * 设置dialog
      */
     setDialogFlag(){
       this.showDialogFlag=false
+      this.editFlag=false
     },
     /**
      * 更新列表
@@ -343,7 +335,7 @@ export default {
       }
       console.log("search......")
       console.log(this.searchQuery)
-      this.getOrder()
+      this.getRefund()
       this.showDialogFlag=false
     },
     /**
@@ -375,7 +367,7 @@ export default {
         this.editFlag=flag
         this.title=title
         this.showDialogFlag=true
-        this.Oid=this.multipleSelection[0].id
+        this.refundId=this.multipleSelection[0].id
       }
     },
      /**
@@ -390,7 +382,7 @@ export default {
      * 删除
      */
     deleteOrder(){
-       if(this.multipleSelection.length>0){
+        if(this.multipleSelection.length>0){
         console.log("选择")
         console.log(this.multipleSelection)
         this.$confirm('此操作将永久删除, 是否继续?', '提示', {
@@ -408,7 +400,7 @@ export default {
           })
           console.log("qeryyyyy")
           // console.log(order_base_id)
-          deleteOrder(order_base_id).then(res=>{
+          deleteReturn(order_base_id).then(res=>{
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -440,7 +432,7 @@ export default {
     searchUpdate(val){
        this.searchQuery=val
        this.showDialogFlag=false
-       this.getOrder()
+       this.getRefund()
     },
     /**
      * 设置editFlag

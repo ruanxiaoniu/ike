@@ -178,7 +178,8 @@ export default {
       
     }
   },
-  created() {    
+  created() {   
+    this.$store.dispatch('customer/setupdateDialogVisible',false)  
     console.log("刷新了吗？")
     this.getMyList()
   },

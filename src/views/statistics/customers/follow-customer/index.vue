@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import tabPane from './TabPane/index'
+import tabPane from './TabPand/index'
 
 export default {
   name: 'Tab',
@@ -19,14 +19,11 @@ export default {
   data() {
     return {
       tabMapOptions: [
-        { label: '全部', key: 'all' },
-        { label: '未付款', key: 'unpaid' },
-        { label: '已付款', key: 'paid' },
-        { label: '回款中', key: 'returning' },
-        { label: '退款中', key: 'refunding' },
-        { label: '退款完成', key: 'refunded' }
+        { label: '按年统计', key: 'year' },
+        { label: '按月统计', key: 'month' },
+        { label: '按日统计', key: 'day' },
       ],
-      activeName: 'all',
+      activeName: 'year',
     }
   },
   watch: {
@@ -40,7 +37,7 @@ export default {
     if (tab) {
       this.activeName = tab
     }
-    this.$store.dispatch('customer/setmodelType','allCustomer')
+    // this.$store.dispatch('customer/setmodelType','allCustomer')
   },
   methods: {
     showCreatedTimes() {

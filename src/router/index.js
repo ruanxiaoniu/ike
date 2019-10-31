@@ -179,12 +179,12 @@ export const constantRoutes = [
         name: 'Payback',
         meta: { title: '回款管理' }
       },
-      {
-        path: 'plan',
-        component: () => import('@/views/finance/plan/index'),
-        name: 'Plan',
-        meta: { title: '回款计划' }
-      },
+      // {
+      //   path: 'plan',
+      //   component: () => import('@/views/finance/plan/index'),
+      //   name: 'Plan',
+      //   meta: { title: '回款计划' }
+      // },
       {
         path: 'refund',
         component: () => import('@/views/finance/refund/index'),
@@ -267,19 +267,53 @@ export const constantRoutes = [
         path:'customer',
         name:'Customer',
         component:()=>import('@/views/statistics/customers/index'),
-        meta:{title:'客户'},
+        meta:{title:'客户统计'},
+        children:[
+          {
+            path:'add',
+            name:'add',
+            component:()=>import('@/views/statistics/customers/add/index'),
+            meta:{title:'按时间统计新增客户'},
+          },
+          {
+            path:'followCustomer',
+            name:'FollowCustomer',
+            component:()=>import('@/views/statistics/customers/follow-customer/index'),
+            meta:{title:'按时间统计跟进客户数'},
+          },
+          {
+            path:'followRecords',
+            name:'FollowRecords',
+            component:()=>import('@/views/statistics/customers/follow-records/index'),
+            meta:{title:'按时间统计跟进记录数'},
+          }
+        ]
       },
       {
         path:'order',
         name:'Order',
         component:()=>import('@/views/statistics/order/index'),
-        meta:{title:'订单'},
+        meta:{title:'订单统计'},
       },
       {
         path:'product',
         name:'Product',
         component:()=>import('@/views/statistics/product/index'),
-        meta:{title:'产品'},
+        meta:{title:'产品统计'},
+        children:[
+          {
+            path:'productClass',
+            name:'ProductClass',
+            component:()=>import('@/views/statistics/product/productClass/index'),
+            meta:{title:'产品分类统计'},
+          },
+          {
+            path:'productName',
+            name:'ProductName',
+            component:()=>import('@/views/statistics/product/productName/index'),
+            meta:{title:'产品名统计'},
+          }
+        ]
       },
     ]
 
