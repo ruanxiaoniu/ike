@@ -24,13 +24,21 @@
 import moment from 'moment'
 import {stageLog} from '@/api/customer'
 export default {
+  props:['Cid'],
   data() {
     return {
-      logList:null
+      logList:null,
+      params:{
+        Cid:''
+      }
     }
   },
   created() {
-    this.getstageLog()
+    if(this.Cid){
+      this.params.Cid=this.Cid
+      this.getstageLog()
+    }
+    
   },
   filters:{
      formatDate(time){
@@ -39,11 +47,11 @@ export default {
   },
   methods:{
     getstageLog(){
-      const params={
-        Cid:this.$store.getters.customerRowList.id,
-        pageNum:1,
-        pageSize:10
-      }
+      // const params={
+      //   Cid:this.$store.getters.customerRowList.id,
+      //   pageNum:1,
+      //   pageSize:10
+      // }
       stageLog(params).then(res=>{
          this.logList=res.data.records
          console.log("logList")

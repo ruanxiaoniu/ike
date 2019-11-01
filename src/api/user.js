@@ -6,7 +6,7 @@ export function login(data) {
   //   method: 'post',
   //   data
   // })
-  console.log(data.username+"===="+data.password)
+  console.log(data)
 
   return request({
     url: `/Authen/login?name=${data.username}&pwd=${data.password}`,
@@ -14,10 +14,9 @@ export function login(data) {
     // data:JSON.stringify(data)
   })
 }
-
 export function getInfo(token) {
   return request({
-    url: '/user/info',
+    url: '/Authen/getUserInfo',
     method: 'get',
     params: { token }
   })
@@ -51,5 +50,31 @@ export function  findPwd(data) {
   return request({
     url: `/Authen/findPwd?newPwd=${data}`,
     method: 'put'
+  })
+}
+//个人信息
+export function getPerson(params){
+  return request({
+    url: '/json/user/getDetail',
+    method: 'get',
+    params
+  })
+}
+
+//修改个人信息
+export function updatePerson(params){
+  return request({
+    url: '/json/user/update',
+    method: 'put',
+    data:params
+  })
+}
+
+//修改密码
+export function updatePwd(params){
+  return request({
+    url: '/Authen/updatePwd',
+    method: 'put',
+    params
   })
 }

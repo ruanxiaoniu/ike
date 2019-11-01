@@ -136,7 +136,8 @@ export default {
     type: {
       type: String,
       default: 'all'
-    }
+    },
+    Cid:''
   },
   data() {
     return {
@@ -243,6 +244,9 @@ export default {
       this.checkTab()
       this.$set(this.params,'pageNum',this.listQuery.page)
       this.$set(this.params,'pageSize',this.listQuery.size)
+       if(this.Cid){
+        this.$set(this.params,'customerId',this.Cid)
+      }
       getAllReturn(this.params).then(res=>{
         this.listLoading = false
         this.returnList = res.data.list
@@ -409,7 +413,7 @@ export default {
               type: 'success',
               message: '删除成功!'
             });
-            this.getAllReturn()
+            this.getReturn()
           }).catch(err=>{
             this.$message({
               type: 'error',

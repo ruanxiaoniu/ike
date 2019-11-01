@@ -3,7 +3,7 @@
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
-          <tab-pane v-if="activeName==item.key" :type="item.key"/>
+          <tab-pane v-if="activeName==item.key" :type="item.key" :Cid="Cid"/>
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -14,8 +14,10 @@
 import tabPane from './TabPane/index'
 
 export default {
+
   name: 'Tab',
   components: { tabPane },
+  props:['Cid'],
   data() {
     return {
       tabMapOptions: [

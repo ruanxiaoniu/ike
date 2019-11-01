@@ -132,7 +132,8 @@ export default {
     type: {
       type: String,
       default: 'all'
-    }
+    },
+    Cid:''
   },
   data() {
     return {
@@ -220,6 +221,9 @@ export default {
       this.checkTab()
       this.$set(this.params,'pageNum',this.listQuery.page)
       this.$set(this.params,'pageSize',this.listQuery.size)
+       if(this.Cid){
+        this.$set(this.params,'customerId',this.Cid)
+      }
       planAll(this.params).then(res=>{
         
         this.listLoading = false

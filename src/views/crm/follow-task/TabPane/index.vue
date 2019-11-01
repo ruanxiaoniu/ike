@@ -132,7 +132,8 @@
       type: {
         type: String,
         default: 'all'
-      }
+      },
+      customerId:''
     },
     data() {
       return {
@@ -177,7 +178,7 @@
     watch:{
       watchTab:{
       deep:true,
-        handle:function(val){
+        handler:function(val){
           this.getArrange()
         }
       },
@@ -243,6 +244,9 @@
         this.checkTab()
         this.$set(this.params,'pageNum',this.listQuery.page)
         this.$set(this.params,'pageSize',this.listQuery.size)
+        if(this.customerId){
+           this.$set(this.params,'customerId',this.customerId)
+        }
         getArrangeAll(this.params).then(response => {
           console.log(this.listQuery)
           console.log(this.arrangeList)

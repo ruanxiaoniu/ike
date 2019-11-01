@@ -89,7 +89,7 @@
        
        <el-table-column label="总价" min-width="60px" prop="total">
          <template slot-scope="scope">
-           <el-input disabled v-model="scope.row.orderActualTotal" ></el-input>
+           <el-input disabled v-model="scope.row.orderTotal" ></el-input>
          </template>
          
        </el-table-column>
@@ -142,14 +142,6 @@
     </el-row>
     
     <el-row>
-      <!-- <el-col :span="12">
-        <el-form-item label="下单时间：">
-          <el-date-picker
-                v-model="orderList.orderTimeStr"
-                type="datetime"
-                placeholder="选择下单时间"/>
-        </el-form-item>
-      </el-col> -->
       <el-col :span="12">
         <el-form-item label="备注：">
           <el-input type="textarea" v-model="orderList.note"></el-input>
@@ -185,6 +177,7 @@ export default {
           orderNum:0,
           orderActualTotal:'',
           productId:'',
+          orderTotal:'',
           productName:''
         }
       ],
@@ -250,8 +243,6 @@ export default {
     },
     edit(newVal){
       this.editFlag=newVal
-      console.log("editttttttttttt")
-      console.log(this.editFlag)
       this.orderList={
          productClassId:'',
          productName:'',
@@ -266,24 +257,25 @@ export default {
     'orderList.customerId':function (newVal) {
       this.Cid=newVal
       if(newVal!=''){
-        console.log(newVal)
         this.getRelation()
       }
     },
     watchProduct:{
       deep:true,
       handler:function(val){
-        let TotalCost=0
-        let TotalPrice=0
-        // console.log("计算啦1")
-        this.productList.forEach((item,index)=>{
-          this.orderList.orderTotal=parseInt(this.orderList.orderTotal)+parseInt(item.orderActualTotal) 
-          this.orderList.orderCost=parseInt(this.orderList.orderCost)+parseInt(item.cost) 
-          // console.log("计算啦2")
-          console.log(this.orderList.orderTotal)
+         let orderActualTotalSum=0
+         let orderTotalSum=0
+          let costSum=0
+         this.productList.forEach((item,index)=>{
+              console.log("数组变化了")
+              orderTotalSum=orderTotalSum+parseInt(item.orderTotal)
+              costSum=costSum+(parseInt(item.cost))*item.orderNum
+              orderActualTotalSum=orderActualTotalSum+parseInt(item.orderActualTotal)
+             console.log(orderTotalSum,costSum,orderActualTotalSum)
         })
-        // this.orderList.orderTotal=totalPrice
-        // this.orderList.orderCost=TotalCost
+        this.orderList.orderTotal=orderTotalSum
+        this.orderList.orderActualTotal=orderActualTotalSum
+        this.orderList.orderCost=costSum
       }
     }
   },
@@ -335,6 +327,7 @@ export default {
     this.getEmployee()
     this.getCustomer()
     this.getProduct()
+    
   },
   methods:{
      /**
@@ -352,19 +345,25 @@ export default {
             this.orderList.customerId=res.data.customerId
             this.orderList.orderTimeStr=res.data.orderTime
             this.orderList.id=res.data.id
+            this.orderList.paymentMethod=res.data.paymentMethod
             res.data.orderProductVoList.forEach((item,index)=>{
+              if(item.actualPrice==null){
+                item.actualPrice=item.totalPrice
+              }
               let product={
                             cost:item.saleCost,
                             salePrice:item.salePrice,
                             orderNum:item.orderCount,
-                            orderActualTotal:item.totalPrice,
+                            orderActualTotal:item.actualPrice,
+                            orderTotal:item.totalPrice,
                             productName:item.productName,
                             productId:item.productId,
                           }
               this.productList.push(product)
+              this.Cid=this.orderList.customerId
+              this.getRelation()
             })
             console.log("product")
-            console.log(res.data.orderProductVoList)
             console.log(this.orderList)
             console.log(this.productList)
           }).catch(err=>{
@@ -486,7 +485,7 @@ export default {
       */
      getPDetail(id){
        console.log("id")
-       console.log(id)
+       console.log(this.currentIndex)
        let query={
          id:id
        }
@@ -494,11 +493,24 @@ export default {
          let p={
              cost:res.data.productExtVO.cost,
              salePrice:res.data.productExtVO.salePrice,
-             orderNum:res.data.productVO.orderNum,
+             orderNum:0,
              orderActualTotal:res.data.productExtVO.salePrice*res.data.productVO.orderNum,
              productId:id
            }
-           this.productList[this.currentIndex]=p
+          this.productList[this.currentIndex]=p
+          let orderActualTotalSum=0
+          let orderTotalSum=0
+          let costSum=0
+          this.productList.forEach((item,index)=>{
+              console.log("计算啦2")
+              orderTotalSum=orderTotalSum+parseInt(item.orderActualTotal)
+              costSum=costSum+parseInt(item.cost)
+              orderActualTotalSum=orderActualTotalSum+parseInt(item.orderActualTotal)
+             console.log(orderTotalSum,costSum,orderActualTotalSum)
+        })
+        this.orderList.orderTotal=orderTotalSum
+        this.orderList.orderActualTotal=orderActualTotalSum
+        this.orderList.orderCost=costSum
          console.log("product")
          console.log(this.productList)
        }).catch(err=>{
@@ -584,7 +596,8 @@ export default {
              this.productList.forEach((item,index)=>{
              let ele={
               productId:item.productId,
-              orderCount:item.orderNum
+              orderCount:item.orderNum,
+              totalPrice:item.orderTotal
              }
              this.orderList.orderProductVoList.push(ele)
             })
@@ -643,26 +656,40 @@ export default {
     changehandle(index){
       console.log("下标")
       
-      this.productList[index].orderActualTotal=this.productList[index].orderNum*this.productList[index].salePrice 
-        this.productList.forEach((item,index)=>{
-          console.log("计算啦1")
-           this.orderList.orderTotal=parseInt(this.orderList.orderTotal) +parseInt(item.orderActualTotal)
-          this.orderList.orderCost=parseInt(this.orderList.orderCost)+parseInt(item.cost)
-          console.log("计算啦2")
-          console.log(this.orderList.orderTotal)   
+      this.productList[index].orderTotal=this.productList[index].orderNum*this.productList[index].salePrice 
+        // this.productList.forEach((item,index)=>{
+        //   console.log("计算啦1")
+        //    this.orderList.orderTotal=parseInt(this.orderList.orderTotal) +parseInt(item.orderActualTotal)
+        //   this.orderList.orderCost=parseInt(this.orderList.orderCost)+parseInt(item.cost)
+        //   console.log("计算啦2")
+        //   console.log(this.orderList.orderTotal)   
+        // })
+           let orderActualTotalSum=0
+          let orderTotalSum=0
+          let costSum=0
+          this.productList.forEach((item,index)=>{
+              console.log("数字框变化")
+              orderTotalSum=orderTotalSum+parseInt(item.orderTotal)
+              costSum=costSum+(parseInt(item.cost))*item.orderNum
+              orderActualTotalSum=orderActualTotalSum+parseInt(item.orderActualTotal)
+             console.log(orderTotalSum,costSum,orderActualTotalSum)
         })
+        this.orderList.orderTotal=orderTotalSum
+        this.orderList.orderActualTotal=orderActualTotalSum
+        this.orderList.orderCost=costSum
     },
     /**
      * 添加产品
      */
     addOrder(index){
       this.productList.push( {
-          cost:'',
-          salePrice:'',
+          cost:0,
+          salePrice:0,
           orderNum:0,
-          orderActualTotal:'',
+          orderActualTotal:0,
           productId:'',
         })
+        this.currentIndex=index+1
     },
     /**
      * 删除产品

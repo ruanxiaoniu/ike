@@ -13,7 +13,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
+          placeholder="用户名"
           name="username"
           type="text"
           tabindex="1"
@@ -30,7 +30,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -80,8 +80,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'Kyre',
-        password: '123456'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -114,14 +114,12 @@ export default {
     },
     handleLogin() {
       this.loading = true
-      // this.$router.push({ path: this.redirect || '/' })
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
           console.log("hhhh")
-          // this.$router.push({ path: this.redirect || '/' })
           this.$store.dispatch('user/login', this.loginForm).then((res) => {
-            console.log("hhhh")
+            console.log("aaaa")
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
@@ -185,6 +183,10 @@ export default {
                      });
 
                    }
+                  this.$message({
+                      type: 'success',
+                      message: '验证码通过!'
+                    });
                 }).catch(err=>{
                     this.$message({
                       type: 'error',

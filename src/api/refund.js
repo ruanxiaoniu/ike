@@ -10,9 +10,9 @@ export function getAllRefund(params){
 }
 
 //批量删除
-export function deleteReturn(params){
+export function deleteRefund(params){
   return request({
-    url: '/json/returnDetail/listReturnDetailSearch',
+    url: '/json/refund/deleteBatch',
     method: 'delete',
     data:params
   })
@@ -27,7 +27,7 @@ export function creatRefund(params){
   })
 }
 
-//获取某个回款信息
+//获取某个退款信息
 export function refundById(params){
   return request({
     url: '/json/refund/searchRefund',
@@ -36,7 +36,7 @@ export function refundById(params){
   })
 }
 
-//修改回款
+//修改退款
 export function updateRefund(params){
   return request({
     url: '/json/refund/update',
