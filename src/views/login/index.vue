@@ -156,7 +156,6 @@ export default {
               }).then(({ value }) => {
                 checkAuthCode(value).then(response =>{
                   console.log("coderes: "+response.data.code);
-<<<<<<< HEAD
                    if(response.data.code == 0){
                      console.log("wd");
                      this.$prompt('请输入密码','提示', {
@@ -184,12 +183,10 @@ export default {
                      });
 
                    }
-=======
                   this.$message({
                       type: 'success',
                       message: '验证码通过!'
                     });
->>>>>>> 权限
                 }).catch(err=>{
                     this.$message({
                       type: 'error',

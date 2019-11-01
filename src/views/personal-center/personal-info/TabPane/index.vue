@@ -32,7 +32,7 @@
 </template>
 
 <script>
-
+import {getPerson} from '@/api/user'
   export default {
     filters: {
       statusFilter(status) {
@@ -52,12 +52,27 @@
     },
     data() {
       return {
-        personalList:null
+        personalList:null,
+        params:{
+          id:''
+        }
       }
     },
     created() {
+      this.params.id=this.$store.getters.userId
+      this.getPersonInfo()
     },
-    methods: {}
+    methods: {
+      getPersonInfo(){
+        console.log("内部消息")
+        console.log(this.params)
+        getPerson(this.params).then(res=>{
+          this.personalList=res.data
+        }).catch(err=>{
+
+        })
+      }
+    }
   }
 </script>
 

@@ -11,17 +11,14 @@ const getters = {
   customerRowList:state=>state.customer.customerRowList,
   customerUpdateDialogVisible:state=>state.customer.updateDialogVisible,
   customerTableList:state=>state.customer.customerTableList,
-<<<<<<< HEAD
 
   complaintUpdateDialogVisible:state=>state.complaint.updateDialogVisible,
   complaintRowList:state=>state.complaint.complaintRowList,
-  complaintTableList:state=>state.complaint.complaintTableList
-=======
+  complaintTableList:state=>state.complaint.complaintTableList,
   roles: state => state.user.roles,
   permission_routes: state => state.permission.routes,
   visitedViews: state => state.tagsView.visitedViews,
   cachedViews: state => state.tagsView.cachedViews,
-  userId:state=>state.permission.userId
->>>>>>> 权限
+  userId:state=>state.user.userId
 }
 export default getters
