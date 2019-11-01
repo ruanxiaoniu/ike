@@ -374,7 +374,8 @@ export const constantRoutes = [
   },
 
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  { path: '*', redirect: '/dashboard' }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
 
@@ -563,12 +564,12 @@ export const asyncRoutes = [
         component:()=>import('@/views/personal-center/personal-info/index'),
         meta:{title:'个人信息'},
       },
-      {
-        path:'pwd',
-        name:'PWD',
-        component:()=>import('@/views/personal-center/password/index'),
-        meta:{title:'密码管理'},
-      },
+      // {
+      //   path:'pwd',
+      //   name:'PWD',
+      //   component:()=>import('@/views/personal-center/password/index'),
+      //   meta:{title:'密码管理'},
+      // },
     ]
   },
    /**

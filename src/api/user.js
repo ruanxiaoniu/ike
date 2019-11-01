@@ -69,3 +69,12 @@ export function updatePerson(params){
     data:params
   })
 }
+
+//修改密码
+export function updatePwd(params){
+  return request({
+    url: '/Authen/updatePwd',
+    method: 'put',
+    params
+  })
+}

@@ -5,7 +5,7 @@
         <keep-alive>
           <tab-pane v-if="item.key=='person_info'"></tab-pane>
           <update v-if="item.key=='info_modify'"></update>
-          <!-- <tab-pane v-if="activeName===item.key" :type="item.key" @create="showCreatedTimes" /> -->
+          <updatePwd v-if="item.key=='password_modify'"></updatePwd>
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -15,9 +15,10 @@
 <script>
   import tabPane from './TabPane/index'
   import update from './TabPane/updateInfo'
+  import updatePwd from './TabPane/updatePWD'
   export default {
     name: 'Tab',
-    components: { tabPane ,update},
+    components: { tabPane ,update,updatePwd},
     data() {
       return {
         tabMapOptions: [

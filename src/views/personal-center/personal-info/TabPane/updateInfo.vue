@@ -178,6 +178,7 @@ import {getDepartmentInfo} from '@/api/department'
              */
             updatePerson(this.personalList).then(res=>{
               this.$message.success('修改成功')
+              this.$router.go(0)
             }).catch(err=>{
               this.$message.error('修改失败，请重试！')
             })
