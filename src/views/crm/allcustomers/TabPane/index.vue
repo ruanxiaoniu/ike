@@ -34,7 +34,7 @@
       <el-button size="small" icon="el-icon-search" @click="handle('search')">
             搜索
       </el-button>
-      <el-button  size="small"  icon="el-icon-delete">
+      <el-button  size="small"  icon="el-icon-delete" @click="customerDelete">
             删除
       </el-button>
        <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="handle('add')" >
@@ -48,7 +48,7 @@
       </el-button>
     </div>
     <p></p>
-  <el-table :data="list" border fit highlight-current-row style="width: 100%"  @update="update">
+  <el-table :data="list" border fit highlight-current-row style="width: 100%"  @update="update" @selection-change="handleSelectionChange">
    <el-table-column  type="selection" align="center"  />
     <el-table-column
       v-loading="loading"
@@ -194,6 +194,7 @@ export default {
         employeeName:'负责人详情'
       },
       currentIndex:0,
+      multipleSelection:[]
     }
   },
   created() {    
@@ -349,7 +350,53 @@ export default {
         this.showDialogFlag=false
         this.$store.dispatch('customer/setupdateDialogVisible',false)
       }
-    }
+    },
+    /**
+     * 删除
+     */
+     customerDelete(){
+      if(this.multipleSelection.length>0){
+        console.log("选择")
+        console.log(this.multipleSelection)
+        this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let ids=[]
+
+          this.multipleSelection.forEach(item=>{
+            // this.$set(query,'id',item.id)
+            ids.push(item.id)
+          })
+          console.log("qeryyyyy")
+          console.log(ids)
+          deletePlan(ids).then(res=>{
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.getList()
+          }).catch(err=>{
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            });
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      }else{
+        console.log("未选择")
+         this.$message({
+              type: 'error',
+              message: '请选择!'
+            });
+      }
+    },
   }
 }
 </script>

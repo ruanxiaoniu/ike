@@ -28,7 +28,7 @@
       <el-button size="small" icon="el-icon-search" @click="search('search')">
             搜索
       </el-button>
-      <el-button  size="small"  icon="el-icon-delete" @click="deleteOrder">
+      <el-button  size="small"  icon="el-icon-delete" @click="Refunddelete">
             删除
       </el-button>
       <el-button :loading="downloadLoading" size="small" icon="el-icon-plus" @click="addOrder(false,'add')" >
@@ -93,7 +93,7 @@
 </template>
 
 <script> 
-import {getAllRefund,deleteReturn} from '@/api/refund'
+import {getAllRefund,deleteRefund} from '@/api/refund'
 import {getEmployeeAll} from '@/api/employee'
 import pagination from '@/components/Pagination'
 import show from '../../../public/customer/all-detail/index'
@@ -381,7 +381,7 @@ export default {
     /**
      * 删除
      */
-    deleteOrder(){
+    Refunddelete(){
         if(this.multipleSelection.length>0){
         console.log("选择")
         console.log(this.multipleSelection)
@@ -390,22 +390,16 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let order_base_id=[]
-          // let query={
-          //   order_base_id:[]
-          // }
+          let refundId=[]
           this.multipleSelection.forEach(item=>{
-            // this.$set(query,'id',item.id)
-            order_base_id.push(item.id)
+           refundId.push(item.id)
           })
-          console.log("qeryyyyy")
-          // console.log(order_base_id)
-          deleteReturn(order_base_id).then(res=>{
+          deleteRefund(refundId).then(res=>{
             this.$message({
               type: 'success',
               message: '删除成功!'
             });
-            this.getOrder()
+            this.getRefund()
           }).catch(err=>{
             this.$message({
               type: 'error',

@@ -16,5 +16,8 @@ export function isExternal(path) {
  */
 export function validUsername(str) {
   const valid_map = ['Kyre', 'editor']
+  valid_map.push(str)
+  console.log("客户吗？")
+  console.log(valid_map)
   return valid_map.indexOf(str.trim()) >= 0
 }

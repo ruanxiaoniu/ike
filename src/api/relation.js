@@ -25,3 +25,12 @@ export function updateRelation(params){
     data:params
   })
 }
+
+//获取某个联系人信息
+export function getRelationDetail(params){
+  return request({
+    url:'/relation/getDetail',
+    method:'get',
+    params,
+  })
+}

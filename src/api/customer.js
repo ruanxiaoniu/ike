@@ -41,6 +41,15 @@ export function getCustomerDetail(params){
   })
 }
 
+
+//删除客户信息
+export function deleteCustomer(params){
+  return request({
+    url: '/customer/detail',
+    method: 'delete',
+    data:params,
+  })
+}
 //获取阶段表中当前存有的阶段
 export function getCustomerAllStage(){
   return request({

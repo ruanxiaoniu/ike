@@ -19,10 +19,10 @@
         <relation :Cid="Cid"></relation>
       </el-tab-pane>
       <el-tab-pane  label="成交订单">
-
+        <successOrder :Cid="Cid"></successOrder>
       </el-tab-pane>
         <el-tab-pane  label="回款记录">
-
+          <returnDetail :Cid="Cid"></returnDetail>
       </el-tab-pane>
       <el-tab-pane  label="投诉记录">
 
@@ -40,9 +40,9 @@ import history from '../../../public/follow/base'
 import planDetail from '../../../crm/follow-plan/index'
 import taskDetail from '../../../crm/follow-task/index'
 import relation from '../../relation/relation'
-// import relation from '../../../public/customer/relation'
 import stageLog from '../stage-log'
-
+import returnDetail from '../../../finance/return/index'
+import successOrder from '../../../finance/success-order/index'
 export default {
   // props:['Cid'],
   components:{
@@ -52,6 +52,8 @@ export default {
     planDetail,
     taskDetail,
     stageLog,
+    successOrder,
+    returnDetail
   },
   data() {
     return {

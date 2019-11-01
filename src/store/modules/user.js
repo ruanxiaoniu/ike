@@ -5,7 +5,9 @@ import { resetRouter } from '@/router'
 const state = {
   token: getToken(),
   name: '',
-  avatar: ''
+  roles:[],
+  userId:'',
+  avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
 }
 const tokens = {
   Kyre: {
@@ -18,7 +20,7 @@ const tokens = {
 
 const users = {
   'admin-token': {
-    roles: ['Kyre'],
+    roles: ['admin'],
     introduction: 'I am a super administrator',
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
     name: 'Super Admin'
@@ -40,7 +42,15 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
-  }
+  },
+  //角色
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
+  },
+  //ID
+  SET_USER_ID: (state, id) => {
+    state.userId = id
+  },
 }
 
 const actions = {
@@ -53,6 +63,13 @@ const actions = {
         console.log("login")
         console.log(response)
         const { data } = response
+        let user={
+          token: 'admin-token'
+        }
+        console.log(username)
+        tokens[username]=user
+        console.log("添加了token")
+        console.log(tokens)
         const TOKEN=tokens[username]
         // console.log(tokens[username])
         // console.log(TOKEN.token)
@@ -73,15 +90,28 @@ const actions = {
       
       getInfo(state.token).then(response => {
         const { data } = response
-
+        console.log("data")
+        console.log(data)
         if (!data) {
           reject('Verification failed, please Login again.')
         }
 
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
+        //新增角色
+        const { roles } = data
+        const {username,id}=data.user
+        console.log("请求uderInfo接口")
+        console.log(username)
+        //新增
+        if (!roles || roles.length <= 0) {
+          reject('getInfo: roles must be a non-null array!')
+        }
+        // const { name, avatar } = data
+        //新增
+        commit('SET_ROLES', roles)
+        commit('SET_NAME', username)
+        commit('SET_USER_ID',id)
+        // commit('SET_NAME', name)
+        // commit('SET_AVATAR', avatar)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -94,6 +124,8 @@ const actions = {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
+        //新增
+        commit('SET_ROLES', [])
         removeToken()
         resetRouter()
         resolve()
@@ -107,7 +139,33 @@ const actions = {
   resetToken({ commit }) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
+      commit('SET_ROLES', [])
       removeToken()
+      resolve()
+    })
+  },
+  //新增
+   // dynamically modify permissions
+   changeRoles({ commit, dispatch }, role) {
+    return new Promise(async resolve => {
+      const token = role + '-token'
+
+      commit('SET_TOKEN', token)
+      setToken(token)
+
+      const { roles } = await dispatch('getInfo')
+
+      resetRouter()
+
+      // generate accessible routes map based on roles
+      const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
+
+      // dynamically add accessible routes
+      router.addRoutes(accessRoutes)
+
+      // reset visited views and cached views
+      dispatch('tagsView/delAllViews', null, { root: true })
+
       resolve()
     })
   }

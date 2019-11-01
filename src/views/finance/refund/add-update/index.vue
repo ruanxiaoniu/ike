@@ -86,10 +86,10 @@
            </el-col>
          </el-row>
        </el-form-item>
-       <el-form-item label="退款金额：" prop="amount">
+       <el-form-item label="退款金额：" prop="refundAmount">
          <el-row >
            <el-col :span="8">
-             <el-input v-model="refundList.amount"></el-input>
+             <el-input v-model="refundList.refundAmount"></el-input>
            </el-col>
          </el-row>
        </el-form-item>
@@ -165,7 +165,7 @@ export default {
         planDate:[
           {requried:true,message:'请选择回款时间',trigger:'blur'}
         ],
-        amount:[
+        refundAmount:[
           {requried:true,message:'请选择回款金额',trigger:'blur'}
         ],
         paymentType:[
@@ -212,7 +212,7 @@ export default {
          orderBaseId:'',
          remark:'',
          note:'',
-         amount:''
+         refundAmount:''
        }
        this.getrefundById()
     }

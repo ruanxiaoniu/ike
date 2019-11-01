@@ -30,8 +30,22 @@
       <el-button size="small" icon="el-icon-delete" @click="handle('delete')">
         删除
       </el-button>
+<<<<<<< HEAD
       <el-button  size="small" icon="el-icon-edit" @click="handle('add')">
         新建
+=======
+      <!-- <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="operation('update')">
+        修改
+      </el-button> -->
+      <!-- <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="operation('add')">
+        新建
+      </el-button> -->
+      <el-button :loading="downloadLoading" size="small" icon="el-icon-upload" @click="handleDownload">
+        导入
+      </el-button>
+      <el-button :loading="downloadLoading" size="small" icon="el-icon-document" @click="handleDownload">
+        导出
+>>>>>>> 权限
       </el-button>
     </div>
     <p></p>

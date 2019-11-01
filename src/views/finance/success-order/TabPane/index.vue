@@ -52,7 +52,7 @@
 
     <el-table-column label="下单时间" min-width="120px" prop="orderTime" align="center">
       <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'orderDetail')">{{ scope.row.orderTime }}</span>
+        <span class="link-type">{{ scope.row.orderTime }}</span>
       </template>
     </el-table-column>
 
@@ -133,7 +133,8 @@ export default {
     type: {
       type: String,
       default: 'all'
-    }
+    },
+    Cid:''
   },
   data() {
     return {
@@ -239,6 +240,9 @@ export default {
       this.checkTab()
       this.$set(this.params,'pageNum',this.listQuery.page)
       this.$set(this.params,'pageSize',this.listQuery.size)
+      if(this.Cid){
+        this.$set(this.params,'customerId',this.Cid)
+      }
       searchOrder(this.params).then(res=>{
         this.listLoading = false
         this.orderList = res.data.list

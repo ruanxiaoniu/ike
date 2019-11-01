@@ -43,7 +43,7 @@
 
     >
       <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,scope.$index,'customerName')">{{ scope.row.customerName }}</span>
+        <span class="link-type" @click="customerDetail(scope.row)">{{ scope.row.customerName }}</span>
       </template>
     </el-table-column>
 
@@ -281,7 +281,12 @@ export default {
         })
       // }  
     },
-   
+   /**
+    * 客户详情
+    */
+    customerDetail(row){
+       this.$router.push({name:'CustomerDetail',query:{customerId:row.id,customerName:row.customerName}})
+    },
     update(val){
       console.log("val")
       console.log(val)
