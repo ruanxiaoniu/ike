@@ -198,11 +198,11 @@ export default {
       if(this.$route.query.tab==='today_add'){//今天新增
             this.searchQuery.isToday="true"
          }else if(this.$route.query.tab==='today_follow'){//今天跟进
-            this.searchQuery.differMin=0
+            this.searchQuery.differFollow=0
          }else if(this.$route.query.tab==='never'){//从未跟进
             this.searchQuery.isFollowed="true"
          }else if(this.$route.query.tab==='thirty'){//30天未跟进
-            this.searchQuery.differMax=30
+            this.searchQuery.differFollow=30
          }
          if(this.selection=="所有成员"){
            this.searchQuery.employeeIds=""

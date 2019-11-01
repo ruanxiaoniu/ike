@@ -291,11 +291,11 @@ export default {
       if(this.$route.query.tab==='today_add'){//今天新增
            this.$set(query,'isToday',"true")
       }else if(this.$route.query.tab==='today_follow'){//今天跟进
-          this.$set(query,'differMin',0)
+          this.$set(query,'differFollow',0)
       }else if(this.$route.query.tab==='never'){//从未跟进
             this.$set(query,'isFollowed',"true")
       }else if(this.$route.query.tab==='thirty'){//30天未跟进
-            this.$set(query,'differMax',30)
+            this.$set(query,'differFollow',30)
       }
      
       getCustomerAll(query).then(res=>{
