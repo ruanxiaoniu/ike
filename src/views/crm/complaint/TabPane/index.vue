@@ -24,30 +24,21 @@
           </el-col>
         </el-row>
       </el-select>
-      <el-button size="small" icon="el-icon-search" @click="operation('search')">
+      <el-button size="small" icon="el-icon-search" @click="handle('search')">
         搜索
       </el-button>
       <el-button size="small" icon="el-icon-delete" @click="handle('delete')">
         删除
       </el-button>
-      <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="operation('update')">
-        修改
-      </el-button>
-      <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="operation('add')">
+      <el-button  size="small" icon="el-icon-edit" @click="handle('add')">
         新建
-      </el-button>
-      <el-button :loading="downloadLoading" size="small" icon="el-icon-upload" @click="handleDownload">
-        导入
-      </el-button>
-      <el-button :loading="downloadLoading" size="small" icon="el-icon-document" @click="handleDownload">
-        导出
       </el-button>
     </div>
     <p></p>
     <el-table :data="list" border fit highlight-current-row style="width: 100%" @selection-change="handleSelectionChange">
       <el-table-column type="selection" align="center"/>
-
-      <el-table-column v-loading="loading" align="center" label="投诉时间" min-width="150px" element-loading-text="请给我点时间！" prop="complaintTime">
+      <el-table-column v-loading="loading" align="center" label="投诉时间" min-width="150px"
+                       element-loading-text="请给我点时间！" prop="complaintTime">
         <template slot-scope="scope">
           <span class="link-type">{{ scope.row.complaintTime | formatDate }}</span>
         </template>
@@ -55,43 +46,43 @@
 
       <el-table-column min-width="180px" align="center" label="投诉详情" prop="complaintContent">
         <template slot-scope="scope">
-          <span class="link-type" @click="operation('complaintDetail')">{{ scope.row.complaintContent}}</span>
+          <span class="link-type" @click="operation(scope.row,scope.$index,'complaintContent')">{{ scope.row.complaintContent}}</span>
         </template>
       </el-table-column>
 
       <el-table-column min-width="180px" align="center" label="投诉客户" prop="customerName">
         <template slot-scope="scope">
-          <span class="link-type" @click="operation(scope.row,scope.$index,'customerName')">{{ scope.row.relationName}}</span>
+          <span class="link-type" @click="customerDetail(scope.row)">{{ scope.row.customerName}}</span>
         </template>
       </el-table-column>
 
       <el-table-column min-width="180px" align="center" label="客户联系人" prop="relationName">
         <template slot-scope="scope">
-          <span class="link-type" @click="operation(scope.row,scope.$index,'relationName')">{{ scope.row.relationName}}</span>
+          <span class="link-type">{{ scope.row.relationName}}</span>
         </template>
       </el-table-column>
 
       <el-table-column min-width="100px" align="center" label="投诉方式" prop="complaintMethod">
         <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.complaintMethod }}</span>
+          <span class="link-type" @click="operation(scope.row,scope.$index,'complaintMethod')">{{ scope.row.complaintMethod }}</span>
         </template>
       </el-table-column>
 
       <el-table-column min-width="100px" align="center" label="投诉类型" prop="complaintType">
         <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.complaintType }}</span>
+          <span class="link-type" @click="operation(scope.row,scope.$index,'complaintType')">{{ scope.row.complaintType }}</span>
         </template>
       </el-table-column>
 
       <el-table-column min-width="100px" align="center" label="紧急程度" prop="urgencyLevel">
         <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.urgencyLevel }}</span>
+          <span class="link-type" @click="operation(scope.row,scope.$index,'urgencyLevel')">{{ scope.row.urgencyLevel }}</span>
         </template>
       </el-table-column>
 
       <el-table-column min-width="100px" label="处理状态" prop="handStatus">
         <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.customer_origin === 0 ? '未处理' : '未完成' }}</span>
+          <span class="link-type">{{ scope.row.handStatus === 0 ? '未处理' : '未完成' }}</span>
         </template>
       </el-table-column>
 
@@ -100,26 +91,22 @@
           <span class="link-type" @click="operation('handler')">{{ scope.row.chargerName }}</span>
         </template>
       </el-table-column>
-
     </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="this.page" :limit.sync="this.limit"
+    <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size"
                 @pagination="getList"/>
 
-    <el-dialog title="客户详情" :visible.sync="dialogFlag" v-if="title==='customerName'" width="60%">
-      <customer v-if="title==='customerName'" :Cid="Cid"></customer>
+    <el-dialog title="客户详情" :visible.sync="dialogFlag" v-if=" title==='customerName'" width="60%">
+      <customer v-if="title==='customerName'" ></customer>
     </el-dialog>
-    <el-dialog v-else-if="operation_type!=='update'" :title="textMap[title]" :visible.sync="showDialogFlag" width="60%">
-      <complaintDetail v-if="title==='complaintDetail'"></complaintDetail>
-      <customer v-else-if="title==='handler'"></customer>
-      <add v-else-if="title==='add'"></add>
-      <search v-else-if="title==='search'"></search>
+    <el-dialog v-else-if="operation_type!=='update'" :title="textMap[title]"
+               :visible.sync="showDialogFlag" @setdialog="setDialog" width="65%">
+      <search v-if="title==='search'" @setdialog="setDialog" :selection="selection" :sortType="sortType" :sortName="sortName" @updatecustomer="getList"></search>
+      <add v-else-if="title==='add'" @updatelist="getList"></add>
+      <complaintDetail v-else-if="title==='complaintContent'"></complaintDetail>
     </el-dialog>
     <el-dialog v-else :title="textMap[title]" :visible.sync="showDialogFlag" width="30%">
       <update :type="title"></update>
     </el-dialog>
-   <!-- <el-dialog v-else :title="textMap[title]" :visible.sync="showDialogFlag" width="30%">
-      <update :type="title"></update>
-    </el-dialog>-->
   </div>
 
 </template>
@@ -147,7 +134,7 @@
     },
     filters: {
       formatDate(time) {
-        return moment(time).format('YYYY年MM月DD日 hh时')
+        return moment(time).format('YYYY年MM月DD日 hh时mm分')
       },
       statusFilter(status) {
         const statusMap = {
@@ -166,38 +153,57 @@
     },
     data() {
       return {
-        operation_type:'update',
+        operation_type: 'update',
         selection: '所有成员',
         list: null,
-        page: 1,
-        total: 0,
+        listQuery: {
+          total: 0,
+          size: 10,   //每页显示的数据条数
+          current: '1',
+          page: 1    //跳转页码
+        },
         title: '',
-        sortName:'',
-        sortType:'',
+        sortName: '',
+        sortType: '',
         dialogFlag: false,
         showDialogFlag: false,
         textMap: {
           search: '搜索',
           add: '新增投诉',
-          complaintDetail: '客户投诉详情',
+          complaintContent: '客户投诉详情',
           customer: '客户详情',
-          relation: '联系人详情',
-          customer_origin: '修改客户来源',
-          relation_primary: '修改主联系手机号',
           employee: '修改负责人',
-          update: '修改客户投诉'
+          complaintMethod: '修改投诉方式',
+          complaintType: '修改投诉类型',
+          urgencyLevel: '修改紧急程度'
         },
         currentIndex: 0,
         modelType: '',
         multipleSelection: [],
         ids: [],
-        Cid: ''
       }
     },
     created() {
       this.getList()
     },
     watch: {
+      watchRowlist:{
+        deep:true,
+        handler:function(newval){
+          this.list[this.currentIndex]=newval
+        }
+      },
+      watchDialogFlag:{
+        handler:function(newval){
+          this.showDialogFlag=newval
+        }
+      },
+      watchTableList:{
+        deep:true,
+        handler:function(newval){
+          this.list=newval
+        }
+      },
       watchTab: {
         deep: true,
         handler: function(newval) {
@@ -206,54 +212,72 @@
       }
     },
     computed: {
-      watchTab() {
+      watchRowlist(){
+        return this.$store.getters.complaintRowList
+      },
+      watchTableList(){
+        return this.$store.getters.complaintTableList
+      },
+      watchDialogFlag(){
+        return this.$store.getters.complaintUpdateDialogVisible
+      },
+      watchTab(){
         return this.$route.query.tab
       }
     },
     methods: {
+      setPage(response) {
+        this.listQuery.total = response.data.total
+        this.listQuery.page = response.data.pages
+        this.listQuery.size = response.data.size
+        this.listQuery.current = response.data.current
+      },
       getList() {
         this.loading = true
         if (this.type === 'all') {//全部
           listAll().then(response => {
             this.list = response.data.records
             this.loading = false
-            this.total = response.data.total
+            this.setPage(response)
           })
         } else if (this.type === 'cur_handle') {//由我处理
           listCurHandle().then(response => {
             this.list = response.data.records
             this.loading = false
-            this.total = response.data.total
+            this.setPage(response)
           })
         } else if (this.type === 'un_handle') {// 未处理
           listUnHandle().then(response => {
             this.list = response.data.records
             this.loading = false
-            this.total = response.data.total
+            this.setPage(response)
           })
         } else if (this.type === 'is_handle') {// 已处理
           listIsHandle().then(response => {
             this.list = response.data.records
             this.loading = false
-            this.total = response.data.total
+            this.setPage(response)
           })
         }
       },
-      operation(row,index,title){
-        if(title==='customerName'){
-          this.dialogFlag=true
-          this.Cid = row.customerId
-        }else{
-          this.showDialogFlag=true
+      /**
+       * 客户详情
+       */
+      customerDetail(row) {
+        this.$router.push({ name: 'CustomerDetail', query: { customerId: row.id, customerName: row.customerName } })
+      },
+      operation(row, index, title) {
+        if (title === 'customerName') {
+          this.dialogFlag = true
+        } else {
+          this.showDialogFlag = true
         }
-        this.operation_type='update'
-        this.title=title
-        this.currentIndex=index
+        this.operation_type = 'other'
+        this.title = title
+        this.currentIndex = index
 
-        this.$store.dispatch('customer/setcustomerRowList',row)
-        this.$store.dispatch('customer/setupdateDialogVisible',true)
-        console.log("setupdateDialogVisibel")
-        console.log(this.$store.getters.customerUpdateDialogVisible)
+        this.$store.dispatch('complaint/setComplaintRowList', row)
+        this.$store.dispatch('complaint/setUpdateDialogVisible', true)
       },
       handleSelectionChange(val) {
         this.multipleSelection = val
@@ -262,10 +286,19 @@
         if (type === 'delete') {
           // alert(this.multipleSelection)
           this.batchDelete()
-        } else if (type === 'setIsRead') {
-          this.setIsRead()
-        } else if (type === 'setUnRead') {
-          this.setUnRead()
+        } else {
+          this.title = type
+          this.operation_type = 'other'
+          this.showDialogFlag = true
+        }
+      },
+      //设置dialog
+      setDialog(){
+        if(this.title==='customerName'){
+          this.DialogFlag=false
+        }else{
+          this.showDialogFlag=false
+          this.$store.dispatch('complaint/setUpdateDialogVisible',false)
         }
       },
       checkAndSetSelect() {

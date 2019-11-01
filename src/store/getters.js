@@ -10,6 +10,10 @@ const getters = {
   modelType:state=>state.customer.modelType,
   customerRowList:state=>state.customer.customerRowList,
   customerUpdateDialogVisible:state=>state.customer.updateDialogVisible,
-  customerTableList:state=>state.customer.customerTableList
+  customerTableList:state=>state.customer.customerTableList,
+
+  complaintUpdateDialogVisible:state=>state.complaint.updateDialogVisible,
+  complaintRowList:state=>state.complaint.complaintRowList,
+  complaintTableList:state=>state.complaint.complaintTableList
 }
 export default getters

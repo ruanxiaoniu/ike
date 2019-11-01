@@ -1,75 +1,41 @@
 <template>
-  <div>
-    <div>
-      <el-form ref="base" :model="base" label-position="left" label-width="180px" style="width: 400px; margin-left:50px;">
-                <el-form-item label="编号" prop="customer_no">
-                  <span>{{base.customer_no}}</span>
-                </el-form-item>
-                <el-form-item label="录入时间" prop="customer_no">
-                  <span>{{base.customer_no}}</span>
-                </el-form-item>
-                <el-form-item label="录入人" prop="customer_no">
-                  <span>{{base.customer_no}}</span>
-                </el-form-item>
-                <el-form-item label="负责人" prop="customer_no">
-                  <span>{{base.customer_no}}</span>
-                </el-form-item>
-                <el-form-item label="客户名称" prop="customer_name">
-                  <span>{{base.customer_name}}</span>
-                  <span>[客户名]</span>
-                </el-form-item>
-                <el-form-item label="投诉标题" prop="city">
-                  <span>{{base.city}}</span>
-                </el-form-item>
-                <el-form-item label="投诉内容" prop="customer_stage">
-                  <span>{{base.customer_stage}}</span>
-                </el-form-item>
-                <el-form-item label="投诉方式" prop="customer_level">
-                  <span>
-                    <el-radio v-model="customer_level" label="1">完成</el-radio>
-                    <el-radio v-model="customer_level" label="2">未完成</el-radio>
-                  </span>
-                </el-form-item>
-                <el-form-item label="客户联系" prop="customer_stage">
-                  <span>{{base.customer_stage}}</span>
-                </el-form-item>
-                <el-form-item label="紧急程度" prop="customer_stage">
-                  <span>{{base.customer_stage}}</span>
-                </el-form-item>
-              </el-form>
-    </div>
+  <div class="app-container">
+    <el-tabs v-model="complaint">
+      <el-tab-pane  label="投诉详情">
+        <complaintDetail :type="show" :id="id" :key="complaint"></complaintDetail>
+      </el-tab-pane>
+      <el-tab-pane  label="投诉处理">
+        <complaintHandle :id="id" :key="handle"></complaintHandle>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 <script>
-export default {
-  props:['type'],
-  data() {
-    return {
-      base:{
-        customer_no:'',
-        employee:'',
-        customer_name:'',
-        city:'',
-        customer_stage:'',
-        customer_level:'',
-        customer_origin:'',
-        customer_introduce:'',
-        customer_address:'',
-      },
-      other:{
-        customer_no:0,
-        employee:0,
-        customer_name:0,
-        city:0,
-        customer_stage:0,
-        customer_level:0,
-        customer_origin:0,
-        customer_introduce:0,
-        customer_address:0,
+  import complaintDetail from './detail/index'
+  import complaintHandle from './handle/index'
+
+  export default {
+    components:{
+      complaintDetail,
+      complaintHandle
+    },
+    data() {
+      return {
+        id:'',
       }
+    },
+    created(){
+      this.id = this.$store.getters.complaintRowList.id
     }
-  },
-}
+  }
 </script>
 <style scoped>
+  header{
+    /* font-weight: bolder */
+    background-color: rgba(0, 0, 0, 0.02);
+    height: 50px;
+    line-height: 50px;
+    font-weight: bolder;
+    padding-left: 20px;
+  }
 </style>
