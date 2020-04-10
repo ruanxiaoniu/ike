@@ -54,7 +54,6 @@
 
 </template>
 
-
 <script>
 import { validUsername } from '@/utils/validate'
 import { sendAuthCode } from '@/api/user'
@@ -89,7 +88,7 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined,
+      redirect: undefined
 
     }
   },
@@ -117,13 +116,10 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          console.log("hhhh")
           this.$store.dispatch('user/login', this.loginForm).then((res) => {
-            console.log("aaaa")
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
-
             this.loading = false
           })
         } else {
@@ -132,92 +128,86 @@ export default {
         }
       })
     },
-    forgetPwd(){
-      this.$prompt('请输入邮箱','找回密码', {
+    forgetPwd() {
+      this.$prompt('请输入邮箱', '找回密码', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
         inputErrorMessage: '邮箱格式不正确'
       }).then(({ value }) => {
-        sendAuthCode(value).then(response =>{
+        sendAuthCode(value).then(response => {
           console.log(response.data)
-          if(response.data.code == 0){
+          if (response.data.code === 0) {
             this.$message({
               type: 'success',
               message: '验证码已发送至邮箱: ' + value
-            });
+            })
 
-            setTimeout(() =>{
-              this.$prompt('请输入验证码','验证码',{
+            setTimeout(() => {
+              this.$prompt('请输入验证码', '验证码', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 inputPattern: /^[\S\n\s]{6,6}$/,
                 inputErrorMessage: '验证码格式不正确'
               }).then(({ value }) => {
-                checkAuthCode(value).then(response =>{
-                  console.log("coderes: "+response.data.code);
-                   if(response.data.code == 0){
-                     console.log("wd");
-                     this.$prompt('请输入密码','提示', {
-                       confirmButtonText: '确定',
-                       cancelButtonText: '取消',
-                       inputPattern: /^[\S\n\s]{6,6}$/,
-                       inputErrorMessage: '密码不能少于6位'
-                     }).then(({ value}) => {
-                       console.log(value);
-                       findPwd(value).then(response =>{
-                         console.log(response.data.code);
-                       })
+                checkAuthCode(value).then(response => {
+                  console.log('coderes: ' + response.data.code)
+                  if (response.data.code === 0) {
+                    this.$prompt('请输入密码', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      inputPattern: /^[\S\n\s]{6,6}$/,
+                      inputErrorMessage: '密码不能少于6位'
+                    }).then(({ value }) => {
+                      findPwd(value).then(response => {
+                        console.log(response.data.code)
+                      })
 
-                       setTimeout(() =>{
-                         this.$message({
-                           type: 'success',
-                           message: '修改成功,请登陆爽爽! '
-                         })
-                       },3000);
-                     }).catch(() => {
-                       this.$message({
-                         type: 'info',
-                         message: '取消输入'
-                       });
-                     });
-
-                   }
+                      setTimeout(() => {
+                        this.$message({
+                          type: 'success',
+                          message: '修改成功,请登陆爽爽! '
+                        })
+                      }, 3000)
+                    }).catch(() => {
+                      this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                      })
+                    })
+                  }
                   this.$message({
-                      type: 'success',
-                      message: '验证码通过!'
-                    });
-                }).catch(err=>{
-                    this.$message({
-                      type: 'error',
-                      message: '验证码错误!'
-                    });
+                    type: 'success',
+                    message: '验证码通过!'
+                  })
+                // eslint-disable-next-line handle-callback-err
+                }).catch(err => {
+                  this.$message({
+                    type: 'error',
+                    message: '验证码错误!'
+                  })
                 })
               }).catch(() => {
                 this.$message({
                   type: 'warning',
                   message: '取消输入验证码'
-                });
-
-              });
-
-            },3000);
-
-          }else{
+                })
+              })
+            }, 3000)
+          } else {
             this.$message({
               type: 'error',
               message: '邮箱错误,请检查后重新输入!: '
-            });
+            })
           }
         })
-
       }).catch(() => {
         this.$message({
           type: 'warning',
           message: '取消输入'
-        });
-      });
-    },
+        })
+      })
+    }
   }
 }
 </script>

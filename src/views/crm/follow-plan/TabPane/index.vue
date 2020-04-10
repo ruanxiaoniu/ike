@@ -40,7 +40,7 @@
       <el-table-column min-width="180px" align="center" label="客户联系人名称[客户名]">
         <template slot-scope="scope">
           <span class="link-type" @click="viewRelation(scope.row)">{{ scope.row.relationName }}</span>
-          <span class="link-type" @click="handle('customer',scope.row)">[{{ scope.row.customerName }}]</span>
+          <span class="link-type" @click="handle(scope.row)">[{{ scope.row.customerName }}]</span>
         </template>
       </el-table-column>
 
@@ -167,8 +167,6 @@ export default {
       }
       this.checkTab()
       assign(this.params, this.listQuery)
-      // this.$set(this.params, 'pageNum', this.listQuery.page)
-      // this.$set(this.params, 'pageSize', this.listQuery.size)
       if (this.Cid) {
         this.$set(this.params, 'customerId', this.Cid)
       }
@@ -231,17 +229,8 @@ export default {
     /**
      * 显示产品详情、客户详情、联系人详情
      */
-    handle(type, row) {
-      if (type === 'customer') {
-        this.$router.push({ name: 'CustomerDetail', query: { customerId: row.customerId }})
-      } else {
-        this.title = type
-        console.log('tirlrrlrlr')
-        console.log(type)
-        this.planId = row.id
-        this.Rid = row.relationId
-        this.showDialogFlag = true
-      }
+    handle(row) {
+      this.$router.push({ name: 'CustomerDetail', query: { customerId: row.customerId }})
     },
     addPlan() {
       this.$refs.updateAdd.show()

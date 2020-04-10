@@ -46,7 +46,7 @@
       </el-table-column>
       <el-table-column min-width="180px" align="center" label="客户联系人名称[客户名]">
         <template slot-scope="scope">
-          <span class="link-type" @click="handle('relation',scope.row)">{{ scope.row.relationName }}</span>
+          <span class="link-type" @click="viewRelation(scope.row)">{{ scope.row.relationName }}</span>
           <span class="link-type" @click="handle('customer',scope.row)">[{{ scope.row.customerName }}]</span>
         </template>
       </el-table-column>
@@ -78,7 +78,7 @@
     <search ref="search" @updatelist="searchUpdate" />
     <updateAdd ref="updateAdd" @updatelist="getArrange" />
     <arrangeDetail ref="arrangeDetail" @updatelist="getArrange" />
-    <!-- <relation ref="relation" /> -->
+    <relation ref="relation" />
   </div>
 
 </template>
@@ -90,9 +90,8 @@ import pagination from '@/components/Pagination'
 import arrangeDetail from '../../../public/follow/task-detail'
 import search from '../search/index'
 import updateAdd from '../add/index'
+import relation from '../../../public/relation/relationById'
 import moment from 'moment'
-// import relation from '../../../public/relation/relation'
-// import { getEmployeeAll } from '@/api/employee'
 import { sortTypeOpts } from '@/utils/common.js'
 export default {
 
@@ -100,7 +99,7 @@ export default {
     pagination,
     // customer,
     employeeSelect,
-    // relation,
+    relation,
     search,
     arrangeDetail,
     updateAdd
@@ -124,7 +123,6 @@ export default {
       arrangeList: null,
       total: 0,
       title: '',
-      // showDialogFlag: false,
       listQuery: {
         total: 0,
         page: 1, // 跳转页码
@@ -139,8 +137,6 @@ export default {
       sortType: '',
       searchQuery: {},
       reverse: true,
-      // employeeOptions: null,
-      // employeeFilter: null,
       params: {},
       arrangeId: '所有安排人',
       chargeId: '所有成员',
@@ -190,26 +186,9 @@ export default {
       this.arrangeMyself = true
     }
 
-    // this.getEmployee()
     this.getArrange()
   },
   methods: {
-    // /**
-    //    * 获取所有成员，用于搜索
-    //    * method:getEmployee()
-    //    */
-    // getEmployee() {
-    //   getEmployeeAll().then(res => {
-    //     this.employeeOptions = res.data
-    //     this.employeeFilter = res.data
-    //   }).catch(err => {
-    //     console.log(err)
-    //   })
-    // },
-
-    /**
-       * 获取所有任务信息
-       */
     getArrange() {
       this.loading = true
       this.checkTab()
@@ -225,20 +204,11 @@ export default {
         this.multipleSelection = []
       })
     },
-
-    /**
-       * 清空params
-       */
     clearParams() {
       for (const key in this.params) {
         delete this.params[key]
       }
     },
-
-    /**
-       * 检查变化
-       * method:checkTab()
-       */
     checkTab() {
       const tab = this.$route.query.tab
       if (tab === 'arrangeMyself') {
@@ -279,29 +249,6 @@ export default {
         this.$set(this.params, 'sortName', this.sortName)
       }
     },
-
-    // /**
-    //    * 远程搜索负责人
-    //    * method:remoteMethod()
-    //    */
-    // remoteMethod(query) {
-    //   if (query !== '') {
-    //     this.loading = true
-    //     setTimeout(() => {
-    //       this.loading = false
-    //       this.employeeOptions = this.employeeFilter.filter(item => {
-    //         return item.name.toLowerCase()
-    //           .indexOf(query.toLowerCase()) > -1
-    //       })
-    //     }, 100)
-    //   } else {
-    //     this.employeeOptions = this.employeeFilter
-    //   }
-    // },
-
-    /**
-       * 显示详情
-       */
     handle(type, row) {
       if (type === 'customer') {
         this.$router.push({ name: 'CustomerDetail', query: { customerId: row.customerId }})
@@ -383,6 +330,9 @@ export default {
     },
     viewArrangeDetail(item) {
       this.$refs.arrangeDetail.show(item.id)
+    },
+    viewRelation(item) {
+      this.$refs.relation.show(item.relationId)
     }
 
   }

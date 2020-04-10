@@ -69,7 +69,6 @@ export default {
     employeeSelect,
     relation
   },
-  // props: ['type == 'edit'', 'aid'],
   data() {
     return {
       dialogFlag: false,
@@ -81,10 +80,6 @@ export default {
         chargeId: '',
         relationId: ''
       },
-      arrangeOptions: null,
-      arrangeFilter: null,
-      // chargeOptions: null,
-      // chargeFilter: null,
       relationList: null,
       Cid: '',
       originRelationId: '', // 原始联系人Id
@@ -113,38 +108,10 @@ export default {
         this.getRelation()
       }
     }
-    // type == 'edit'(newVal) {
-    //   if (this.type == 'edit') {
-    //     this.getArrange()
-    //   }
-    // },
-    // Aid(newVal) {
-    //   if (newVal) {
-    //     this.getArrange()
-    //   }
-    // }
-    // Cid(newVal) {
-    //   if (newVal) {
-    //     console.log('添加计划')
-    //     console.log(newVal)
-    //     this.getRelation()
-    //   }
-    // }
   },
-  // created() {
-  //   console.log('修改页面被创建')
-  //   this.getCustomer()
-  //   this.getEmployee()
-  //   if (this.type == 'edit') {
-  //     this.getArrange()
-  //   }
-  // },
   methods: {
     show(item) {
-      console.log('item')
-      console.log(item)
       this.clearData()
-      // this.getCustomer()
       if (item && item.id) {
         this.type = 'edit'
         this.Aid = item.id
@@ -156,11 +123,7 @@ export default {
       }
       this.dialogVisible = true
     },
-    /**
-      获取所有员工信息
-      */
     getEmployee() {
-      console.log('获取所有员工信息..... ')
       getEmployeeAll().then(res => {
         this.chargeOptions = res.data
         this.chargeFilter = res.data
@@ -177,8 +140,6 @@ export default {
       const params = {
         Cid: this.Cid
       }
-      console.log('Ciiiiiiiii')
-      console.log(this.Cid)
       getOneRelation(params).then(res => {
         this.relationList = res.data
       // eslint-disable-next-line handle-callback-err
@@ -194,16 +155,12 @@ export default {
         const params = {
           id: this.Aid
         }
-        console.log(this.params)
         arrangeDetail(params).then(res => {
           this.followArrange = res.data
           this.originRelationId = res.data.relationId
           this.followArrange.relationId = res.data.relationName
-
           if (this.type === 'edit') {
             this.Cid = res.data.customerId
-            console.log('this.Cid')
-            console.log(this.Cid)
           }
         // eslint-disable-next-line handle-callback-err
         }).catch(err => {
@@ -219,15 +176,10 @@ export default {
       if (this.type === 'edit') {
         this.$refs[formName].validate(valid => {
           if (valid) {
-            console.log('要修改了')
-            console.log(this.followArrange)
-            console.log(typeof this.followArrange.relationId)
-            console.log(this.followArrange.arrangeId)
             if (typeof this.followArrange.relationId === 'string') {
               // 没有选择其他的联系人 说明选的是默认的联系人
               this.followArrange.relationId = this.originRelationId
             }
-            console.log(this.followArrange)
             updateArrange(this.followArrange).then(res => {
               this.$message.success('修改成功！')
               this.$emit('updatelist')
@@ -262,24 +214,6 @@ export default {
         }
       })
     },
-
-    /**
-      * 远程搜索负责人
-      */
-    // remoteChargeMethod(query) {
-    //   if (query !== '') {
-    //     this.chargeLoading = true
-    //     setTimeout(() => {
-    //       this.chargeLoading = false
-    //       this.chargeOptions = this.chargeFilter.filter(item => {
-    //         return item.name.toLowerCase()
-    //           .indexOf(query.toLowerCase()) > -1
-    //       })
-    //     }, 100)
-    //   } else {
-    //     this.chargeOptions = this.chargeFilter
-    //   }
-    // },
 
     /**
       * 点击取消
