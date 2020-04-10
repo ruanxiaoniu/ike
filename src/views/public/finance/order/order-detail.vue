@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div v-if="dialogVisible">
+    <el-dialog title="订单详情" :visible.sync="dialogVisible"></el-dialog>
     <div class="top">基本信息</div>
     <el-form v-model="orderList" label-width="150px" label-position="right" class="demo-form-inline">
       <el-row>
@@ -14,7 +15,6 @@
           </el-form-item>
         </el-col>
       </el-row>
-      
       <el-row>
         <el-col :span="12">
           <el-form-item label="成交总额：" prop="orderActualTotal">
@@ -98,6 +98,7 @@ export default {
   props:['Oid'],
   data() {
     return {
+      dialogVisible: false,
       params:{
         id:''
       },

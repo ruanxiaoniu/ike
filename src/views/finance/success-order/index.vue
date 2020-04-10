@@ -28,7 +28,7 @@ export default {
         { label: '退款中', key: 'refunding' },
         { label: '退款完成', key: 'refunded' }
       ],
-      activeName: 'all',
+      activeName: 'all'
     }
   },
   watch: {
@@ -42,7 +42,7 @@ export default {
     if (tab) {
       this.activeName = tab
     }
-    this.$store.dispatch('customer/setmodelType','allCustomer')
+    this.$store.dispatch('customer/setmodelType', 'allCustomer')
   },
   methods: {
     showCreatedTimes() {

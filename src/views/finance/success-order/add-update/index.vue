@@ -1,56 +1,40 @@
 <template>
-  <div >
-    <div class="top">基本信息</div>
-     <el-form :model="orderList" ref="orderList" :rules="rules" label-position="right" label-width="130px" style="margin-top:10px">
-       <el-form-item label="客户">
-        <el-row>
-          <el-col :span="18">
-            <!-- 可进行远程搜索客户 -->
-            <el-select
-              v-model="orderList.customerId"
-              filterable
-              remote
-              reserve-keyword
-              style="width:200px"
-              placeholder="请输入关键词"
-              :remote-method="remoteMethodCustomer"
-              :loading="loading"
-            >
-              <el-option
-                v-for="item in customerOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              />
-            </el-select>
-          </el-col>
-        </el-row>
-       </el-form-item>
+  <div v-if="dialogVisible">
+    <el-dialog :title="type == 'add' ? '新建' : '修改'" :visible.sync="dialogVisible">
+      <div class="top">基本信息</div>
+      <el-form ref="orderList" :model="orderList" :rules="rules" label-position="right" label-width="130px" style="margin-top:10px">
+        <el-form-item label="客户">
+          <el-row>
+            <el-col :span="18">
+              <customerSelect v-model="orderList.customerId" />
+            </el-col>
+          </el-row>
+        </el-form-item>
         <el-form-item label="联系人" prop="relationId">
           <el-row>
-            <el-col span="18">
+            <el-col :span="18">
               <el-select v-model="orderList.relationId" placeholder="请选择联系人" style="width:200px">
-                <el-option v-for="(item) in relationList" :key="item.id" :label="item.relationName" :value="item.id"/>
+                <el-option v-for="(item) in relationList" :key="item.id" :label="item.relationName" :value="item.id" />
               </el-select>
             </el-col>
           </el-row>
         </el-form-item>
-     </el-form>
-     <div class="top">选择产品</div>
-     <el-table
-       :data="productList"
-       border
-       style="width: 100%;margin-top:10px">
-      <el-table-column>
-        <template slot-scope="scope">
-          <el-button size="small" icon="el-icon-plus" @click="addOrder(scope.$index)"></el-button>
-          <el-button size="small" icon="el-icon-delete" @click="subOrder(scope.$index)"></el-button>
-        </template>
-          
-      </el-table-column>
-      <el-table-column label="产品名称" min-width="100px" prop="productName">
-        <template slot-scope="scope">
-           <el-select
+      </el-form>
+      <div class="top">选择产品</div>
+      <el-table
+        :data="productList"
+        border
+        style="width: 100%;margin-top:10px"
+      >
+        <el-table-column width="150px">
+          <template slot-scope="scope">
+            <el-button size="small" icon="el-icon-plus" @click="addOrder(scope.$index)" />
+            <el-button size="small" icon="el-icon-delete" @click="subOrder(scope.$index)" />
+          </template>
+        </el-table-column>
+        <el-table-column label="产品名称" min-width="100px" prop="productName" width="150px">
+          <template slot-scope="scope">
+            <el-select
               v-model="scope.row.productId"
               filterable
               remote
@@ -68,518 +52,412 @@
                 :value="item.id"
               />
             </el-select>
-        </template>
-        
-       </el-table-column>
-       <el-table-column label="成本" min-width="50px" prop="cost">
-         <template slot-scope="scope">
-             <el-input disabled v-model="scope.row.cost"></el-input>
-         </template>
-       </el-table-column>
-       <el-table-column label="销售单价"  min-width="60px" prop="salePrice">
-         <template slot-scope="scope">
-           <el-input disabled  v-model="scope.row.salePrice"></el-input>
-         </template>
-       </el-table-column>
-       <el-table-column label="成交数量"  min-width="120px" prop="orderNum">
-          <template slot-scope="scope">
-            <el-input-number style="width:150px" :min="0" @change="changehandle(scope.$index)"  v-model="scope.row.orderNum"  label="描述文字"></el-input-number>
           </template>
-       </el-table-column>
-       
-       <el-table-column label="总价" min-width="60px" prop="total">
-         <template slot-scope="scope">
-           <el-input disabled v-model="scope.row.orderTotal" ></el-input>
-         </template>
-         
-       </el-table-column>
-  </el-table>
-  <el-form class="demo-form-inline" ref="orderList" :rules="rules" :model="orderList" style="margin-top:10px">
-    <el-row>
-      <el-col :span="12">
-          <el-form-item label="成交总额：" >
-            <el-row>
-              <el-col :span="7">
-                <el-input v-model="orderList.orderTotal" disabled></el-input>  
-              </el-col>
-              <el-col :span="5">
-                 <span>元</span>
-              </el-col>
-            </el-row>
-          </el-form-item>
-      </el-col>
 
-      <el-col :span="12">
-         <el-form-item label="总成本：">
-            <el-row>
-              <el-col span="7">
-                <el-input v-model="orderList.orderCost" disabled></el-input>
-              </el-col>
-            </el-row>
-          </el-form-item>
-      </el-col>
-    </el-row>
-    
-    <el-row>
-       <el-col :span="12">
-          <el-form-item label="实际成交价：">
-            <el-row>
-              <el-col span="7">
-                <el-input v-model="orderList.orderActualTotal"></el-input>
-              </el-col>
-            </el-row>
-          </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item label="付款方式：">
-          <el-row>
-            <el-col span="5">
-              <el-input v-model="orderList.paymentMethod"></el-input>
-            </el-col>
-          </el-row>
-        </el-form-item>
-      </el-col>
-    </el-row>
-    
-    <el-row>
-      <el-col :span="12">
-        <el-form-item label="备注：">
-          <el-input type="textarea" v-model="orderList.note"></el-input>
-        </el-form-item>
-      </el-col>
-    </el-row>
-    
-  </el-form>
-     <div style="margin-left:500px;margin-top20px;">
-       <el-button size="small" @click="cancel">取消</el-button>
-       <el-button size="small" type="primary" v-if="editFlag" @click="editOperate('orderList')">修改</el-button>
-       <el-button size="small" type="primary" v-else @click="add('orderList')">新建</el-button>
-     </div>
+        </el-table-column>
+        <el-table-column label="成本" width="100px" prop="cost">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.cost" disabled />
+          </template>
+        </el-table-column>
+        <el-table-column label="销售单价" width="100px" prop="salePrice">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.salePrice" disabled />
+          </template>
+        </el-table-column>
+        <el-table-column label="成交数量" width="200px" prop="orderNum">
+          <template slot-scope="scope">
+            <el-input-number v-model="scope.row.orderNum" style="width:150px" :min="0" label="描述文字" @change="changehandle(scope.$index)" />
+          </template>
+        </el-table-column>
+
+        <el-table-column label="总价" width="100px" prop="total">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.orderTotal" disabled />
+          </template>
+
+        </el-table-column>
+      </el-table>
+      <el-form ref="orderList" class="demo-form-inline" :rules="rules" :model="orderList" style="margin-top:10px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="成交总额：">
+              <el-row>
+                <el-col :span="7">
+                  <el-input v-model="orderList.orderTotal" disabled />
+                </el-col>
+                <el-col :span="5">
+                  <span>元</span>
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="12">
+            <el-form-item label="总成本：">
+              <el-row>
+                <el-col :span="7">
+                  <el-input v-model="orderList.orderCost" disabled />
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="实际成交价：">
+              <el-row>
+                <el-col :span="7">
+                  <el-input v-model="orderList.orderActualTotal" />
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="付款方式：">
+              <el-row>
+                <el-col :span="5">
+                  <el-input v-model="orderList.paymentMethod" />
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="备注：">
+              <el-input v-model="orderList.note" type="textarea" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+      </el-form>
+      <div style="margin-left:500px;margin-top20px;">
+        <el-button size="small" @click="cancel">取消</el-button>
+        <el-button v-if="type == 'edit'" size="small" type="primary" @click="editOperate('orderList')">修改</el-button>
+        <el-button v-else size="small" type="primary" @click="add('orderList')">新建</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
-import {orderById,updateOrder,createOrder} from '@/api/order'
-import {getProductList,getProductDetail} from '@/api/product'
-import {getEmployeeAll} from '@/api/employee'
-import { getCustomerInfo,getOneRelation} from '@/api/customer'
+import { orderById, updateOrder, createOrder } from '@/api/order'
+import { getProductList, getProductDetail } from '@/api/product'
+import { getOneRelation } from '@/api/customer'
+import customerSelect from '../../../public/customer/customerSelect/customerSelect'
 import moment from 'moment'
 export default {
-  props:['edit','Oid'],
-  components:{
+  components: {
+    customerSelect
   },
   data() {
     return {
-      productId:0,
-      productList:[
+      type: '',
+      dialogVisible: false,
+      productId: 0,
+      productList: [
         {
-          cost:'',
-          salePrice:'',
-          orderNum:0,
-          orderActualTotal:'',
-          productId:'',
-          orderTotal:'',
-          productName:''
+          cost: '',
+          salePrice: '',
+          orderNum: 0,
+          orderActualTotal: '',
+          productId: '',
+          orderTotal: '',
+          productName: ''
         }
       ],
-      loading:false,
-      Cid:'',
-       orderList:{
-         id:'',
-         employeeId:'',
-         relationId:'',
-         productClassId:'',
-         note:'',
-         orderTotal:0,
-         orderActualTotal:'',
-         orderCost:0,
-         orderState:'',
-         orderTimeStr:'',
-         paymentMethod:'',
-         orderProductVoList:[]
-       },
-       editFlag:false,
-       editDialog:false,
-       title:'',
-       textMap:{
-         classedit:'产品类别管理',
-         unit:'销售单位管理'
-       },
-       editQuery:{
-         id:''
-       },
-      rules:{
-        customerId:[
-          {requried:true,message:'请选择客户',trigger:'blur'}
-        ],
-        relationId:[
-          {requried:true,message:'请选择联系人',trigger:'blur'}
-        ],
-        orderActualTotal:[
-          {requried:true,message:'请输入实际成交价',trigger:'blur'}
-        ],
-        paymentMethod:[
-          {requried:true,message:'请输入付款方式',trigger:'blur'}
-        ],
+      loading: false,
+      Cid: '',
+      orderList: {
+        id: '',
+        employeeId: '',
+        relationId: '',
+        productClassId: '',
+        note: '',
+        orderTotal: 0,
+        orderActualTotal: '',
+        orderCost: 0,
+        orderState: '',
+        orderTimeStr: '',
+        paymentMethod: '',
+        orderProductVoList: []
       },
-      employeeOptions:null,//员工选项
-      employeeFilter:null,//用于远程搜索
-      customerFilter:null,//客户搜索
-      customerOptions:null,
-      productFilter:null,//客户搜索
-      productOptions:null,
-      relationList:null,
-      currentIndex:0
-    }
-  },
-  watch:{
-    Oid(newVal){
-      console.log("nnnnnnn")
-      console.log(newVal)
-      this.editQuery={
-        orderBaseId:newVal
-      }
-      console.log(this.editQuery)
-      this.getOrderById()
-    },
-    edit(newVal){
-      this.editFlag=newVal
-      this.orderList={
-         productClassId:'',
-         productName:'',
-         salePrice:'',
-         cost:'',
-         saleUnitId:'',
-         onSale:'',
-         introduction:''
-       }
-       this.getOrderById()
-    },
-    'orderList.customerId':function (newVal) {
-      this.Cid=newVal
-      if(newVal!=''){
-        this.getRelation()
-      }
-    },
-    watchProduct:{
-      deep:true,
-      handler:function(val){
-         let orderActualTotalSum=0
-         let orderTotalSum=0
-          let costSum=0
-         this.productList.forEach((item,index)=>{
-              console.log("数组变化了")
-              orderTotalSum=orderTotalSum+parseInt(item.orderTotal)
-              costSum=costSum+(parseInt(item.cost))*item.orderNum
-              orderActualTotalSum=orderActualTotalSum+parseInt(item.orderActualTotal)
-             console.log(orderTotalSum,costSum,orderActualTotalSum)
-        })
-        this.orderList.orderTotal=orderTotalSum
-        this.orderList.orderActualTotal=orderActualTotalSum
-        this.orderList.orderCost=costSum
-      }
+      editDialog: false,
+      title: '',
+      textMap: {
+        classedit: '产品类别管理',
+        unit: '销售单位管理'
+      },
+      editQuery: {
+        id: ''
+      },
+      rules: {
+        customerId: [
+          { requried: true, message: '请选择客户', trigger: 'blur' }
+        ],
+        relationId: [
+          { requried: true, message: '请选择联系人', trigger: 'blur' }
+        ],
+        orderActualTotal: [
+          { requried: true, message: '请输入实际成交价', trigger: 'blur' }
+        ],
+        paymentMethod: [
+          { requried: true, message: '请输入付款方式', trigger: 'blur' }
+        ]
+      },
+      productFilter: null, // 客户搜索
+      productOptions: null,
+      relationList: null,
+      currentIndex: 0
     }
   },
   computed: {
-    watchProduct(){
+    watchProduct() {
       return this.productList
     },
-    getTotal:{
-      
-      get(){
-        let sum=0
-       console.log("计算啦1")
-          this.productList.forEach((item,index)=>{
-            console.log("计算啦2")
-            sum=sum+item.orderActualTotal
-          })
-          return sum
+    getTotal: {
+
+      get() {
+        let sum = 0
+        console.log('计算啦1')
+        this.productList.forEach((item, index) => {
+          console.log('计算啦2')
+          sum = sum + item.orderActualTotal
+        })
+        return sum
       },
-      set(){
-        let sum=0
-         this.productList.forEach((item,index)=>{
-            console.log("计算啦2")
-            sum=sum+item.orderActualTotal
-          })
-          return sum
+      set() {
+        let sum = 0
+        this.productList.forEach((item, index) => {
+          console.log('计算啦2')
+          sum = sum + item.orderActualTotal
+        })
+        return sum
       }
     },
-    getTotalCost(){
-      let sum=0
-       console.log("计算啦1")
-      this.productList.forEach((item,index)=>{
-        sum=sum+item.cost
+    getTotalCost() {
+      let sum = 0
+      console.log('计算啦1')
+      this.productList.forEach((item, index) => {
+        sum = sum + item.cost
       })
       return sum
     }
   },
-  created(){
-    
-    if(this.edit){//若是修改
-      console.log("产品修改")
-      console.log(this.Oid)
-        console.log(this.edit)
-        this.editFlag=this.edit
-        this.editQuery={
-          orderBaseId:this.Oid
+  watch: {
+    'orderList.customerId': function(newVal) {
+      this.Cid = newVal
+      this.relationList = []
+      if (newVal) {
+        this.getRelation()
+      }
+    },
+    watchProduct: {
+      deep: true,
+      handler: function(val) {
+        let orderActualTotalSum = 0
+        let orderTotalSum = 0
+        let costSum = 0
+        this.productList.forEach((item, index) => {
+          console.log('数组变化了')
+          orderTotalSum = orderTotalSum + parseInt(item.orderTotal)
+          costSum = costSum + (parseInt(item.cost)) * item.orderNum
+          orderActualTotalSum = orderActualTotalSum + parseInt(item.orderActualTotal)
+          console.log(orderTotalSum, costSum, orderActualTotalSum)
+        })
+        this.orderList.orderTotal = orderTotalSum
+        this.orderList.orderActualTotal = orderActualTotalSum
+        this.orderList.orderCost = costSum
+      }
+    }
+  },
+  methods: {
+    show(item) {
+      this.clearData()
+      if (item && item.id) {
+        this.type = 'edit'
+        this.editQuery = {
+          orderBaseId: item.id
         }
         this.getOrderById()
-    }
-    this.getEmployee()
-    this.getCustomer()
-    this.getProduct()
-    
-  },
-  methods:{
-     /**
-     * 修改，回显某个订单
-     */
-     getOrderById(){
-       if(this.edit){
-          this.productList=[]
-          console.log("search")
-          console.log(this.editQuery)
-          orderById(this.editQuery).then(res=>{
-            this.orderList.relationId=res.data.relationId
-            this.orderList.orderActualTotal=res.data.orderActualTotal
-            this.orderList.note=res.data.note
-            this.orderList.customerId=res.data.customerId
-            this.orderList.orderTimeStr=res.data.orderTime
-            this.orderList.id=res.data.id
-            this.orderList.paymentMethod=res.data.paymentMethod
-            res.data.orderProductVoList.forEach((item,index)=>{
-              if(item.actualPrice==null){
-                item.actualPrice=item.totalPrice
-              }
-              let product={
-                            cost:item.saleCost,
-                            salePrice:item.salePrice,
-                            orderNum:item.orderCount,
-                            orderActualTotal:item.actualPrice,
-                            orderTotal:item.totalPrice,
-                            productName:item.productName,
-                            productId:item.productId,
-                          }
-              this.productList.push(product)
-              this.Cid=this.orderList.customerId
-              this.getRelation()
-            })
-            console.log("product")
-            console.log(this.orderList)
-            console.log(this.productList)
-          }).catch(err=>{
-          })
-       }
-      
-     },
-       /**
+      } else {
+        this.type = 'add'
+      }
+      this.getProduct()
+      this.dialogVisible = true
+    },
+    clearData() {
+      this.orderList = {
+        id: '',
+        employeeId: '',
+        relationId: '',
+        productClassId: '',
+        note: '',
+        orderTotal: 0,
+        orderActualTotal: '',
+        orderCost: 0,
+        orderState: '',
+        orderTimeStr: '',
+        paymentMethod: '',
+        orderProductVoList: []
+      }
+      this.productList = [
+        {
+          cost: '',
+          salePrice: '',
+          orderNum: 0,
+          orderActualTotal: '',
+          productId: '',
+          orderTotal: '',
+          productName: ''
+        }
+      ]
+    },
+    getOrderById() {
+      this.productList = []
+      orderById(this.editQuery).then(res => {
+        this.orderList.relationId = res.data.relationId
+        this.orderList.orderActualTotal = res.data.orderActualTotal
+        this.orderList.note = res.data.note
+        this.orderList.customerId = res.data.customerId
+        this.orderList.orderTimeStr = res.data.orderTime
+        this.orderList.id = res.data.id
+        this.orderList.paymentMethod = res.data.paymentMethod
+        res.data.orderProductVoList.forEach((item, index) => {
+          if (item.actualPrice == null) {
+            item.actualPrice = item.totalPrice
+          }
+          const product = {
+            cost: item.saleCost,
+            salePrice: item.salePrice,
+            orderNum: item.orderCount,
+            orderActualTotal: item.actualPrice,
+            orderTotal: item.totalPrice,
+            productName: item.productName,
+            productId: item.productId
+          }
+          this.productList.push(product)
+          this.Cid = this.orderList.customerId
+          this.getRelation()
+        })
+        // eslint-disable-next-line handle-callback-err
+      }).catch(err => {
+      })
+    },
+    /**
      * 获取所有产品名
      */
-    getProduct(){
-        
-       getProductList().then(res=>{
-           console.log("uuuuuuu")
-        this.productOptions=res.data.records
-         console.log("pppppp")
-         console.log(this.productOptions)
-      }).catch(err=>{
-      
+    getProduct() {
+      getProductList().then(res => {
+        this.productOptions = res.data.records
+        console.log(this.productOptions)
+      }).catch(err => {
         console.log(err)
       })
     },
-     /**
+    /**
     * 远程搜索产品
     */
-    remoteMethodProduct(query){
-       if (query !== '') {
-          this.loading = true;
-          setTimeout(() => {
-            this.loading = false;
-            this.productOptions = this.productFilter.filter(item => {
-              return item.name.toLowerCase()
-                .indexOf(query.toLowerCase()) > -1;
-            });
-          }, 100);
-        }else{
-          this.customerOptions=this.customerFilter
-          
-        }
+    remoteMethodProduct(query) {
+      if (query !== '') {
+        this.loading = true
+        setTimeout(() => {
+          this.loading = false
+          this.productOptions = this.productFilter.filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1
+          })
+        }, 100)
+      } else {
+        this.customerOptions = this.customerFilter
+      }
     },
     /**
-     * 获取所有成员，用于搜索
-     * method:getEmployee()
-     */
-    getEmployee(){
-      getEmployeeAll().then(res=>{
-        this.employeeOptions=res.data
-        this.employeeFilter=res.data
-        // console.log("employee")
-        // console.log(this.employeeOptions)
-      }).catch(err=>{
-        console.log(err)
+      获取所有客户联系人信息
+    */
+    getRelation() {
+      const params = {
+        Cid: this.Cid
+      }
+      getOneRelation(params).then(res => {
+        this.relationList = res.data
+      // eslint-disable-next-line handle-callback-err
+      }).catch(err => {
+
       })
     },
     /**
-     * 远程搜索负责人
-     */
-    remoteMethodEmployee(query){
-       if (query !== '') {
-          this.loading = true;
-          setTimeout(() => {
-            this.loading = false;
-            this.employeeOptions = this.employeeFilter.filter(item => {
-              return item.name.toLowerCase()
-                .indexOf(query.toLowerCase()) > -1;
-            });
-          }, 100);
-        }else{
-          this.employeeOptions=this.employeeFilter
-        }
-    },
-      /**
-    获取所有客户信息
-     */
-     getCustomer(){
-       console.log("kehu xinxi ")
-       getCustomerInfo().then(res=>{
-         this.customerOptions=res.data
-         this.customerFilter=res.data
-       }).catch(err=>{
-
-       })
-     },
-     /**
-    * 远程搜索客户
-    */
-    remoteMethodCustomer(query){
-       if (query !== '') {
-          this.loading = true;
-          setTimeout(() => {
-            this.loading = false;
-            this.customerOptions = this.customerFilter.filter(item => {
-              return item.name.toLowerCase()
-                .indexOf(query.toLowerCase()) > -1;
-            });
-          }, 100);
-        }else{
-          this.customerOptions=this.customerFilter
-          
-        }
-    },
-     /**
-      获取所有客户联系人信息
-    */
-     getRelation(){
-       let params={
-         Cid:this.Cid
-       }
-       console.log("Ciiiiiiiii")
-       console.log(this.Cid)
-       getOneRelation(params).then(res=>{
-         this.relationList=res.data
-       }).catch(err=>{
-         
-       })
-     },
-     /**
       * 获取某个产品信息
       */
-     getPDetail(id){
-       console.log("id")
-       console.log(this.currentIndex)
-       let query={
-         id:id
-       }
-       getProductDetail(query).then(res=>{
-         let p={
-             cost:res.data.productExtVO.cost,
-             salePrice:res.data.productExtVO.salePrice,
-             orderNum:0,
-             orderActualTotal:res.data.productExtVO.salePrice*res.data.productVO.orderNum,
-             productId:id
-           }
-          this.productList[this.currentIndex]=p
-          let orderActualTotalSum=0
-          let orderTotalSum=0
-          let costSum=0
-          this.productList.forEach((item,index)=>{
-              console.log("计算啦2")
-              orderTotalSum=orderTotalSum+parseInt(item.orderActualTotal)
-              costSum=costSum+parseInt(item.cost)
-              orderActualTotalSum=orderActualTotalSum+parseInt(item.orderActualTotal)
-             console.log(orderTotalSum,costSum,orderActualTotalSum)
+    getPDetail(id) {
+      const query = {
+        id: id
+      }
+      getProductDetail(query).then(res => {
+        const p = {
+          cost: res.data.productExtVO.cost,
+          salePrice: res.data.productExtVO.salePrice,
+          orderNum: 0,
+          orderActualTotal: res.data.productExtVO.salePrice * res.data.productVO.orderNum,
+          productId: id
+        }
+        this.productList[this.currentIndex] = p
+        let orderActualTotalSum = 0
+        let orderTotalSum = 0
+        let costSum = 0
+        this.productList.forEach((item, index) => {
+          console.log('计算啦2')
+          orderTotalSum = orderTotalSum + parseInt(item.orderActualTotal)
+          costSum = costSum + parseInt(item.cost)
+          orderActualTotalSum = orderActualTotalSum + parseInt(item.orderActualTotal)
+          console.log(orderTotalSum, costSum, orderActualTotalSum)
         })
-        this.orderList.orderTotal=orderTotalSum
-        this.orderList.orderActualTotal=orderActualTotalSum
-        this.orderList.orderCost=costSum
-         console.log("product")
-         console.log(this.productList)
-       }).catch(err=>{
+        this.orderList.orderTotal = orderTotalSum
+        this.orderList.orderActualTotal = orderActualTotalSum
+        this.orderList.orderCost = costSum
+        console.log('product')
+        console.log(this.productList)
+      // eslint-disable-next-line handle-callback-err
+      }).catch(err => {
 
-       })
-     },
+      })
+    },
     /**
      * 点击取消
      */
-    cancel(){
-      this.orderList={
-         productClassId:'',
-         productName:'',
-         salePrice:'',
-         cost:'',
-         saleUnitId:'',
-         onSale:''
-       },
-      this.$emit('setdialog')
-      this.$emit('seteditflag')
+    cancel() {
+      this.clearData()
+      this.dialogVisible = false
     },
     /**
      * 添加
      */
-    add(formName){
-      this.$refs[formName].validate(valid=>{
-        if(valid){
-          this.productList.forEach((item,index)=>{
-            let ele={
-              productId:item.productId,
-              orderCount:item.orderNum
+    add(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.productList.forEach((item, index) => {
+            const ele = {
+              productId: item.productId,
+              orderCount: item.orderNum
             }
             this.orderList.orderProductVoList.push(ele)
           })
-          console.log("prrpprprp")
-          console.log(this.orderList)
           /**
            * 添加订单请求
            */
-          createOrder(this.orderList).then(res=>{
+          createOrder(this.orderList).then(res => {
             this.$message.success('添加成功！')
-            this.$emit('setdialog')
-            this.$emit('seteditflag')
             this.$emit('updatelist')
-            this.orderList={
-              employeeId:'',
-              relationId:'',
-              productClassId:'',
-              note:'',
-              orderTotal:0,
-              orderActualTotal:'',
-              orderCost:0,
-              orderState:'',
-              paymentMethod:'',
-              orderProductVoList:[]
-            }
-            this.productList=[
-                {
-                cost:'',
-                salePrice:'',
-                orderNum:0,
-                orderActualTotal:'',
-                productId:'',
-                }
-            ]
-          }).catch(err=>{
+            this.dialogVisible = false
+            this.clearData()
+          // eslint-disable-next-line handle-callback-err
+          }).catch(err => {
             this.$message.error('添加失败，请重试！')
           })
-        }else{
+        } else {
           return false
         }
       })
@@ -587,115 +465,81 @@ export default {
     /**
      * 修改
      */
-    editOperate(formName){
+    editOperate(formName) {
       /**
        * 修改请求
        */
-       this.$refs[formName].validate(valid=>{
-         if(valid){
-             this.productList.forEach((item,index)=>{
-             let ele={
-              productId:item.productId,
-              orderCount:item.orderNum,
-              totalPrice:item.orderTotal
-             }
-             this.orderList.orderProductVoList.push(ele)
-            })
-            this.orderList.orderTimeStr=moment(this.orderList.orderTimeStr).format('YYYY-MM-DD')
-            console.log("prrpprprp")
-            console.log(this.orderList)
-            updateOrder(this.orderList).then(res=>{
-                this.$message.success('修改成功！')
-                this.$emit('setdialog')
-                this.$emit('seteditflag')
-                this.$emit('updatelist')
-                this.orderList={
-                  employeeId:'',
-                  relationId:'',
-                  productClassId:'',
-                  note:'',
-                  orderTotal:0,
-                  orderActualTotal:'',
-                  orderCost:0,
-                  orderState:'',
-                  paymentMethod:'',
-                  orderProductVoList:[]
-                }
-                this.productList=[
-                    {
-                    cost:'',
-                    salePrice:'',
-                    orderNum:0,
-                    orderActualTotal:'',
-                    productId:'',
-                    }
-                ]
-                }).catch(err=>{
-                  console.log("出错了")
-                  console.log(err)
-                  this.$message.error('修改失败，请重试！')
-                })
-         }else{
-           return false
-         }
-       })
-     
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.productList.forEach((item, index) => {
+            const ele = {
+              productId: item.productId,
+              orderCount: item.orderNum,
+              totalPrice: item.orderTotal
+            }
+            this.orderList.orderProductVoList.push(ele)
+          })
+          this.orderList.orderTimeStr = moment(this.orderList.orderTimeStr).format('YYYY-MM-DD')
+          updateOrder(this.orderList).then(res => {
+            this.$message.success('修改成功！')
+            this.$emit('updatelist')
+            this.dialogVisible = false
+            this.clearData()
+          // eslint-disable-next-line handle-callback-err
+          }).catch(err => {
+            this.$message.error('修改失败，请重试！')
+          })
+        } else {
+          return false
+        }
+      })
     },
-    
+
     /**
      * 产品选中值发生变化时
      */
-    changeProduct(id){
-      console.log("产品")
-      console.log(id)      
+    changeProduct(id) {
       this.getPDetail(id)
     },
     /**
      * 数量框发生变化
      */
-    changehandle(index){
-      console.log("下标")
-      
-      this.productList[index].orderTotal=this.productList[index].orderNum*this.productList[index].salePrice 
-        // this.productList.forEach((item,index)=>{
-        //   console.log("计算啦1")
-        //    this.orderList.orderTotal=parseInt(this.orderList.orderTotal) +parseInt(item.orderActualTotal)
-        //   this.orderList.orderCost=parseInt(this.orderList.orderCost)+parseInt(item.cost)
-        //   console.log("计算啦2")
-        //   console.log(this.orderList.orderTotal)   
-        // })
-           let orderActualTotalSum=0
-          let orderTotalSum=0
-          let costSum=0
-          this.productList.forEach((item,index)=>{
-              console.log("数字框变化")
-              orderTotalSum=orderTotalSum+parseInt(item.orderTotal)
-              costSum=costSum+(parseInt(item.cost))*item.orderNum
-              orderActualTotalSum=orderActualTotalSum+parseInt(item.orderActualTotal)
-             console.log(orderTotalSum,costSum,orderActualTotalSum)
-        })
-        this.orderList.orderTotal=orderTotalSum
-        this.orderList.orderActualTotal=orderActualTotalSum
-        this.orderList.orderCost=costSum
+    changehandle(index) {
+      console.log('下标')
+
+      this.productList[index].orderTotal = this.productList[index].orderNum * this.productList[index].salePrice
+      let orderActualTotalSum = 0
+      let orderTotalSum = 0
+      let costSum = 0
+      this.productList.forEach((item, index) => {
+        console.log('数字框变化')
+        orderTotalSum = orderTotalSum + parseInt(item.orderTotal)
+        costSum = costSum + (parseInt(item.cost)) * item.orderNum
+        orderActualTotalSum = orderActualTotalSum + parseInt(item.orderActualTotal)
+        console.log(orderTotalSum, costSum, orderActualTotalSum)
+      })
+      this.orderList.orderTotal = orderTotalSum
+      this.orderList.orderActualTotal = orderActualTotalSum
+      this.orderList.orderCost = costSum
     },
     /**
      * 添加产品
      */
-    addOrder(index){
-      this.productList.push( {
-          cost:0,
-          salePrice:0,
-          orderNum:0,
-          orderActualTotal:0,
-          productId:'',
-        })
-        this.currentIndex=index+1
+    addOrder(index) {
+      this.productList.push({
+        cost: 0,
+        salePrice: 0,
+        orderNum: 0,
+        orderActualTotal: 0,
+        productId: ''
+      })
+      this.currentIndex = index + 1
     },
     /**
      * 删除产品
      */
-    subOrder(index){
-      this.productList.splice(index,1)
+    subOrder(index) {
+      this.productList.splice(index, 1)
     }
   }
 }
