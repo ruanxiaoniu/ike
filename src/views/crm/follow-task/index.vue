@@ -1,11 +1,11 @@
 <template>
   <div class="tab-container">
     <el-tabs v-model="TopactiveName" style="margin-top:15px;" type="border-card">
-     <el-tab-pane v-for="item in ToptabMapOptions" :key="item.key" :label="item.label" :name="item.key">
-       <keep-alive>
-         <tab-pane v-if="TopactiveName==item.key" :type="item.key" :customerId="Cid" />
-       </keep-alive>
-     </el-tab-pane>
+      <el-tab-pane v-for="item in ToptabMapOptions" :key="item.key" :label="item.label" :name="item.key">
+        <keep-alive>
+          <tab-pane v-if="TopactiveName==item.key" :type="item.key" :customer-id="Cid" />
+        </keep-alive>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -15,8 +15,9 @@
 import tabPane from './TabPane/index'
 
 export default {
-  props:['Cid'],
   components: { tabPane },
+  // eslint-disable-next-line vue/require-prop-types
+  props: ['Cid'],
   data() {
     return {
       ToptabMapOptions: [
@@ -24,12 +25,12 @@ export default {
         { label: '我负责的', key: 'chargeMyself' },
         { label: '全部客户', key: 'allArrange' }
       ],
-      TopactiveName:'allArrange',
-      modelType:'myCustomer'
+      TopactiveName: 'allArrange',
+      modelType: 'myCustomer'
     }
   },
   watch: {
-     TopactiveName(val) {
+    TopactiveName(val) {
       this.$router.push(`${this.$route.path}?tab=${val}`)
     }
   },
@@ -39,7 +40,7 @@ export default {
     if (tab) {
       this.TopactiveName = tab
     }
-    this.$store.dispatch('customer/setmodelType','myCustomer')
+    this.$store.dispatch('customer/setmodelType', 'myCustomer')
   },
   methods: {
     showCreatedTimes() {

@@ -39,9 +39,7 @@
       </el-table-column>
     </el-table>
     <div class="editBtn">
-      <el-button v-if="!addFlag" size="small" type="success" @click="add">添加</el-button>
-      
-      <!-- <el-button @click="select" size="small" type="primary">选择</el-button> -->
+      <el-button v-if="!addFlag" size="small" type="success" @click="add">添加</el-button>  
     </div>
     
   </div>
@@ -69,11 +67,7 @@ export default {
   created() {
      this.getStage()
   },
-  
   methods:{
-    setVisible(){
-      this.$emit('setvisible')
-    },
      getStage(){
        getCustomerAllStage().then(res=>{
          const items=res.data
@@ -85,8 +79,6 @@ export default {
            return ele
          })
          
-        //  this.originalStage[0]=this.stageList[0]
-        //  console.log(this.stageList)
        }).catch(err=>{
        console.log(err)
      })
@@ -114,8 +106,6 @@ export default {
       this.addFlag=true
     },
     select(){
-      // console.log("selection")
-      // console.log(this.selection)
       if(this.selection==null){
         this.$message.error("未选择客户等级！")
       }else{
@@ -176,15 +166,21 @@ export default {
       const params={
         id:row.id
       }
-      console.log("delete")
-       deleteStage(params).then(res=>{
+      this.$confirm(`确认删除：【${row.stageName}】阶段？`, '提示', {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      }).then(() => {
+        deleteStage(params).then(res=>{
             this.$message.success("删除成功！")
             this.getStage()
             this.$emit('updatelist')
-       }).catch(err=>{
-         console.log(err)
-          this.$message.error("修改失败，请重试！")
-       })
+        }).catch(err=>{
+          console.log(err)
+            this.$message.error("修改失败，请重试！")
+        })
+      }).catch(() => {
+
+      })  
     }
   },
   

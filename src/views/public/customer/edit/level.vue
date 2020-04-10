@@ -39,9 +39,7 @@
       </el-table-column>
     </el-table>
     <div class="editBtn">
-      <el-button v-if="!addFlag" size="small" type="success" @click="add">添加</el-button>
-      
-      <!-- <el-button @click="select" size="small" type="primary">选择</el-button> -->
+      <el-button v-if="!addFlag" size="small" type="success" @click="add">添加</el-button>   
     </div>
     
   </div>
@@ -84,9 +82,6 @@ export default {
            ele.originlevelCriteria=ele.levelCriteria
            return ele
          })
-         
-        //  this.originalLevel[0]=this.levelList[0]
-        //  console.log(this.levelList)
        }).catch(err=>{
        console.log(err)
      })
@@ -114,8 +109,6 @@ export default {
       this.addFlag=true
     },
     select(){
-      // console.log("selection")
-      // console.log(this.selection)
       if(this.selection==null){
         this.$message.error("未选择客户等级！")
       }else{
@@ -176,8 +169,11 @@ export default {
       const params={
         id:row.id
       }
-      console.log("delete")
-       deleteLevel(params).then(res=>{
+      this.$confirm(`确定删除【${row.levelName}】等级？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+         deleteLevel(params).then(res=>{
             this.$message.success("删除成功！")
             this.getLevel()
             this.$emit('updatelist')
@@ -185,6 +181,9 @@ export default {
          console.log(err)
           this.$message.error("修改失败，请重试！")
        })
+      }).catch(() => {
+      })
+     
     }
   },
   

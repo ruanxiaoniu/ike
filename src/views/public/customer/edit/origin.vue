@@ -61,9 +61,6 @@ export default {
            ele.originoriginName=ele.originName
            return ele
          })
-         
-        //  this.originalStage[0]=this.originList[0]
-        //  console.log(this.originList)
        }).catch(err=>{
        console.log(err)
      })
@@ -89,8 +86,6 @@ export default {
       this.addFlag=true
     },
     select(){
-      // console.log("selection")
-      // console.log(this.selection)
       if(this.selection==null){
         this.$message.error("未选择客户等级！")
       }else{
@@ -147,8 +142,11 @@ export default {
       const params={
         id:row.id
       }
-      console.log("delete")
-       deleteOrigin(params).then(res=>{
+      this.$confirm(`确定删除【${row.originName}】来源？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+         deleteOrigin(params).then(res=>{
             this.$message.success("删除成功！")
             this.getOrigin()
             this.$emit('updatelist')
@@ -156,6 +154,10 @@ export default {
          console.log(err)
           this.$message.error("修改失败，请重试！")
        })
+      }).catch(() =>{
+        
+      })
+      
     }
   },
   

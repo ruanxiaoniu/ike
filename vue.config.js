@@ -13,7 +13,7 @@ const name = defaultSettings.title || 'i客' // page title
 // For example, Mac: sudo npm run
 // You can change the port by the following methods:
 // port = 9528 npm run dev OR npm run dev --port = 9528
-const port = process.env.port || process.env.npm_config_port || 8082 // dev port
+const port = process.env.port || process.env.npm_config_port || 8080 // dev port
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -38,19 +38,18 @@ module.exports = {
     },
     proxy: {
       '/api': {
-        target :'http://10.20.5.22:8081',
-        // target :'http://localhost:8081',
+        // target: 'http://10.20.5.22:8081',
+        target: 'http://192.168.0.33:8081',
         // target :'http://10.64.2.44:8081',
         // target :'http://172.18.44.14:8081',
         ws: true,
         changeOrigin: true,
-        pathRewrite:{
-          // '^/api':'http://localhost:8081'
+        pathRewrite: {
+          '^/api': 'http://192.168.0.33:8081'
           // '^/api':'http://10.64.2.44:8081'
-          '^/api':'http://10.20.5.22:8081'
-          
+          // '^/api': 'http://10.20.5.22:8081'
         }
-      },
+      }
     }
   },
   configureWebpack: {

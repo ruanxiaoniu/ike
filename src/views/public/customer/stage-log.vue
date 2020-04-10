@@ -12,8 +12,10 @@
         </div>
         <el-pagination
           small
-          layout="prev, pager, next"
-          :total="10"
+          layout="total, prev, pager, next"
+          :size="pageParams.size"
+          :total="pageParams.total"
+          :current-page="current"
           >
         </el-pagination>
       </el-card>
@@ -30,12 +32,25 @@ export default {
       logList:null,
       params:{
         Cid:''
+      },
+      pageParams: {
+        total: 0,
+        size: 5,
+        current: 1,
+      }
+    }
+  },
+  watch:{
+    "Cid": {
+      immediate: true,
+      handler: function(){
+        this.getstageLog()
       }
     }
   },
   created() {
     if(this.Cid){
-      this.params.Cid=this.Cid
+      this.params.Cid=this.Cid      
       this.getstageLog()
     }
     
@@ -46,16 +61,15 @@ export default {
     }
   },
   methods:{
-    getstageLog(){
-      // const params={
-      //   Cid:this.$store.getters.customerRowList.id,
-      //   pageNum:1,
-      //   pageSize:10
-      // }
-      stageLog(params).then(res=>{
+    getstageLog(){      
+      stageLog(this.params).then(res=>{
          this.logList=res.data.records
-         console.log("logList")
-         console.log(this.logList)
+         this.pageParams.total = res.data.total
+         this.pageParams.size = res.data.size
+         this.pageParams.current = res.data.current
+      }).catch(err => {
+        console.log('出错了');
+        console.log(err);
       })
     },
    

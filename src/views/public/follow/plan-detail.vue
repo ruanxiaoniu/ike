@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div>
+  <div v-if="dialogVisible">
+    <el-dialog title="跟进计划详情" :visible.sync="dialogVisible">
       <el-form ref="plan" :model="plan" label-position="right" label-width="180px" style="width: 400px; margin-left:50px;">
           <el-form-item label="跟进计划时间：" prop="planDate">
             <span>{{plan.planDate}}</span>
@@ -34,7 +34,7 @@
         <el-form v-if="iscomplete!=plan.iscomplete&&plan.iscomplete==0" :model="plan" res="plan" :rules="rules" label-position="right" label-width="180px" style="width: 400px; margin-left:50px;">
           <el-form-item label="跟进时间：" prop="followTime">
             <el-row>
-              <el-col span="8">
+              <el-col :span="8">
                 <el-date-picker
                   v-model="plan.followTime"
                   type="datetime"
@@ -45,21 +45,21 @@
           </el-form-item>
           <el-form-item label="跟进方式：" prop="followWay">
             <el-row>
-              <el-col span="24">
+              <el-col :span="24">
                 <el-input v-model="plan.followWay"></el-input>
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item label="跟进过程：" prop="followDetail">
             <el-row>
-              <el-col span="24">
+              <el-col :span="24">
                 <el-input v-model="plan.followDetail" type="textarea"></el-input>
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item label="跟进结果：" prop="followResult">
             <el-row>
-              <el-col span="24">
+              <el-col :span="24">
                 <el-input v-model="plan.followResult"></el-input>
               </el-col>
             </el-row>
@@ -68,20 +68,32 @@
         <el-dialog title="联系人详情：" :visible.sync="dialogFlag" append-to-body="">
           <relationDetail :Rid="Rid"></relationDetail>
         </el-dialog>
-    </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import {planDetail,planComplete,planFail} from '@/api/follow'
 import relationDetail from '../relation/relationById'
 export default {
-  props:['type','planId'],
+  // props:['type','planId'],
   components:{
     relationDetail
   },
   data() {
     return {
-      plan:null,
+      dialogVisible: false,
+      plan:{
+        followResult: '',
+        followDetail: '',
+        followWay: '',
+        followTime: '',
+        iscomplete: '',
+        employeeName: '',
+        planContent: '',
+        planDate: '',
+        relationName: '',
+        customerName: ''
+      },
       iscomplete:0,//保存原始计划完成状态
       Rid:'',
       Cid:'',
@@ -102,17 +114,27 @@ export default {
       }
     }
   },
-  watch: {
-    planId(newVal){
-      if(newVal){
-        this.getDetail()
-      }
-    }
-  },
-  created() {
-    this.getDetail()
-  },
   methods: {
+    clearData(){
+      this.plan = {
+        followResult: '',
+        followDetail: '',
+        followWay: '',
+        followTime: '',
+        iscomplete: '',
+        employeeName: '',
+        planContent: '',
+        planDate: '',
+        relationName: '',
+        customerName: ''
+      }
+    },
+    show(item){
+      this.clearData()
+      this.planId = item.id
+      this.getDetail()
+      this.dialogVisible = true
+    },
     /**
      * 获取改计划的详情
      */

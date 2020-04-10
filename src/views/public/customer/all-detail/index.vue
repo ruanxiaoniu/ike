@@ -1,5 +1,5 @@
  <template>
- <div class="app-container">
+   <div class="app-container">
   <header>{{customerName}}详情</header>
    <el-tabs>
       <el-tab-pane  label="详细资料">
@@ -31,7 +31,7 @@
           <stageLog :Cid="Cid"></stageLog>
       </el-tab-pane>
     </el-tabs>
-  </div>
+  </div> 
 </template>
 <script>
 import customerDetail from '../../../public/customer/part-detail'
@@ -58,10 +58,13 @@ export default {
   data() {
     return {
       Cid:'',
-      customerName:''
+      customerName:'',
+      show: '',
     }
   },
   created(){
+    console.log('？？？？？？？');
+    
     this.Cid=this.$route.query.customerId
     this.customerName=this.$route.query.customerName
   }

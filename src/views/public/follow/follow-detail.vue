@@ -1,46 +1,41 @@
 <template>
-  <div>
-    <el-form ref="followForm" :model="follow" label-width="200px" :rules="rules" style="width:500px">
+  <div v-if="dialogVisible">
+    <el-dialog :title="type == 'edit' ? '修改跟进详情': '跟进详情'" :visible.sync="dialogVisible">
+      <el-form ref="followForm" :model="follow" label-width="200px" :rules="rules" style="width:500px">
       <el-form-item label="跟进时间:" prop="followTime">
           <el-date-picker
-            v-if="editFlag"
+            v-if="type == 'edit'"
             v-model="follow.followTime"
             type="datetime"
           placeholder="选择跟进时间" />
         <span v-else>{{follow.followTime|formateDate}}</span>
       </el-form-item>
-      <el-form-item v-if="editFlag" label="客户联系人名称" prop="relationName"> 
-        <!-- <el-input v-model="follow.relationName" v-if="editFlag"></el-input> -->
-        <el-select v-model="relationId" placeholder="请选择联系人">
-          <el-option v-for="(item) in relationList" :key="item.id" :label="item.relationName" :value="item.id"/>
+      <el-form-item v-if="type == 'edit'" label="客户联系人名称" prop="relationName"> 
+        <el-select v-model="relation" placeholder="请选择联系人" value-key="relationId">
+          <el-option v-for="(item) in relationList" :key="item.relationId" :label="item.relationName" :value="item"/>
         </el-select>
       </el-form-item>
-      <el-form-item v-if="editFlag" label="客户名称" prop="customerName">
-        <el-input v-model="follow.customerName" v-if="editFlag"></el-input>
+      <el-form-item v-if="type == 'edit'" label="客户名称" prop="customerName">
+        <el-input v-model="follow.customerName" v-if="type == 'edit'"></el-input>
       </el-form-item>
       <el-form-item v-else label="客户联系人名称[客户名称]:">         
         <span >{{follow.relationName}}&nbsp;&nbsp;[{{follow.customerName}}]</span>
       </el-form-item>
       <el-form-item label="跟进方式:" prop="followWay">
-        <el-input v-model="follow.followWay" v-if="editFlag"></el-input>
+        <el-input v-model="follow.followWay" v-if="type == 'edit'"></el-input>
         <span v-else>{{follow.followWay}}</span>
       </el-form-item>
       <el-form-item label="跟进过程:" prop="followDetail">
-         <el-input type="textarea" v-if="editFlag" v-model="follow.followDetail"></el-input>
+         <el-input type="textarea" v-if="type == 'edit'" v-model="follow.followDetail"></el-input>
         <span v-else>{{follow.followDetail}}</span>
       </el-form-item>
       <el-form-item label="跟进结果:" prop="followResult">
-         <el-input v-if="editFlag" v-model="follow.followResult"></el-input>
+         <el-input v-if="type == 'edit'" v-model="follow.followResult"></el-input>
         <span v-else>{{follow.followResult}}</span>
       </el-form-item>
        <el-form-item label="客户状态:" prop="customerStatus">
-           <el-select v-if="editFlag" v-model="follow.customerStatus" style="width:100%" placeholder="请选择客户状态">
-                <el-option label="冷却" value="冷却"></el-option>
-                <el-option label="潜在" value="潜在"></el-option>
-                <el-option label="意向" value="意向"></el-option>
-                <el-option label="成交" value="成交"></el-option>
-                <el-option label="失败" value="失败"></el-option>
-                <el-option label="流失" value="流失"></el-option>
+           <el-select v-if="type == 'edit'" v-model="follow.customerStatus" style="width:100%" placeholder="请选择客户状态">
+                <el-option v-for="item in customerStatus" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         <span v-else>{{follow.customerStatus}}</span>
       </el-form-item>
@@ -53,7 +48,7 @@
             remote
             reserve-keyword
             :remote-method="remoteMethod"
-            v-if="editFlag"
+            v-if="type == 'edit'"
             style="width:100%"
           >
             <el-option v-for="(item) in employeeOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
@@ -62,7 +57,7 @@
       </el-form-item>
        <el-form-item label="录入时间:" prop="createTime">
           <el-date-picker
-            v-if="editFlag"
+            v-if="type == 'edit'"
             v-model="follow.createTime"
             type="datetime"
           placeholder="选择跟进时间" />
@@ -70,34 +65,55 @@
       </el-form-item>
         
     </el-form>
-    <div style="margin-left:600px;margin-top:50px" v-if="editFlag">
-          <el-button  size="small" icon="el-icon-cancel" @click="cancel">取消</el-button>
-          <el-button  size="small" type="primary" @click="editDetail('followForm')">确认</el-button>
+    <div style="margin-left:400px;margin-top:50px" v-if="type == 'edit'">
+      <el-button  size="small" icon="el-icon-cancel" @click="cancel">取消</el-button>
+      <el-button  size="small" type="primary" @click="editDetail('followForm')">确认</el-button>
     </div>
+    </el-dialog>
+   
   </div>
 </template>
 <script>
 import {getFollowDetail,updateFollow} from '@/api/follow'
 import {getOneRelation} from '@/api/customer'
 import {getEmployeeAll} from '@/api/employee'
+import { customerStatus } from '@/utils/common.js';
 import moment from 'moment'
 
 export default {
-  props:['id','edit'],
   filters:{
     formateDate(date){
-       return moment(date).format('YYYY-MM-DD HH:MM:SS')
+      if(date){
+        return moment(date).format('YYYY-MM-DD HH:MM:SS')
+      }
+      return ''
     }
   },
   data() {
     return {
-      follow:null,
+      customerStatus,
+      id: '',
+      Cid: '',
+      dialogVisible: false,
+      follow:{
+        followTime: '',
+        relationName: '',
+        customerName: '',
+        followWay: '',
+        followDetail:'',
+        followResult: '',
+        customerStatus: '',
+        employeeName: '',
+        createTime: ''
+      },
       params:{},
-      editFlag:false,
       employeeOptions:null,
       employeeFilter:null,
       relationList:null,
-      relationId:'',
+      relation:{
+        relationId: '',
+        relationName: ''
+      },
       rules:{
         followWay:[
           {required:true,message:'请输入跟进方式',trigger:'blur'}
@@ -129,30 +145,34 @@ export default {
       }
     }
   },
-  created() {
-    if(this.id){
-      this.$set(this.params,'id',this.id)
-    }
-    if(this.edit){
-      this.editFlag=this.edit
-    }
-    console.log("editttttt")
-    console.log(this.editFlag)
-    this.getEmployee()
-    this.getRelation()
-    this.getDetail()
-  },
-  watch:{
-    id(newVal){
-      this.params.id=newVal
-       this.getDetail()
-    },
-    edit(newVal){
-       this.editFlag=newVal
-      //  this.getDetai()
-    }
-  },
   methods:{
+    show(item, flag){
+      // this.$nextTick(() => {
+        this.type = flag    
+        this.id = item.id
+        this.params.id = item.id
+        this.Cid = item.customerId
+        this.dialogVisible = true
+        this.relation.relationId = item.relationId
+        this.relation.relationName = item.relationName        
+        this.getDetail()
+        this.getEmployee()
+        this.getRelation()
+      // })
+    },
+    clearData(){
+       this.follow = {
+        followTime: '',
+        relationName: '',
+        customerName: '',
+        followWay: '',
+        followDetail:'',
+        followResult: '',
+        customerStatus: '',
+        employeeName: '',
+        createTime: ''
+      }
+    },
      /**
      * 获取所有成员，用于搜索
      * method:getEmployee()
@@ -170,12 +190,17 @@ export default {
     */
      getRelation(){
        let params={
-         Cid:this.id
+         Cid:this.Cid
        }
-       console.log("Ciiiiiiiii")
-       console.log(this.Cid)
        getOneRelation(params).then(res=>{
-         this.relationList=res.data
+         let data = res.data 
+         this.relationList=[]
+         data.map(item => {
+           this.relationList.push({
+             relationId: item.id,
+             relationName: item.relationName
+           })
+         })
        }).catch(err=>{
          
        })
@@ -185,11 +210,9 @@ export default {
      * method:getFollowDetail()
      */
     getDetail(){
+      this.clearData()
       getFollowDetail(this.params).then(res=>{
-        this.follow=res.data
-        this.relationId=this.follow.relationName
-        console.log("folloe???")
-        console.log(this.follow)
+          this.follow =res.data
       }).catch(err=>{
         
       })
@@ -212,32 +235,23 @@ export default {
         this.employeeOptions=this.employeeFilter
       }
     },
-    /**
-     * 点击取消，触发父组件方法
-     * method:cancel()
-     */
     cancel(){
-      this.$emit('setedit')
+      this.clearData()
+      this.dialogVisible = false
     },
-    /**
-     * 点击确定，验证并提交表单，触发父组件方法
-     * method:cancel()
-     */
     editDetail(formName){
         this.$refs[formName].validate(valid=>{
         if(valid){
-          /**
-           * 修改请求
-          */
-         this.follow.relationId=this.relationId
-         updateFollow(this.follow).then(res=>{
-           //更新跟进列表
-           this.$emit('updatefollow')
-           this.$emit('setdialog')
-           this.$message.success('修改成功！')
-         }).catch(err=>{
-           this.$message.error('修改失败，请重试！')
-         })
+          this.follow.relationId = this.relation.relationId
+          this.follow.relationName = this.relation.relationName
+          updateFollow(this.follow).then(res=>{
+            //更新跟进列表
+            this.$emit('updatefollow')
+            this.$message.success('修改成功！')
+            this.dialogVisible = false
+          }).catch(err=>{
+            this.$message.error('修改失败，请重试！')
+          })
         }else{
           return false
         }

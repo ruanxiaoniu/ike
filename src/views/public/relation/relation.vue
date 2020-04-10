@@ -4,10 +4,10 @@
       <el-button  size="small"  icon="el-icon-delete" @click="deleteRelation">
             删除
       </el-button>
-      <el-button :loading="downloadLoading" size="small" icon="el-icon-plus" @click="handle('add')" >
+      <el-button  size="small" icon="el-icon-plus" @click="add" >
         新建
       </el-button>
-      <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="handle('edit')" >
+      <el-button size="small" icon="el-icon-edit" @click="edit" >
         修改
       </el-button>
     </div>
@@ -99,9 +99,7 @@
             </template>
           </el-table-column>
      </el-table>
-    <el-dialog :title="textMap[title]" :visible.sync="adddialogFlag" width="30%">
-      <addUpdate :Rid="Rid" :editFlag="editFlag" :Cid="Cid" @setdialog="adddialogFlag=!adddialogFlag" @seteditflag="editFlag=!editFlag" @updatelist="getRelation"></addUpdate>
-    </el-dialog>
+    <addUpdate ref="addUpdate" :Cid="Cid"  @updatelist="getRelation"></addUpdate>
   </div>
 </template>
 <script>
@@ -141,7 +139,6 @@ export default {
   },
   created() {
     this.rowList=this.$store.getters.customerRowList
-    console.log("raltionlaal")
     if(this.Cid){
       this.params.Cid=this.Cid
     }else{
@@ -151,31 +148,13 @@ export default {
     this.getRelation()
   },
   watch:{
-     watchCid:{
-       deep:true,
-       handler:function(val){
-          this.params.Cid=val
-          console.log("relation啦啦啦")
-          console.log(this.params)
-          this.getRelation()
-       }
-     },
      Cid(newVal){
        this.params.Cid=newVal
-        console.log("relation啦啦啦")
-        console.log(this.params)
         this.getRelation()
      }
   },
-  computed: {
-    watchCid(){
-      return this.$store.getters.customerRowList.id
-    }
-  },
   methods:{
     getRelation(){
-      console.log("RRRR")
-      console.log(this.params)
       getOneRelation(this.params).then(res=>{
         this.list=res.data
       })
@@ -221,26 +200,18 @@ export default {
           });          
         });
     },
-    /**
-     * 添加联系人
-     */
-    handle(type){
-      this.title=type
-      if(type=='edit'){
-        if(this.multipleSelection.length<=0){
+    edit(){
+       if(this.multipleSelection.length<=0){
           this.$message.error('请选择需要修改计划！')
         }else if(this.multipleSelection.length>1){
           this.$message.error('只能选择一项进行修改！')
         }else{
-          this.editFlag=true
           this.Rid=this.multipleSelection[0].id
-          this.adddialogFlag=true
+          this.$refs.addUpdate.show(this.multipleSelection[0].id)
         }
-      }else{
-        this.editFlag=false
-        this.adddialogFlag=true
-      }
-      
+    },
+    add(){
+      this.$refs.addUpdate.show()
     }
   }
 }

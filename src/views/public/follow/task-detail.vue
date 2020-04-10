@@ -1,15 +1,15 @@
 <template>
-  <div>
-    <div>
+  <div v-if="dialogVisible">
+    <el-dialog title="跟进任务详情" :visible.sync="dialogVisible">
       <el-form ref="arrange" :model="arrange" label-position="right" label-width="180px" style="width: 400px; margin-left:50px;">
           <el-form-item label="安排人名称：" prop="arrangeName">
             <span>{{arrange.arrangeName}}</span>
           </el-form-item>
           <el-form-item label="任务创建时间" prop="createTime">
-            <span>{{arrange.createTime}}</span>
+            <span>{{arrange.createTime| formateTime}}</span>
           </el-form-item>
-          <el-form-item label="客户：">
-            <span class="link-type" @click="handle(arrange.customerId,'customer')">[{{arrange.customerName}}]</span>
+          <el-form-item label="客户：" prop="customerName">
+            <span class="link-type" @click="handle(arrange.customerId,'customer')">{{arrange.customerName}}</span>
           </el-form-item>
           <el-form-item label="客户联系人：" prop="relationName">
             <span class="link-type" @click="handle(arrange.relationId,'relation')">{{arrange.relationName}}</span>
@@ -21,7 +21,7 @@
             <span>{{arrange.chargeName}}</span>
           </el-form-item>
           <el-form-item label="任务执行时间：" prop="executeTime">
-            <span>{{arrange.executeTime}}</span>
+            <span>{{arrange.executeTime | formateTime}}</span>
           </el-form-item>
           <el-form-item label="已读状态：" prop="isread">
             <span v-if="arrange.isread==null">未读</span>
@@ -45,7 +45,7 @@
         <el-form v-if="iscomplete!=arrange.iscomplete&&arrange.iscomplete==0" :model="arrange" res="arrange" :rules="rules" label-position="right" label-width="180px" style="width: 400px; margin-left:50px;">
           <el-form-item label="跟进时间：" prop="followTime">
             <el-row>
-              <el-col span="8">
+              <el-col :span="8">
                 <el-date-picker
                 v-model="arrange.followTime"
                 type="datetime"
@@ -56,21 +56,21 @@
           </el-form-item>
           <el-form-item label="跟进方式：" prop="followWay">
             <el-row>
-              <el-col span="24">
+              <el-col :span="24">
                 <el-input v-model="arrange.followWay"></el-input>
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item label="跟进过程：" prop="followDetail">
             <el-row>
-              <el-col span="24">
+              <el-col :span="24">
                 <el-input v-model="arrange.followDetail" type="textarea"></el-input>
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item label="跟进结果：" prop="followResult">
             <el-row>
-              <el-col span="24">
+              <el-col :span="24">
                 <el-input v-model="arrange.followResult"></el-input>
               </el-col>
             </el-row>
@@ -79,23 +79,45 @@
         <el-dialog title="联系人详情：" :visible.sync="dialogFlag" append-to-body="">
           <relationDetail :Rid="Rid"></relationDetail>
         </el-dialog>
-    </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import {arrangeFail,arrangeComplete,arrangeDetail} from '@/api/arrange'
 import relationDetail from '../relation/relationById'
+import moment from 'moment'
 export default {
-  props:['type','Aid'],
+  // props:['type','Aid'],
+   filters: {
+    formateTime(time) {
+      return moment(time).format('YYYY-MM-DD HH:MM:SS')
+    }
+  },
   components:{
     relationDetail
   },
   data() {
     return {
-      arrange:null,
+      dialogVisible: false,
+      arrange:{
+        arrangeName: '',
+        followResult: '',
+        followDetail: '',
+        followWay: '',
+        followTime: '',
+        iscomplete: '',
+        isread: '',
+        executeTime: '',
+        chargeName: '',
+        relationName: '',
+        customerName: '',
+        createTime: '',
+        arrangeName: ''
+      },
       iscomplete:0,//保存原始计划完成状态
       Rid:'',
       Cid:'',
+      Aid: '',
       dialogFlag:false,
       rules:{
         followDetail:[
@@ -114,17 +136,43 @@ export default {
     }
   },
 
-  watch: {
-    Aid(newVal){
-      if(newVal){
-        this.getDetail()
-      }
-    }
-  },
-  created() {
-    this.getDetail()
-  },
+  // watch: {
+  //   Aid(newVal){
+  //     if(newVal){
+  //       this.getDetail()
+  //     }
+  //   }
+  // },
+  // created() {
+  //   this.getDetail()
+  // },
+ 
   methods: {
+    show(id){
+      this.clearData()
+      if(id) {
+        this.Aid = id
+        this.getDetail()
+        this.dialogVisible = true
+      }
+    },
+    clearData(){
+      this.arrange = {
+        arrangeName: '',
+        followResult: '',
+        followDetail: '',
+        followWay: '',
+        followTime: '',
+        iscomplete: '',
+        isread: '',
+        executeTime: '',
+        chargeName: '',
+        relationName: '',
+        customerName: '',
+        createTime: '',
+        arrangeName: ''
+      }
+    },
     /**
      * 获取改计划的详情
      */

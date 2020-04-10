@@ -3,8 +3,7 @@
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
-          <baseData v-if="activeName==item.key" :type="item.key"></baseData>
-          <!-- <tab-pane v-if="activeName==item.key" :type="item.key"  /> -->
+          <baseData v-if="activeName==item.key" :type="item.key" />
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -12,11 +11,10 @@
 </template>
 
 <script>
-import tabPane from './TabPane/index'
 import baseData from '../../public/follow/base'
 export default {
   name: 'Tab',
-  components: { tabPane ,baseData},
+  components: { baseData },
   data() {
     return {
       tabMapOptions: [
@@ -27,8 +25,8 @@ export default {
         { label: '本周跟进', key: 'this_week' },
         { label: '本月跟进', key: 'this_month' }
       ],
-      activeName:'all',
-      modelType:'myCustomer'
+      activeName: 'all',
+      modelType: 'myCustomer'
     }
   },
   watch: {
@@ -42,10 +40,10 @@ export default {
     if (tab) {
       this.activeName = tab
     }
-    this.$store.dispatch('customer/setmodelType','myCustomer')
+    this.$store.dispatch('customer/setmodelType', 'myCustomer')
   },
-  mounted(){
-    
+  mounted() {
+
   },
   methods: {
     showCreatedTimes() {

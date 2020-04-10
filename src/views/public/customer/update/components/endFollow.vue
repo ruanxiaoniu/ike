@@ -1,13 +1,13 @@
 <template>
   <div>
     <el-form label-width="130px" label-position="left">
-      <el-form-item label="主联系人手机号" >
-          <el-date-picker
-            v-model="value3"
-            type="datetime"
-            placeholder="选择日期时间"
-            default-time="12:00:00">
-          </el-date-picker>
+      <el-form-item label="主联系人手机号">
+        <el-date-picker
+          v-model="form.lastFollowTime"
+          type="datetime"
+          placeholder="选择日期时间"
+          default-time="00:00:00"
+        />
       </el-form-item>
     </el-form>
     <br>
@@ -20,10 +20,14 @@
 </template>
 <script>
 export default {
+  props: ['value'],
   data() {
     return {
-      
+      form: {
+        Cid: '',
+        lastFollowTime: ''
+      }
     }
-  },
+  }
 }
 </script>
