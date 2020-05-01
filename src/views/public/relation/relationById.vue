@@ -6,7 +6,8 @@
         <span>{{relationList.relationName}}</span>
       </el-form-item>
       <el-form-item label="性别：">
-        <span>{{relationList.relationSex}}</span>
+        <span v-if="relationList.relationSex == false">女</span>
+        <span v-else>男</span>
       </el-form-item>
       <el-form-item label="职务：">
         <span>{{relationList.relationPosition}}</span>

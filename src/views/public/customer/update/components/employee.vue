@@ -3,7 +3,7 @@
     <el-form label-width="70px" label-position="left">
       <el-form-item label="负责人">
         <el-select v-model="employee" value-key="id" placeholder="请选择负责人">
-          <el-option v-for="item in employeeOption" :label="item.employeeName" :value="item"></el-option>
+          <el-option v-for="item in employeeOption" :label="item.employeeName" :value="item" :key="item.id"></el-option>
         </el-select>
       </el-form-item>
     </el-form>

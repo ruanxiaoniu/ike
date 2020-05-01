@@ -104,7 +104,6 @@ export default {
     'followArrange.customerId': function(newVal) {
       this.Cid = newVal
       if (newVal !== '') {
-        console.log(newVal)
         this.getRelation()
       }
     }

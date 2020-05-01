@@ -1,34 +1,38 @@
 import request from '@/utils/request'
 
 //获取全部投诉记录
-export function listAll(){
+export function listAll(params){
   return request({
     url: 'complaint/listAll',
-    method: 'get'
+    method: 'get',
+    params: params
   })
 }
 
 //获取由我负责的记录
-export function listCurHandle(){
+export function listCurHandle(params){
   return request({
     url: 'complaint/listCurHandle',
-    method: 'get'
+    method: 'get',
+    params: params
   })
 }
 
 //获取未处理的记录
-export function listUnHandle(){
+export function listUnHandle(params){
   return request({
     url: 'complaint/listUnHandle',
-    method: 'get'
+    method: 'get',
+    params: params
   })
 }
 
 //获取已处理的记录
-export function listIsHandle(){
+export function listIsHandle(params){
   return request({
     url: 'complaint/listIsHandle',
     method: 'get',
+    params: params
   })
 }
 
@@ -41,11 +45,11 @@ export function batchDelete(params){
   })
 }
 
-//修改投诉记录
-export function updateComplaint(params){
+//修改投诉状态
+export function updateComplaintStatus(params){
   return request({
-    url:'/complaint/update',
-    method:'put',
+    url:'/complaintHandle/handleComplaint',
+    method:'post',
     params,
   })
 }
@@ -63,5 +67,14 @@ export function getHandlesById(complaintId){
   return request({
     url:`/complaint/handle/listByComplaintId?complaintId=${complaintId}`,
     method:'get',
+  })
+}
+
+//新增
+export function addComplaint(params){
+  return request({
+    url:`complaint/insert`,
+    method:'post',
+    data: params
   })
 }

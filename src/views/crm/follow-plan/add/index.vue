@@ -101,23 +101,6 @@ export default {
         this.getRelation()
       }
     }
-    // planId(newVal) {
-    //   if (this.planId) {
-    //     this.getPlan()
-    //   }
-    // },
-    // planId(newVal) {
-    //   if (newVal) {
-    //     this.getPlan()
-    //   }
-    // }
-    // Cid(newVal){
-    //   if(newVal){
-    //     console.log("添加计划")
-    //     console.log(newVal)
-    //     this.getRelation()
-    //   }
-    // }
   },
   methods: {
     show(item) {

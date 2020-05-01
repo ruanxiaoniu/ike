@@ -39,13 +39,13 @@ module.exports = {
     proxy: {
       '/api': {
         // target: 'http://10.20.5.22:8081',
-        target: 'http://192.168.0.33:8081',
+        target: 'http://192.168.31.78:8081',
         // target :'http://10.64.2.44:8081',
         // target :'http://172.18.44.14:8081',
         ws: true,
         changeOrigin: true,
         pathRewrite: {
-          '^/api': 'http://192.168.0.33:8081'
+          '^/api': 'http://192.168.31.78:8081'
           // '^/api':'http://10.64.2.44:8081'
           // '^/api': 'http://10.20.5.22:8081'
         }
