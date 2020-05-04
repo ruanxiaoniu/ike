@@ -67,6 +67,8 @@ import relation from '../../../public/relation/relation'
 import { getOneRelation } from '@/api/customer'
 import customerSelect from '../../../public/customer/customerSelect/customerSelect'
 import { addFollow } from '@/api/follow'
+import {parseTime} from '@/utils/formateDate'
+import moment from 'moment'
 export default {
   components: {
     relation,

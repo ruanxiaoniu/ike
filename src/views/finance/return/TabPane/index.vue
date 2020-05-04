@@ -39,12 +39,6 @@
       <el-button :loading="downloadLoading" size="small" icon="el-icon-edit" @click="editOrder(true,'edit')" >
         修改
       </el-button>
-      <el-button :loading="downloadLoading" size="small" icon="el-icon-upload" @click="handleDownload">
-        导入
-      </el-button>
-      <el-button :loading="downloadLoading" size="small" icon="el-icon-document" @click="handleDownload">
-        导出
-      </el-button>
     </div>
     <p></p>
   <el-table :data="returnList" border fit highlight-current-row style="width: 100%"  @selection-change="handleSelectionChange">

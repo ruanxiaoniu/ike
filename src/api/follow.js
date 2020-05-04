@@ -34,6 +34,9 @@ export function deleteFollow(params){
 }
 //添加联系跟进内容
 export function addFollow(params){
+  console.log('follow');
+  console.log(params);
+  
   return request({
     url:'/follow/create',
     method: 'post',

@@ -31,7 +31,7 @@
 
       <el-table-column label="下单时间" min-width="120px" prop="orderTime" align="center">
         <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.orderTime }}</span>
+          <span>{{ scope.row.orderTime }}</span>
         </template>
       </el-table-column>
 
@@ -61,21 +61,22 @@
 
       <el-table-column class-name="status-col" label="创建时间" min-width="120px" prop="createTime" align="center">
         <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.createTime }}</span>
+          <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
 
     </el-table>
     <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getOrder" />
 
-    <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag" width="60%">
+    <!-- <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag" width="60%">
       <orderDetail v-if="title=='orderProduct'" :oid="Oid" />
       <employee v-else-if="title=='employee'" :id="Eid" />
-    </el-dialog>
+    </el-dialog> -->
     <search ref="search" @updatelist="searchUpdate" />
     <addUpdate ref="addUpdate" @updatelist="getOrder" />
     <relation ref="relation" />
     <employee ref="employee" />
+    <orderDetail ref="orderDetail" />
   </div>
 </template>
 
@@ -325,6 +326,9 @@ export default {
     },
     viewEmployee(item) {
       this.$refs.employee.show(item.employeeId)
+    },
+    viewOrder(item){
+      this.$refs.orderDetail.show(item.id)
     }
   }
 }

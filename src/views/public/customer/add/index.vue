@@ -5,14 +5,14 @@
       <el-form ref="customer" :rules="rules" :model="customer" label-position="left" label-width="150px" style="width: 500px; margin-left:50px;">
         <el-form-item label="客户名称" prop="customerName">
           <el-row>
-            <el-col span="18">
+            <el-col :span="18">
               <el-input v-model="customer.customerName" />
             </el-col>
           </el-row>
         </el-form-item>
         <el-form-item label="负责人" prop="employeeId">
           <el-row>
-            <el-col span="18">
+            <el-col :span="18">
               <!-- 可进行远程搜索 -->
               <el-select
                 v-model="customer.employeeId"
@@ -36,19 +36,19 @@
         </el-form-item>
         <el-form-item label="客户阶段" prop="customerStageId">
           <el-row>
-            <el-col span="18">
+            <el-col :span="18">
               <el-select v-model="customer.customerStageId" style="width:100%" placeholder="请选择客户阶段" @change="changeStage">
                 <el-option v-for="(item) in stageList" :key="item.id" :label="item.stageName" :value="item.id" />
               </el-select>
             </el-col>
-            <el-col span="6" style="text-align:right">
+            <el-col :span="6" style="text-align:right">
               <el-button size="small" icon="el-icon-edit" @click="handle('stage')">编辑</el-button>
             </el-col>
           </el-row>
         </el-form-item>
         <el-form-item label="客户等级" prop="customerLevelId">
           <el-row>
-            <el-col span="18">
+            <el-col :span="18">
               <el-select v-model="customer.customerLevelId" style="width:100%" placeholder="请选择客户等级" @change="changeStage">
                 <el-option v-for="(item) in levelList" :key="item.id" :label="item.levelName" :value="item.id" />
               </el-select>
@@ -60,7 +60,7 @@
         </el-form-item>
         <el-form-item label="客户状态" prop="customerState">
           <el-row>
-            <el-col span="18">
+            <el-col :span="18">
               <el-select v-model="customer.customerState" style="width:100%" placeholder="请选择客户状态">
                 <el-option label="冷却" value="冷却" />
                 <el-option label="潜在" value="潜在" />
@@ -74,26 +74,26 @@
         </el-form-item>
         <el-form-item label="客户来源" prop="customerOriginId">
           <el-row>
-            <el-col span="18">
+            <el-col :span="18">
               <el-select v-model="customer.customerOriginId" style="width:100%" placeholder="请选择客户来源" @change="changeStage">
                 <el-option v-for="(item) in originList" :key="item.id" :label="item.originName" :value="item.id" />
               </el-select>
             </el-col>
-            <el-col span="6" style="text-align:right">
+            <el-col :span="6" style="text-align:right">
               <el-button size="small" icon="el-icon-edit" @click="handle('origin')">编辑</el-button>
             </el-col>
           </el-row>
         </el-form-item>
         <el-form-item label="客户介绍" prop="customerIntroduce">
           <el-row>
-            <el-col span="18">
+            <el-col :span="18">
               <el-input v-model="customer.customerIntroduce" />
             </el-col>
           </el-row>
         </el-form-item>
         <el-form-item label="客户地址" prop="customerAddress">
           <el-row>
-            <el-col span="18">
+            <el-col :span="18">
               <el-input v-model="customer.customerAddress" type="textarea" />
             </el-col>
           </el-row>
@@ -143,6 +143,7 @@ import levelEdit from '../edit/level'
 import originEdit from '../edit/origin'
 import { getCustomerAllOrigin, getCustomerAllStage, getCustomerAllLevel, addCustomer } from '@/api/customer'
 import { getEmployeeAll } from '@/api/employee'
+import moment from 'moment'
 export default {
   components: {
     stageEdit,
@@ -317,7 +318,10 @@ export default {
     add(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          // console.log(this.customer)
+          this.customer.followTime = moment(this.customer.followTime).format('YYYY-MM-DD HH:SS:MM')
+          console.log('moment');
+          
+          console.log(this.customer)
           addCustomer(this.customer).then(res => {
             this.$emit('updatelist')
             this.dialogVisible = false

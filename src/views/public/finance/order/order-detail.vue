@@ -95,31 +95,50 @@
 <script>
 import {orderById} from '@/api/order'
 export default {
-  props:['Oid'],
+  // props:['Oid'],
   data() {
     return {
       dialogVisible: false,
       params:{
         id:''
       },
-      orderList:null
-    }
-  },
-  watch: {
-    Oid(newVal){
-      if(newVal){
-        this.params.id=newVal
-        this.getDetail()
+      // Oid:'',
+      orderList: {
+        employeeName: '',
+        relationName: '',
+        orderActualTotal: '',
+        orderCost: '',
+        orderGetSum: '',
+        paymentMethod: '',
+        note: '',
+        orderState: '',
+        modifyTime: '',
+        orderProductVoList: [],
       }
     }
   },
+  watch: {
+    // Oid(newVal){
+    //   if(newVal){
+    //     this.params.id=newVal
+    //     this.getDetail()
+    //   }
+    // }
+  },
   created() {
-    if(this.Oid){
-      this.params.id=this.Oid
-      this.getDetail()
-    }
+    // if(this.Oid){
+    //   this.params.id=this.Oid
+    //   this.getDetail()
+    // }
   },
   methods: {
+    show(id){
+      if(id){
+        this.params.id = id
+        this.getDetail()
+        this.dialogVisible = true
+      }
+    },
     getDetail(){
       orderById(this.params).then(res=>{
         this.orderList=res.data
