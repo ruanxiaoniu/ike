@@ -25,6 +25,8 @@
 <script>
 import moment from 'moment'
 import {stageLog} from '@/api/customer'
+import {parseTime} from '@/utils/formateDate'
+
 export default {
   props:['Cid'],
   data() {
@@ -57,7 +59,7 @@ export default {
   },
   filters:{
      formatDate(time){
-      return moment(time).format('YYYY-MM-DD hh:mm:ss')
+      return parseTime(time)
     }
   },
   methods:{

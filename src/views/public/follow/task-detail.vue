@@ -6,7 +6,7 @@
             <span>{{arrange.arrangeName}}</span>
           </el-form-item>
           <el-form-item label="任务创建时间" prop="createTime">
-            <span>{{arrange.createTime| formateTime}}</span>
+            <span>{{arrange.createTime| formateDate}}</span>
           </el-form-item>
           <el-form-item label="客户：" prop="customerName">
             <span class="link-type" @click="handle(arrange.customerId,'customer')">{{arrange.customerName}}</span>
@@ -21,7 +21,7 @@
             <span>{{arrange.chargeName}}</span>
           </el-form-item>
           <el-form-item label="任务执行时间：" prop="executeTime">
-            <span>{{arrange.executeTime | formateTime}}</span>
+            <span v-if="arrange.executeTime">{{arrange.executeTime | formateDate}}</span>
           </el-form-item>
           <el-form-item label="已读状态：" prop="isread">
             <span v-if="arrange.isread==null">未读</span>
@@ -86,11 +86,12 @@
 import {arrangeFail,arrangeComplete,arrangeDetail} from '@/api/arrange'
 import relationDetail from '../relation/relationById'
 import moment from 'moment'
+import {parseTime} from '@/utils/formateDate'
 export default {
   // props:['type','Aid'],
    filters: {
-    formateTime(time) {
-      return moment(time).format('YYYY-MM-DD HH:MM:SS')
+    formateDate(time) {
+      return parseTime(time)
     }
   },
   components:{

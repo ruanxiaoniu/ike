@@ -119,6 +119,8 @@ import search from '../search/index'
 import updateAdd from '../update-add/index'
 import moment from 'moment'
 import assign from 'lodash/assign'
+import {parseTime} from '@/utils/formateDate'
+
 export default {
   components: {
     // productDetail,
@@ -131,7 +133,7 @@ export default {
   },
   filters: {
     formateTime(time) {
-      return moment(time).format('YYYY-MM-DD HH:MM:SS')
+      return parseTime(time)
     }
   },
   data() {

@@ -48,6 +48,7 @@
 
   import moment from 'moment'
   import { getComplaintById } from '@/api/complaint'
+  import {parseTime} from '@/utils/formateDate'
 
   export default {
     props: ['type'],
@@ -71,14 +72,9 @@
         dialogVisivle: false
       }
     },
-    // created() {
-    //   // this.complaintId = this.$store.getters.complaintRowList.id
-    //   // this.setComplaint(this.complaintId)
-    //   // this.setComplaintHandle(this.complaintId)
-    // },
     filters: {
       formatDate(time) {
-        return moment(time).format('YYYY年MM月DD日 hh时mm分ss秒')
+        return parseTime(time)
       }
     },
     methods: {

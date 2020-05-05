@@ -41,7 +41,8 @@
       </el-table-column>
       <el-table-column min-width="150px" align="center" label="执行时间" prop="executeTime">
         <template slot-scope="scope">
-          <span>{{ scope.row.executeTime | formateTime }}</span>
+          <span v-if="scope.row.executeTime">{{ scope.row.executeTime | formateTime }}</span>
+          <span v-else>未执行</span>
         </template>
       </el-table-column>
       <el-table-column min-width="180px" align="center" label="客户联系人名称[客户名]">
@@ -68,13 +69,6 @@
 
     </el-table>
     <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getArrange" />
-
-    <!-- <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag" width="60%" @before-close="setClose">
-      <relation v-if="title=='relation'" :rid="Rid" />
-      <arrangeDetail v-else-if="title=='arrangeDetail'" :aid="Aid" @updatelist="getArrange" />
-      <updateAdd v-else-if="title=='add'||title=='edit'" :edit-flag="editFlag" :aid="Aid" @setdialog="showDialogFlag=!showDialogFlag" @updatelist="getArrange" />
-      <search v-else-if="title=='search'" @updatelist="searchUpdate" />
-    </el-dialog> -->
     <search ref="search" @updatelist="searchUpdate" />
     <updateAdd ref="updateAdd" @updatelist="getArrange" />
     <arrangeDetail ref="arrangeDetail" @updatelist="getArrange" />
@@ -93,6 +87,8 @@ import updateAdd from '../add/index'
 import relation from '../../../public/relation/relationById'
 import moment from 'moment'
 import { sortTypeOpts } from '@/utils/common.js'
+import {parseTime} from '@/utils/formateDate'
+
 export default {
 
   components: {
@@ -106,7 +102,7 @@ export default {
   },
   filters: {
     formateTime(time) {
-      return moment(time).format('YYYY-MM-DD HH:MM:SS')
+      return parseTime(time)
     }
   },
   props: {

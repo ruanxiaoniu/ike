@@ -72,6 +72,7 @@
   import moment from 'moment'
   import pagination from '@/components/Pagination'
   import { getAllMessage, getUnReadMessage, getIsReadMessage, batchDelete, batchToRead, batchToUnRead } from '@/api/message'
+import {parseTime} from '@/utils/formateDate'
 
   export default {
     components: {
@@ -118,7 +119,7 @@
     },
     filters: {
       formatDate(time) {
-        return moment(time).format('YYYY年MM月DD日 hh时mm分')
+        return parseTime(time)
       },
       statusFilter(status) {
         const statusMap = {

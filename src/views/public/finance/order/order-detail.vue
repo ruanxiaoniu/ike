@@ -1,7 +1,7 @@
 <template>
   <div v-if="dialogVisible">
-    <el-dialog title="订单详情" :visible.sync="dialogVisible"></el-dialog>
-    <div class="top">基本信息</div>
+    <el-dialog title="订单详情" :visible.sync="dialogVisible">
+       <div class="top">基本信息</div>
     <el-form v-model="orderList" label-width="150px" label-position="right" class="demo-form-inline">
       <el-row>
         <el-col :span="12">
@@ -90,6 +90,8 @@
           </template>
       </el-table-column>
     </el-table>
+    </el-dialog>
+   
   </div>
 </template>
 <script>
@@ -100,7 +102,7 @@ export default {
     return {
       dialogVisible: false,
       params:{
-        id:''
+        orderBaseId:''
       },
       // Oid:'',
       orderList: {
@@ -134,7 +136,7 @@ export default {
   methods: {
     show(id){
       if(id){
-        this.params.id = id
+        this.params.orderBaseId = id
         this.getDetail()
         this.dialogVisible = true
       }
@@ -142,6 +144,8 @@ export default {
     getDetail(){
       orderById(this.params).then(res=>{
         this.orderList=res.data
+        console.log(this.orderList);
+        
       }).catch(err=>{
 
       })

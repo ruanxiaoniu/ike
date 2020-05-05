@@ -79,12 +79,13 @@ import {getOneRelation} from '@/api/customer'
 import {getEmployeeAll} from '@/api/employee'
 import { customerStatus } from '@/utils/common.js';
 import moment from 'moment'
+import {parseTime} from '@/utils/formateDate'
 
 export default {
   filters:{
     formateDate(date){
       if(date){
-        return moment(date).format('YYYY-MM-DD HH:MM:SS')
+        return parseTime(date)
       }
       return ''
     }

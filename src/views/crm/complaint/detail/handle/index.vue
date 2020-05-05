@@ -35,6 +35,7 @@
   import moment from 'moment'
   import pagination from '@/components/Pagination'
   import { getHandlesById } from '@/api/complaint'
+import {parseTime} from '@/utils/formateDate'
 
   export default {
     components:{
@@ -54,7 +55,7 @@
     },
     filters: {
       formatDate(time) {
-        return moment(time).format('YYYY年MM月DD日 hh时mm分ss秒')
+        return parseTime(time)
       }
     },
     methods: {

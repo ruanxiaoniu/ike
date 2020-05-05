@@ -34,16 +34,6 @@
 <script>
 import {getPerson} from '@/api/user'
   export default {
-    filters: {
-      statusFilter(status) {
-        const statusMap = {
-          published: 'success',
-          draft: 'info',
-          deleted: 'danger'
-        }
-        return statusMap[status]
-      }
-    },
     props: {
       type: {
         type: String,

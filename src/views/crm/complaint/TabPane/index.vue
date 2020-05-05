@@ -104,6 +104,7 @@ import complaintDetail from '../detail/index'
 // import search from '../search/index'
 import add from '../add/index'
 import relation from '../../../public/relation/relationById'
+import {parseTime} from '@/utils/formateDate'
 
 export default {
   components: {
@@ -116,7 +117,7 @@ export default {
   },
   filters: {
     formatDate(time) {
-      return moment(time).format('YYYY年MM月DD日 hh时mm分')
+      return parseTime(time)
     }
   },
   props: {

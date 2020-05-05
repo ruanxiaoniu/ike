@@ -84,6 +84,8 @@ import updateAdd from '../add/index'
 import { planAll, deletePlan } from '@/api/follow'
 import moment from 'moment'
 import assign from 'lodash/assign'
+import {parseTime} from '@/utils/formateDate'
+
 export default {
   components: {
     pagination,
@@ -95,7 +97,7 @@ export default {
   },
   filters: {
     formateTime(time) {
-      return moment(time).format('YYYY-MM-DD HH:MM:SS')
+      return parseTime(time)
     }
   },
   props: {

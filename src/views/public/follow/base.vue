@@ -70,6 +70,8 @@ import search from '../../crm/contact-follow/search/index'
 import moment from 'moment'
 import pagination from '@/components/Pagination'
 import assign from 'lodash/assign'
+import {parseTime} from '@/utils/formateDate'
+
 export default {
   components:{
     followDetail,
@@ -83,7 +85,7 @@ export default {
   },
   filters:{
     formateDate(date){
-       return moment(date).format('YYYY-MM-DD HH:MM:SS')
+       return parseTime(date)
     }
   },
   props:['Cid'],
