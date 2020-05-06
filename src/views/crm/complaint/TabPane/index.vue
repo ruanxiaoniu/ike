@@ -1,9 +1,9 @@
 <template>
   <div>
     <div>
-      <el-button size="small" icon="el-icon-delete" @click="deleteComplaint">
+      <!-- <el-button size="small" icon="el-icon-delete" @click="deleteComplaint">
         删除
-      </el-button>
+      </el-button> -->
 
       <el-button size="small" icon="el-icon-edit" @click="add">
         新建
@@ -220,6 +220,8 @@ export default {
       }
     },
     customerDetail(row) {
+      console.log('row');
+      
       this.$router.push({ name: 'CustomerDetail', query: { customerId: row.customerId }})
     },
     checkAndSetSelect(val) {

@@ -24,9 +24,9 @@
         <el-tab-pane  label="回款记录">
           <returnDetail :Cid="Cid"></returnDetail>
       </el-tab-pane>
-      <el-tab-pane  label="投诉记录">
+      <!-- <el-tab-pane  label="投诉记录">
 
-      </el-tab-pane>
+      </el-tab-pane> -->
         <el-tab-pane  label="阶段修改记录">
           <stageLog :Cid="Cid"></stageLog>
       </el-tab-pane>

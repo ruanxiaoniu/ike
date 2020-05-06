@@ -63,6 +63,9 @@ export default {
     show(item) {
       this.$nextTick(() => {
         this.dialogVisible = true
+        console.log('type');
+        console.log(this.type);
+        
         this.value = item
       })
     },

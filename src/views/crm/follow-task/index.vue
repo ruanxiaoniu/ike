@@ -3,7 +3,7 @@
     <el-tabs v-model="TopactiveName" style="margin-top:15px;" type="border-card">
       <el-tab-pane v-for="item in ToptabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
-          <tab-pane v-if="TopactiveName==item.key" :type="item.key" :customer-id="Cid" />
+          <tab-pane v-if="TopactiveName==item.key" :type="item.key" :Cid="Cid" />
         </keep-alive>
       </el-tab-pane>
     </el-tabs>

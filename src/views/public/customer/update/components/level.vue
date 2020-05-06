@@ -45,6 +45,8 @@ export default {
     'value': {
       immediate: true,
       handler: function() {
+        console.log('level');
+        
         this.level.id = this.value.customerLevelId
         this.level.levelName = this.value.levelName
         this.getLevel()

@@ -220,15 +220,13 @@ export default {
       }
     }
   },
-  created() {
-    this.getEmployee()
-    this.getStage()
-    this.getLevel()
-    this.getOrigin()
-  },
   methods: {
     show() {
       this.dialogVisible = true
+      this.getEmployee()
+      this.getStage()
+      this.getLevel()
+      this.getOrigin()
     },
     hide(){
       this.dialogVisible = false
@@ -319,9 +317,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.customer.followTime = moment(this.customer.followTime).format('YYYY-MM-DD HH:SS:MM')
-          console.log('moment');
           
-          console.log(this.customer)
           addCustomer(this.customer).then(res => {
             this.$emit('updatelist')
             this.dialogVisible = false

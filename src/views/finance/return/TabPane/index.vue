@@ -58,8 +58,8 @@
 
     <el-table-column min-width="100px" align="center" label="客户联系人[客户名称]" >
       <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'relation')">{{ scope.row.relationName}}</span>
-        <span class="link-type" @click="operation(scope.row,'customer')">[{{ scope.row.customerName}}]</span>
+        <span class="link-type" @click="viewRelation(scope.row)">{{ scope.row.relationName}}</span>
+        <span class="link-type" @click="viewCustomer(scope.row)">[{{ scope.row.customerName}}]</span>
       </template>
     </el-table-column>
 
@@ -72,26 +72,30 @@
 
    <el-table-column align="center" label="支付方式" width="90px" prop="orderCost" >
       <template slot-scope="scope">
-        <span class="link-type">{{ scope.row.paymentType }}</span>
+        <span>{{ scope.row.paymentType }}</span>
       </template>
     </el-table-column>
 
     <el-table-column class-name="status-col" label="负责人姓名" min-width="100px" prop="employeeName" align="center">
       <template slot-scope="scope">
-        <span class="link-type" @click="operation(scope.row,'employee')">{{ scope.row.employeeName }}</span>
+        <span class="link-type" @click="viewEmployee(scope.row)">{{ scope.row.employeeName }}</span>
       </template>
     </el-table-column>
 
   </el-table>
   <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getReturn" />
   
-  <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag" append-to-body>
-    <!-- <orderDetail v-if="title=='returnDetail'" :Rid="Rid"></orderDetail> -->
+  <!-- <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag" append-to-body>
+    <orderDetail v-if="title=='returnDetail'" :Rid="Rid"></orderDetail>
     <search v-if="title=='search'" @updatelist="searchUpdate"></search>
     <addUpdate v-else-if="title=='add'||title=='edit'" :edit="editFlag" :returnId="returnId" @setdialog="setDialogFlag" @seteditflag="setEditFlag" @updatelist="getReturn"></addUpdate>
     <relation v-else-if="title=='relation'" :Rid="Rid"></relation>
     <employee v-else-if="title=='employee'" :id="Eid"></employee>
-  </el-dialog>
+  </el-dialog> -->
+  <employee ref="employee"></employee>
+  <relation ref="relation"></relation>
+  <addUpdate ref="addUpdate"></addUpdate>
+  
 </div>
 </template>
 
@@ -134,14 +138,14 @@ export default {
         size:10,//每页显示的数据条数
       },
       loading: false,
-      textMap:{
-        search:'搜索',
-        add:'新增回款信息',
-        returnDetail:'回款详情',
-        edit:'修改订单信息',
-        relation:'联系人详情',
-        employee:'负责人详情'
-      },
+      // textMap:{
+      //   search:'搜索',
+      //   add:'新增回款信息',
+      //   returnDetail:'回款详情',
+      //   edit:'修改订单信息',
+      //   relation:'联系人详情',
+      //   employee:'负责人详情'
+      // },
       employeeOptions:null,
       employeeFilter:null,
       selection:'所有成员',
@@ -174,7 +178,8 @@ export default {
     },
     selection(newVal){
       this.getReturn()
-    }
+    },
+    
   },
    computed: {
     watchTab(){
@@ -188,6 +193,18 @@ export default {
 
   },
   methods: {
+    viewRelation(item){
+      this.$refs.relation.show(item.relationId)
+    },
+    viewCustomer(item){
+      this.$router.push({
+        name: 'CustomerDetail',
+        query: { customerId: item.customerId, customerName: item.customerName }
+      })
+    },
+    viewEmployee(item){
+      this.$refs.employee.show(item.employeeId)
+    },
     /**
      * 获取所有成员，用于搜索
      * method:getEmployee()

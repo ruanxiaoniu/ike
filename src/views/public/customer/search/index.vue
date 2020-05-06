@@ -147,13 +147,11 @@ export default {
 
     }
   },
-  created() {
-    this.getStage()
-    this.getLevel()
-    this.getOrigin()
-  },
   methods: {
     show() {
+      this.getStage()
+      this.getLevel()
+      this.getOrigin()
       this.dialogVisible = true
     },
     clearData(){

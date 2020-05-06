@@ -67,11 +67,6 @@
 
     </el-table>
     <pagination v-show="listQuery.total>0" :total="listQuery.total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getOrder" />
-
-    <!-- <el-dialog :title="textMap[title]" :visible.sync="showDialogFlag" width="60%">
-      <orderDetail v-if="title=='orderProduct'" :oid="Oid" />
-      <employee v-else-if="title=='employee'" :id="Eid" />
-    </el-dialog> -->
     <search ref="search" @updatelist="searchUpdate" />
     <addUpdate ref="addUpdate" @updatelist="getOrder" />
     <relation ref="relation" />
@@ -108,7 +103,8 @@ export default {
     type: {
       type: String,
       default: 'all'
-    }
+    },
+    Cid: ''
   },
   data() {
     return {
@@ -221,6 +217,9 @@ export default {
       }
       if (this.sortName) {
         this.$set(this.params, 'sortName', this.sortName)
+      }
+      if(this.Cid){
+        this.$set(this.params,'customerId',this.Cid)
       }
     },
     /**

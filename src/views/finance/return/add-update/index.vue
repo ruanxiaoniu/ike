@@ -1,118 +1,89 @@
 <template>
-  <div>
-    <div class="top">基本信息</div>
-     <el-form :model="returnList" ref="returnList" :rules="rules" label-position="right" label-width="130px" style="margin-top:20px">
-       <el-form-item label="负责人：">
-          <el-row>
-            <el-col :span="8">
-              <!-- 可进行远程搜索负责人 -->
-              <el-select
-                v-model="returnList.employeeId"
-                filterable
-                remote
-                reserve-keyword
-                style="width:100%"
-                placeholder="请输入关键词"
-                :remote-method="remoteMethodEmployee"
-                :loading="loading">
-                <el-option
-                  v-for="item in employeeOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </el-col>
-          </el-row> 
-       </el-form-item>
-       <el-form-item label="客户：">
-        <el-row>
-          <el-col :span="8">
-            <!-- 可进行远程搜索客户 -->
-            <el-select
-              v-model="returnList.customerId"
-              filterable
-              remote
-              reserve-keyword
-              style="width:100%"
-              placeholder="请输入关键词"
-              :remote-method="remoteMethodCustomer"
-              :loading="loading"
-            >
-              <el-option
-                v-for="item in customerOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              />
-            </el-select>
-          </el-col>
-        </el-row>
-       </el-form-item>
-        <el-form-item label="联系人：" prop="relationId">
-          <el-row>
-            <el-col span="8">
-              <el-select v-model="returnList.relationId" placeholder="请选择联系人" style="width:100%">
-                <el-option v-for="(item) in relationList" :key="item.id" :label="item.relationName" :value="item.id"/>
-              </el-select>
-            </el-col>
-          </el-row>
-        </el-form-item>
-     </el-form>
-     <div class="top">回款信息</div>
-     <el-form label-position="right" label-width="130px" style="margin-top:20px">
-       <el-form-item label="成交订单：" prop="orderBaseId">
-         <el-row>
-           <el-col :span="8">
-              <el-select
-              v-model="orderName"
-              style="width:100%"
-              placeholder="请输入关键词"
-            >
-            </el-select>
-           </el-col>
-           <el-col :span="6">
-             <el-button size="small" @click="editOrder">编辑</el-button>
-           </el-col>
-         </el-row> 
-       </el-form-item>
-       <el-form-item label="回款时间：" prop="planDate">
-         <el-row>
-           <el-col :span="8">
-              <el-date-picker
-                v-model="returnList.payTimeStr"
-                type="datetime"
-                placeholder="选择回款时间"/>
-           </el-col>
-         </el-row>
-       </el-form-item>
-       <el-form-item label="回款金额：" prop="amount">
-         <el-row >
-           <el-col :span="8">
-             <el-input v-model="returnList.amount"></el-input>
-           </el-col>
-         </el-row>
-       </el-form-item>
-       <el-form-item label="付款方式：" prop="paymentType">
-         <el-row>
-           <el-col :span="8">
-             <el-input v-model="returnList.paymentType"></el-input>
-           </el-col>
-         </el-row>
-       </el-form-item>
-       <el-form-item label="备注：">
-         <el-row>
-           <el-col :span="8">
-             <el-input type="textarea" v-model="returnList.remark"></el-input>
-           </el-col>
-         </el-row>
-       </el-form-item>
-     </el-form>
-  <div style="margin-left:500px">
-    <el-button size="small" @click="cancel">取消</el-button>
-    <el-button size="small" type="primary" v-if="editFlag" @click="editOperate('returnList')">修改</el-button>
-    <el-button size="small" type="primary" v-else @click="add('returnList')">新建</el-button>
-  </div>
+  <div v-if="dialogVisible">
+    <el-dialog title="" :visible.sync="dialogVisible">
+      <div class="top">基本信息</div>
+        <el-form :model="returnList" ref="returnList" :rules="rules" label-position="right" label-width="130px" style="margin-top:20px">
+          <el-form-item label="负责人：">
+              <el-row>
+                <el-col :span="8">
+                  <employeeSelect v-model="returnList.employeeId" />                 
+                </el-col>
+              </el-row> 
+          </el-form-item>
+          <el-form-item label="客户：">
+            <el-row>
+              <el-col :span="8">
+                <!-- 可进行远程搜索客户 -->
+                <customerSelect v-model="returnList.customerId" />
+              </el-col>
+            </el-row>
+          </el-form-item>
+            <el-form-item label="联系人：" prop="relationId">
+              <el-row>
+                <el-col span="8">
+                  <el-select v-model="returnList.relationId" placeholder="请选择联系人" style="width:100%">
+                    <el-option v-for="(item) in relationList" :key="item.id" :label="item.relationName" :value="item.id"/>
+                  </el-select>
+                </el-col>
+              </el-row>
+            </el-form-item>
+        </el-form>
+        <div class="top">回款信息</div>
+        <el-form label-position="right" label-width="130px" style="margin-top:20px">
+          <el-form-item label="成交订单：" prop="orderBaseId">
+            <el-row>
+              <el-col :span="8">
+                  <el-select
+                  v-model="orderName"
+                  style="width:100%"
+                  placeholder="请输入关键词"
+                >
+                </el-select>
+              </el-col>
+              <el-col :span="6">
+                <el-button size="small" @click="editOrder">编辑</el-button>
+              </el-col>
+            </el-row> 
+          </el-form-item>
+          <el-form-item label="回款时间：" prop="planDate">
+            <el-row>
+              <el-col :span="8">
+                  <el-date-picker
+                    v-model="returnList.payTimeStr"
+                    type="datetime"
+                    placeholder="选择回款时间"/>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="回款金额：" prop="amount">
+            <el-row >
+              <el-col :span="8">
+                <el-input v-model="returnList.amount"></el-input>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="付款方式：" prop="paymentType">
+            <el-row>
+              <el-col :span="8">
+                <el-input v-model="returnList.paymentType"></el-input>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="备注：">
+            <el-row>
+              <el-col :span="8">
+                <el-input type="textarea" v-model="returnList.remark"></el-input>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </el-form>
+      <div style="margin-left:500px">
+        <el-button size="small" @click="cancel">取消</el-button>
+        <el-button size="small" type="primary" v-if="editFlag" @click="editOperate('returnList')">修改</el-button>
+        <el-button size="small" type="primary" v-else @click="add('returnList')">新建</el-button>
+      </div>
+    </el-dialog>
+    
   <el-dialog :visible.sync="dialogFlag" title="成交订单" width="60%" append-to-body>
     <successOrder :Cid="Cid" @setdialog="dialogFlag=!dialogFlag" @setorder="setOder"></successOrder>
   </el-dialog>
@@ -120,19 +91,24 @@
 </template>
 <script>
 import {createReturn,returnById,updateReturn} from '@/api/return'
+import customerSelect from '../../../public/customer/customerSelect/customerSelect'
 import {orderById,updateOrder,createOrder,getProductList} from '@/api/order'
 import { getCustomerInfo,getOneRelation} from '@/api/customer'
 import {getEmployeeAll} from '@/api/employee'
+import employeeSelect from '../../../public/employeeSelect/employeeSelect'
 import successOrder from '../../../public/finance/return/success-order'
 import moment from 'moment'
 export default {
   props:['edit','returnId'],
   components:{
-    successOrder
+    successOrder,
+    employeeSelect,
+    customerSelect,
   },
   data() {
     return {
       orderName:'',
+      dialogVisible: false,
        returnList:{
          customerId:'',
          employeeId:'',
@@ -144,6 +120,7 @@ export default {
          note:'',
          amount:''
        },
+       type: '',
        editFlag:false,
        editDialog:false,
        dialogFlag:false,
@@ -172,10 +149,10 @@ export default {
         ],
       },
       loading:false,
-      employeeOptions:null,//员工选项
-      employeeFilter:null,//用于远程搜索
-      customerFilter:null,//客户搜索
-      customerOptions:null,
+      // employeeOptions:null,//员工选项
+      // employeeFilter:null,//用于远程搜索
+      // customerFilter:null,//客户搜索
+      // customerOptions:null,
       relationList:null,
       Cid:'',
       oderQuery:null//成交订单页面传过来的值
@@ -232,6 +209,14 @@ export default {
     this.getCustomer()
   },
   methods:{
+    show(item){
+      if(item && item.id) {
+        this.type = 'edit'
+        
+      }else{
+        this.type = 'add'
+      }
+    },
      /**
      * 获取所有成员，用于搜索
      * method:getEmployee()

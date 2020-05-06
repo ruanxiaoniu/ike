@@ -109,7 +109,8 @@ export default {
     type: {
       type: String,
       default: 'all'
-    }
+    },
+    Cid: ''
   },
   data() {
     return {
@@ -127,7 +128,6 @@ export default {
       loading: false,
       Aid: '',
       Rid: '',
-      Cid: '',
       modelType: '',
       sortName: '',
       sortType: '',
@@ -190,8 +190,11 @@ export default {
       this.checkTab()
       this.$set(this.params, 'pageNum', this.listQuery.page)
       this.$set(this.params, 'pageSize', this.listQuery.size)
-      if (this.customerId) {
-        this.$set(this.params, 'customerId', this.customerId)
+      console.log('cid');
+      console.log(this.Cid);
+      
+      if (this.Cid) {
+        this.$set(this.params, 'customerId', this.Cid)
       }
       getArrangeAll(this.params).then(response => {
         this.arrangeList = response.data.records

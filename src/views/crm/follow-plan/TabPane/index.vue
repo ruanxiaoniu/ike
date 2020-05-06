@@ -104,7 +104,8 @@ export default {
     type: {
       type: String,
       default: 'all'
-    }
+    },
+    Cid: ''
   },
   data() {
     return {
